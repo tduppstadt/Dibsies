@@ -10,16 +10,22 @@ echo ""
 echo "3.  Production - Watch"
 echo "    - theme watch --env prod"
 echo ""
+echo "4.  Production - Replace"
+echo "    - theme replace --env prod"
+echo ""
 echo "______"
 echo ""
-echo "4.  Development - Download"
+echo "5.  Development - Download"
 echo "    - theme download --env dev"
 echo ""
-echo "5.  Development - Update"
+echo "6.  Development - Update"
 echo "    - theme update --env dev"
 echo ""
-echo "6.  Development - Watch"
+echo "7.  Development - Watch"
 echo "    - theme watch --env dev"
+echo ""
+echo "8.  Development - Replace"
+echo "    - theme replace --env dev"
 echo ""
 echo "0.  Cancel"
 echo ""
@@ -57,20 +63,34 @@ if [ $choice -eq 3 ]; then
 fi
 
 if [ $choice -eq 4 ]; then
+	theme replace --env prod;
+	echo " "
+	echo "__ Production Replace Completed __"
+	echo " "
+fi
+
+if [ $choice -eq 5 ]; then
 	theme download --env dev;
 	echo " "
 	echo "__ Development Download Completed __"
 	echo " "
 fi
 
-if [ $choice -eq 5 ]; then
+if [ $choice -eq 6 ]; then
 	theme update --env dev;
 	echo " "
 	echo "__ Development Update Completed __"
 	echo " "
 fi
 
-if [ $choice -eq 6 ]; then
+if [ $choice -eq 7 ]; then
 	echo "Development Watching ... "
 	theme watch --env dev;
+fi
+
+if [ $choice -eq 8 ]; then
+	theme replace --env dev;
+	echo " "
+	echo "__ Development Replace Completed __"
+	echo " "
 fi
