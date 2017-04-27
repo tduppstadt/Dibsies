@@ -1,0 +1,7 @@
+<div class="pagesnippetwidget widget{% if template == 'index' %} one-third column{% endif %}">
+{% if pages[data].handle == '' %}&nbsp;
+{% else %}
+    <a href="{{ pages[data].url }}"><h6>{{ pages[data].title }}</h6></a>
+    {% include 'process-html' with pages[data].content %}
+{% endif %}
+</div>

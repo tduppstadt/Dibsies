@@ -1,0 +1,31 @@
+{% capture titleHTML %}{% if slidetext_title and slidetext_title != '' %}
+{% assign splittitle = slidetext_title | split: '|' %}
+<div class="overlay {{ slidetext_class }}{% if splittitle.size > 2 %} haslower{% endif %}">
+    <div class="upper">
+        {% if splittitle[0].size > 1 %}<h6 class="title">{{ splittitle[0] }}</h6>{% endif %}
+        {% if splittitle[1].size > 1 %}<p>{{ splittitle[1] }}</p>{% endif %}
+    </div>
+    <div class="lower">
+        {% if splittitle[2].size > 1 %}<span class="price">{{ splittitle[2] }}</span>{% endif %}
+        {% if splittitle[3].size > 1 %}<a class="button large" href="REPLACE_URL">{{ splittitle[3] }}</a>{% endif %}
+    </div>
+</div>
+{% endif %}{% endcapture %}
+
+{% if homepage-slide == '' %}
+    <li><img src="{{ slideimage | asset_url }}" alt="{{ homepage-slide }}"/>{{ titleHTML }}</li>
+{% else %}
+    {% capture firstchar %}{{ homepage-slide | truncate: 1, '' }}{% endcapture %}
+    {% capture first7chars %}{{ homepage-slide | truncate: 7, '' }}{% endcapture %}
+    {% if firstchar == '/' or first7chars == 'http://' or first7chars == 'https:/' %}
+        {% comment %} Allow alt text with pipe-separator e.g. 'http://google.com|Link to google' {% endcomment %}
+        {% assign splitwords = homepage-slide | split: '|' %}
+        {% if splitwords.size == 1 %}
+        <li><a href="{{ homepage-slide }}"><img src="{{ slideimage | asset_url }}" alt="{{ homepage-slide }}"/></a>{{ titleHTML | replace: 'REPLACE_URL', homepage-slide }}</li>
+        {% elsif splitwords.size == 2 %}
+        <li><a href="{{ splitwords[0] }}" title="{{ splitwords[1] }}><img src="{{ slideimage | asset_url }}" alt="{{ splitwords[1] }}"/></a>{{ titleHTML | replace: 'REPLACE_URL', splitwords[0] }}</li>
+        {% else %}
+        <li><a href="{{ splitwords[0] }}" title="{{ splitwords[2] }}"><img src="{{ slideimage | asset_url }}" alt="{{ splitwords[1] }}"/></a>{{ titleHTML | replace: 'REPLACE_URL', splitwords[0] }}</li>
+        {% endif %}
+    {% endif %}
+{% endif %}

@@ -1,0 +1,147 @@
+<div id="crumbs" class="sixteen columns">
+    <a href="/" title="Home">Home</a>
+    &raquo;
+    <a href="{{ blog.url }}">{{ blog.title }}</a>
+    &raquo;
+    <a href="{{ article.url }}">{{ article.title }}</a>
+</div><!-- #crumbs -->
+
+{% if settings.show_social_article %}
+<div class="social floating">
+    <span class="label">{{ settings.text_sharethis }}</span>
+    {% include 'social-sharing' %}
+</div>
+{% endif %}
+
+<section class="ten columns">
+    <article>
+      <center><h1><font size="+1">{{ article.title }}</font></h1></center>
+        <div class="info">
+            Posted on {{ article.published_at | date: "%B %d, %Y" }}
+                {% if settings.article_author_show %} by 
+                    {% if settings.article_author_override == '' %}
+                        {{ article.author }}
+                    {% else %}
+                        {{ settings.article_author_override }}
+                    {% endif %}
+                {% endif %} 
+            {% if blog.comments_enabled? %}| <a href="{{article.url}}#commentsection">{{ article.comments_count }} {{ article.comments_count | pluralize: 'comment', 'comments' }}</a>{% endif %}
+        </div>
+        <div class="pagecontent contentsection">
+            {% include 'process-html' with article.content %}
+        </div>
+        
+        {% if article.tags.size > 0 %}
+        <div class="tags contentsection">
+            Tags: 
+            {% for tag in article.tags %}  
+                <a href="{{ blog.url }}/tagged/{{ tag | handleize }}">{{ tag }}{% unless forloop.last %},{% endunless %}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </article>
+    
+    <div class="paging simpletext row">
+        {% if blog.previous_article %}
+            <span class="prevwrap"><a class="prev" href="{{ blog.previous_article }}">&#8249;</a> Previous</span>
+        {% endif %}
+        {% if blog.next_article %}
+            <span class="nextwrap">Next <a class="next" href="{{ blog.next_article }}">&#8250;</a></span>
+        {% endif %}
+    </div>
+    
+    {% if blog.comments_enabled? %}
+    <div id="commentsection" class="comments row">
+        <h3>Comments</h3>
+        {% paginate article.comments by 10 %}  
+            <ul>
+                {% if comment and comment.created_at %}
+                <li class="row">
+                    <div class="two columns alpha">
+                          <span>{{ comment.author }}</span>
+                    </div>
+                    <div class="commentbody seven columns offset-by-one omega">
+                        {{ comment.content }}
+                    </div>
+                </li>
+                {% endif %}
+            
+                {% for comment in article.comments %}
+                <li class="row">
+                    <div class="two columns alpha">
+                          <span>{{ comment.author }}</span>
+                    </div>
+                    <div class="commentbody seven columns offset-by-one omega">
+                        {{ comment.content }}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% include 'pagination' %}
+        {% endpaginate %}
+    </div>
+    <!-- Comment Form -->
+    <div class="commentform">
+        <h3>Leave a reply</h3>
+            {% form article %}
+            
+            {% comment %} Check if a comment has been submitted in the last request, and if yes display an appropriate message {% endcomment %}
+            {% if form.posted_successfully? %}
+              {% if blog.moderated? %}
+                <div class="notice">
+                  Thank you for leaving your comment.<br />
+                  Your comment will need to be approved before it is shown.
+                </div>
+              {% else %}
+                <div class="notice">Your comment has been posted, thank you.</div>
+              {% endif %}
+            {% endif %}
+        
+            {% if form.errors %}
+                {% for field in form.errors %}
+                <p class="error">{{ field | capitalize }} {{ form.errors.messages[field] }}</p>
+                {% endfor %}
+            {% endif %}
+                <ul class="formfields">
+                    <li class="inputrow">
+                        <label for="comment_author" class="hoverlabel">Your name</label>
+                        <input type="text" data-fieldname="Your name" class="required" id="comment_author" name="comment[author]" size="31" value="" />
+                    </li>
+                    <li class="inputrow">
+                        <label for="comment_email" class="hoverlabel">Your email</label>
+                        <input type="email" data-fieldname="Your email" class="required" id="comment_email" name="comment[email]" size="31" value="" />
+                    </li>
+                    <li class="inputrow">
+                        <label for="comment_body">Your comment</label>
+                        <textarea id="comment_body" data-fieldname="Your comment" class="required" name="comment[body]" cols="25" rows="5">{{form.body}}</textarea>
+                    </li>
+                </ul>
+            {% if blog.moderated? %}
+                <p class="hint">This blog is moderated, your comment will need to be approved before it is shown.</p>
+            {% endif %}    
+            <input class="button" type="submit" value="Post comment" id="comment-submit" />
+        {% endform %}
+    </div><!-- #comment-form -->
+    <!-- END Comment Form -->
+    {% endif %}
+</section>
+
+<aside class="five columns offset-by-one widgets">
+    {% if blog.articles.size > 0 %}
+    <div class="item recentarticles">
+        <h6>Recent Articles</h6>
+        <ul>
+            {% for article in blog.articles limit: 4 %}
+            <li>
+                <a href="{{ article.url }}"><h4>{{ article.title }}</h4></a>
+                <span>{{ article.published_at | date: "%B %d, %Y" }}</span>
+                {% capture articledesc %}{% include 'process-html-strip' with article.excerpt_or_content %}{% endcapture %}
+                <p>{{ articledesc | strip_html | truncate: 70 }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+
+</aside>

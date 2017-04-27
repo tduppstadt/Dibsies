@@ -1,0 +1,28 @@
+<div id="crumbs" class="sixteen columns">
+    <a href="/" title="Home">Home</a>
+    &raquo;
+    <a href="{{ page.url }}">{{ page.title }}</a>
+</div><!-- #crumbs -->
+
+{% if settings.show_social_page %}
+<div class="social floating">
+    <span class="label">{{ settings.text_sharethis }}</span>
+    {% include 'social-sharing' %}
+</div>
+{% endif %}
+
+<div class="ten columns">
+    <h1>{{ page.title }}</h1>
+    {% include 'process-html' with page.content %}
+</div>
+
+<aside class="five columns offset-by-one widgets">
+    {% assign data = settings.widget_s1_handle %}
+    {% unless data == '' %}{% include settings.widget_s1_type %}{% endunless %}
+    
+    {% assign data = settings.widget_s2_handle %}
+    {% unless data == '' %}{% include settings.widget_s2_type %}{% endunless %}
+    
+    {% assign data = settings.widget_s3_handle %}
+    {% unless data == '' %}{% include settings.widget_s3_type %}{% endunless %}
+</aside>

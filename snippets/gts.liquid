@@ -1,0 +1,25 @@
+<!-- BEGIN: Simp Google Trusted Stores by Simprosys InfoMedia For Any Assistance on this Code contact info@simprosys.com -->
+		<script type="text/javascript">
+		var gts = gts || [];
+
+		gts.push(["id", "688769"]);
+		gts.push(["badge_position", "BOTTOM_RIGHT"]);
+        
+        gts.push(["locale", "en_US"]);
+		{% if template contains 'product' %} 
+		gts.push(["google_base_offer_id", "shopify_US_{{ product.id }}_{{ product.variants.first.id }}"]);
+		{% endif %}          
+		gts.push(["google_base_subaccount_id", "10856862"]);
+		gts.push(["google_base_country", "US"]);
+		gts.push(["google_base_language", "en"]);
+
+		(function() {
+		var gts = document.createElement("script");
+		gts.type = "text/javascript";
+		gts.async = true;
+		gts.src = "https://www.googlecommerce.com/trustedstores/api/js";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(gts, s);
+		})();
+		</script>
+		<!-- END: Simp Google Trusted Stores  by Simprosys InfoMedia-->

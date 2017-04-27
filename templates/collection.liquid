@@ -1,0 +1,255 @@
+{% assign row_limit = settings.products_per_row_coll | plus: 0 %}
+{% assign total_prods_to_show = row_limit | times: settings.product_rows_on_coll_page %}
+
+{% for link in linklists.main-menu.links %}
+	{% if link.object.title == collection.title and collection.title != "Valentine's Day" and collection.title != 'Gift Cards' and collection.title != 'End of Year Clearance Sale' and collection.title != 'Personalized Pet Gifts'  and collection.title != 'Personalized Toy Box & Bedroom Storage Collection' and collection.title != "Personalized Father's Day Collection" and collection.title != "Personalized Mother's Day Collection" and collection.title != "Personalized Halloween Collection"%}
+{% assign is_root_link = 1 %}
+{% endif %}
+{% endfor %}
+
+{% if collection.metafields.global.has_children == 1 %}
+	{% assign is_root_link = 1 %}
+{% endif %}
+
+{% if is_root_link == 1 %}
+
+
+	{% include 'child-collections-listing' with collection %}
+
+{% else %}
+
+{% assign primary_sort_collection = collection %}
+{% if collection.metafields.sort_primary.collection_handle %}
+    {% assign primary_sort_collection = collections[collection.metafields.sort_primary.collection_handle] %}
+{% endif %}
+
+
+  {% paginate collection.products by total_prods_to_show %}
+  <div class="sixteen columns">
+      <div id="crumbs">
+          <a href="/" title="Home">Home</a>
+          &raquo;
+          <a href="{{ collection.url }}">{{ collection.title | escape }}</a>
+      </div><!-- #crumbs -->
+      
+      {% if settings.show_social_coll %}
+      <div class="social floating">
+          <span class="label">{{ settings.text_sharethis }}</span>
+          {% include 'social-sharing' %}
+      </div>
+      {% endif %}
+      
+      {% unless collection.handle == 'all' %}
+    <h1>{{ collection.title | escape }}</h1>
+          {% if collection.description != '' %}
+          
+    	  <div class="content-block row">
+              <div class="expandable">{{ collection.description }}</div>
+          </div><!-- .pagecontent -->
+      {% endif %}
+
+<script>
+$(document).ready(function() {
+
+  // override default options (also overrides global overrides)
+  $('.expandable').expander({
+    slicePoint:       330,  // default is 100
+    expandPrefix:     ' ... ', // default is '... '
+    expandText:       '[Read More]', // default is 'read more'
+    userCollapseText: ''  // default is 'read less'
+  });
+
+});
+</script>
+    
+
+    {% comment %}  <p style="color: #ff0000; line-height: 1.2;"><b>DIBSIES Winter Clearance Event Is Underway! &nbsp;<b><br/><br/>All items in this category marked down up to 40% Off. &nbsp;&nbsp;&nbsp; ** LIMITED TIME ONLY ** </b><br/><br/><br/> </p>
+    <p> </p>
+    {% endcomment %}
+      {% endunless %}      
+    
+
+  
+    
+    {% if paginate.pages > 1 or collection.tags.size > 0 %}
+          <div class="ten columns alpha">
+              <div class="paging">
+              {% if paginate.pages > 1 %}
+                  {% if paginate.previous %}
+                      <a class="prev" href="{{ paginate.previous.url }}">&#8249; Previous &nbsp; </a>
+                  {% endif %}
+                  {% for part in paginate.parts %}
+                      {% if part.title != paginate.current_page %}
+                          <span class="page">{{ part.title | link_to: part.url }}</span>
+                      {% else %}
+                          <span class="page current">{{ part.title }}</span>
+                      {% endif %}        
+                  {% endfor %}      
+                  {% if paginate.next %}
+                      <a class="next" href="{{ paginate.next.url }}">Next &#8250; &nbsp;</a>
+                  {% endif %}
+              {% endif %}
+              </div>&nbsp;
+          </div>
+         
+      {% endif %}
+    
+    {% comment %} Sort Selecctor From Power Tools App {% endcomment %}
+    {% if primary_sort_collection and primary_sort_collection.metafields.sort_alternates.first %}
+    <label>Sort By: </label>
+    <select onchange="window.location.href = '/collections/' + this.options[this.selectedIndex].value + '{% if current_tags %}/{{ current_tags | handleize | join: '+' }}{% endif %}'">
+    <option value='{{primary_sort_collection.metafields.sort_canonical.first.first}}'
+        {% if primary_sort_collection.metafields.sort_canonical.first.first == collection.handle %}selected='selected'{% endif %}>
+        {{primary_sort_collection.metafields.sort_canonical.first.last}}
+    </option>
+	{% for sort in primary_sort_collection.metafields.sort_alternates %}
+    <option value='{{sort.first}}' {% if sort.first == collection.handle %}selected='selected'{% endif %}>{{sort.last}}</option>
+	{% endfor %}
+    </select>
+	{% endif %}
+  </div>
+  
+      
+    {% if collection.products.size == 0 %}
+        <div class="sixteen columns">There are no products here.</div>
+    {% else %}
+        <div class="productlist">  
+        
+        {% for product in collection.products %}
+          	<!-- Bold Apps: Premium Options --> {% if product.metafields.inventory.ShappifyHidden == "true" %}{% else %}
+            {% include 'product-list-repeatable-item' with product %}
+          	{% endif %} <!-- Bold Apps: Premium Options -->
+        {% endfor %}
+        </div><!-- .productlist -->
+    {% endif %}
+    
+    {% if settings.use_inf_scroll == true %}
+    <script>
+    $('.productlist').infinitescroll({
+        navSelector  : "div.paging",
+        nextSelector : "div.paging .next",
+        itemSelector : "#maincontent .productlist .product, #maincontent .productlist .cf",
+        loading: {
+            img         : '{{ settings.loading_graphic | asset_url }}',
+            msgText     : 'Loading more products...',
+            finishedMsg : 'There are no more products in this collection.'
+        }
+    }, function(items){    
+        $(items).find('img:not(.altimg)').each(function(){
+            $(this).trigger('initprodimg');
+        });
+    });
+    </script>
+    {% endif %}
+
+                
+     {% if paginate.pages > 1 or collection.tags.size > 0 %}
+            <br />
+            <br />
+            <div class="ten columns omega offset-by-seven">
+                <div class="paging">
+                {% if paginate.pages > 1 %}
+                    {% if paginate.previous %}
+                        <a class="prev" href="{{ paginate.previous.url }}">&#8249; Previous &nbsp; </a>
+                    {% endif %}
+                    {% for part in paginate.parts %}
+                        {% if part.title != paginate.current_page %}
+                            <span class="page">{{ part.title | link_to: part.url }}</span>
+                        {% else %}
+                            <span class="page current">{{ part.title }}</span>
+                        {% endif %}        
+                    {% endfor %}      
+                    {% if paginate.next %}
+                        <a class="next" href="{{ paginate.next.url }}">Next &#8250; &nbsp;</a>
+                    {% endif %}
+                {% endif %}
+                </div>&nbsp;
+            </div>
+           
+        {% endif %}
+
+{% assign last_page = 0 %}
+{% if paginate.current_page == paginate.pages %}
+	{% assign last_page = 1 %}
+{% endif %}
+
+  
+{% endpaginate %}
+
+{% endif %}
+
+
+{% if last_page != 0 %}
+
+
+  <div class="productlist">
+      <h2 class="sixteen columns">Related Collections</h2>
+  
+    {% if collection.metafields.related.related_collection %}
+    	{% assign thiscollection = collections[collection.metafields.related.related_collection] %}
+
+    	{% include 'child-collections-repeatable-item' with thiscollection %}
+    {% endif %}
+    
+      {% comment %}  The below is just to find the parent link {% endcomment %}
+            
+      {% for link in linklists.main-menu.links %}
+        {% for sublink in linklists[link.handle].links %}
+                {% if sublink.active %}
+                  {% assign parent_link = link %}
+    			  {% assign parent_link_found = 1 %}
+                {% endif %}
+        {% endfor %}    
+    
+    
+    
+      {% endfor %}     
+    
+      {% if parent_link_found != 1 %}
+          
+          {% for subcatlink in linklists.has_children.links %}
+              {% for subcatsublink in linklists[subcatlink.handle].links %}
+                  {% if subcatsublink.active %}
+                    {% assign parent_link = subcatlink %}
+    				{% assign parent_link_found = 1 %}
+                  {% endif %}
+              {% endfor %}    
+          {% endfor %}
+    
+    {% endif %}
+    
+    {% if parent_link_found != 1 %}
+    
+
+    		{% for mainmenulink in linklists.main-menu.links %}
+    		{% assign thiscollection = mainmenulink.object %} 
+   			 {% if thiscollection.title != collection.title %}
+    		
+    			{% include 'child-collections-repeatable-item' with thiscollection %}
+    	     {% endif %}
+    	{% endfor %} 
+    {% else %}
+      {% for rootsublink in linklists[parent_link.handle].links %}
+          
+  
+        {% assign thiscollection = rootsublink.object %} 
+    
+      	{% if thiscollection.title != collection.title %}
+    
+        	{% include 'child-collections-repeatable-item' with thiscollection %}
+                      
+      	{% endif %}
+    {% endfor %} 
+    {% endif %}
+                    
+  </div>        
+
+{% endif %}
+
+<script type="text/javascript">
+var google_tag_params = {
+ecomm_prodid: '',
+ecomm_pagetype: 'category',
+ecomm_totalvalue: 0.0
+};
+</script>

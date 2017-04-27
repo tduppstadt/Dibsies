@@ -1,0 +1,11 @@
+<!-- meta.liquid snippet  -->
+{% assign maxwords = 30 %}
+{% if template contains 'product' %}
+    <meta name="description" content="{{ product.description | strip_html | strip_newlines | truncatewords: maxwords | escape }}" />
+{% elsif template contains 'page' %}
+    <meta name="description" content="{{ page.content | strip_html | strip_newlines | truncatewords: maxwords | escape }}" />
+{% elsif template == 'index' %}
+    {% if shop.description != '' %}
+        <meta name="description" content="{{ shop.description }}" />
+    {% endif %}
+{% endif %}

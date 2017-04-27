@@ -1,0 +1,12 @@
+<br/>
+{% for p in item.properties %}
+    {% unless p.last == blank %}
+        {{ p.first }}:
+        {% if p.last contains '/uploads/' %}
+        <a href="{{ p.last }}">Click to see</a>
+        {% else %}
+        {{ p.last }}
+        {% endif %}
+        <br />
+    {% endunless %}
+{% endfor %}

@@ -1,0 +1,73 @@
+<div id="crumbs" class="sixteen columns">
+    <a href="/" title="Home">Home</a>
+    &raquo;
+    <a href="{{ page.url }}">{{ page.title }}</a>
+</div><!-- #crumbs -->
+
+{% if settings.show_social_page %}
+<div class="social floating">
+    <span class="label">{{ settings.text_sharethis }}</span>
+    {% include 'social-sharing' %}
+</div>
+{% endif %}
+
+<div class="ten columns">
+    <h1>{{ page.title }}</h1>
+    {% include 'process-html' with page.content %}
+    
+    {% form 'contact' %}
+  
+    {% if form.posted_successfully? %}
+  <h6><b><font color="green">Message Sent Successfully</font></b></h6><p>  Your message has been sent and you should receive a response to your inquiry within 8 business hours. Thank you for your patience.</p>
+    {% else %}
+  
+  	
+
+      {% if form.errors %}
+          <ul>
+          {% for field in form.errors %}
+              <li class="error">{{ field | replace: 'body','Message' | capitalize }} - {{ form.errors.messages[field] }}</li>
+          {% endfor %}
+          </ul>
+      {% endif %}
+      
+      <ul class="formfields" style="list-style: none;">
+		<li class="inputrow">
+            <label for="contact_name" class="hoverlabel">Name</label>
+            <input type="text" data-fieldname="Your name" class="required" id="contact_name" name="contact[name]" />
+        </li>	
+        <li class="inputrow">
+            <label for="contact_email" class="hoverlabel">Email Address</label>
+            <input type="email" data-fieldname="Your email" class="required" id="contact_email" class="email" name="contact[email]" />
+        </li>  
+        <li class="inputrow">
+			<label for="contact_phone" class="hoverlabel">Telephone</label>
+			<input type="text" data-fieldname="Telephone" id="contact_phone" name="contact[phone]" />
+		</li>
+          <li class="inputrow">
+              <label for="order_number" class="hoverlabel">Order Number (Optional)</label>
+              <input type="text" data-fieldname="Order Number" id="order_number"  name="contact[Order Number]" />
+          </li>
+          <li class="inputrow">
+              Message:
+              <label for="message" class="hidden">Message</label>
+              <textarea id="message" data-fieldname="Your message" class="required" name="contact[Customer Message]"></textarea>
+          </li>
+          <li>
+              <input type="submit" class="button" value="Send" />
+          </li>
+      </ul>
+  {% endif %}
+  {% endform %}
+</div>
+
+<aside class="five columns offset-by-one widgets">
+    {% assign data = settings.widget_s1_handle %}
+    {% unless data == '' %}{% include settings.widget_s1_type %}{% endunless %}
+    
+    {% assign data = settings.widget_s2_handle %}
+    {% unless data == '' %}{% include settings.widget_s2_type %}{% endunless %}
+    
+    {% assign data = settings.widget_s3_handle %}
+    {% unless data == '' %}{% include settings.widget_s3_type %}{% endunless %}
+</aside>

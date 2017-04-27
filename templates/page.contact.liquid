@@ -1,0 +1,54 @@
+<div id="crumbs" class="sixteen columns">
+    <a href="/" title="Home">Home</a>
+    &raquo;
+    <a href="{{ page.url }}">{{ page.title }}</a>
+</div><!-- #crumbs -->
+
+{% if settings.show_social_page %}
+<div class="social floating">
+    <span class="label">{{ settings.text_sharethis }}</span>
+    {% include 'social-sharing' %}
+</div>
+{% endif %}
+
+<h1 class="sixteen columns">{{ page.title }}</h1>
+
+<div class="nine columns">
+    {% form 'contact' %}
+  
+    {% if form.posted_successfully? %}
+      <p class="success-msg">Thanks for contacting us! We'll get back to you as soon as possible.</p>
+    {% endif %}
+
+    {% if form.errors %}
+        <ul>
+        {% for field in form.errors %}
+            <li class="error">{{ field | replace: 'body','Message' | capitalize }} - {{ form.errors.messages[field] }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    
+    <ul class="formfields">
+        <li class="inputrow">
+            <label for="contact_name" class="hoverlabel">Name</label>
+            <input type="text" data-fieldname="Your name" class="required" id="contact_name" name="contact[name]" />
+        </li>
+        <li class="inputrow">
+            <label for="contact_email" class="hoverlabel">Email Address</label>
+            <input type="email" data-fieldname="Your email" class="required" id="contact_email" class="email" name="contact[email]" />
+        </li>   
+        <li class="inputrow">
+            Send us a message, be polite!:
+            <label for="message" class="hidden">Message</label>
+            <textarea id="message" data-fieldname="Your message" class="required" name="contact[body]"></textarea>
+        </li>
+        <li>
+            <input type="submit" class="button" value="Send" />
+        </li>
+    </ul>
+  {% endform %}
+</div>
+
+<aside class="seven columns">
+    {% include 'process-html' with page.content %}
+</aside>

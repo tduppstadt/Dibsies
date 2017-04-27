@@ -1,0 +1,125 @@
+<div id="crumbs" class="sixteen columns">
+    <a href="/" title="Home">Home</a>
+    &raquo;
+    Search
+</div><!-- #crumbs -->
+
+{% assign row_limit = settings.products_per_row_coll %}
+<div>
+    {% if search.performed %}
+        <h1 class="sixteen columns">You searched for <strong>{{search.terms | escape}}</strong></h1>
+</div>        
+
+
+        {% paginate search.results by 20 %}
+  
+
+              <div class="paging">
+              {% if paginate.pages > 1 %}
+                  {% if paginate.previous %}
+                      <a class="prev" href="{{ paginate.previous.url }}">&#8249; Previous &nbsp; </a>
+                  {% endif %}
+                  {% for part in paginate.parts %}
+                      {% if part.title != paginate.current_page %}
+                          <span class="page">{{ part.title | link_to: part.url }}</span>
+                      {% else %}
+                          <span class="page current">{{ part.title }}</span>
+                      {% endif %}        
+                  {% endfor %}      
+                  {% if paginate.next %}
+                      <a class="next" href="{{ paginate.next.url }}">Next &#8250; &nbsp;</a>
+                  {% endif %}
+              {% endif %}
+              </div>&nbsp;
+
+<div>
+            {% if search.results == empty %}
+                <div class="sixteen columns row formfields">
+                    <p class="row">We couldn't find any products to match your search terms - please try a different search.</p>
+                    <h4 class="row">Search for anything in our store:</h4>
+                    <form action="/search" class="inputrow">
+                      	<input type="hidden" name="type" value="product" />
+                        <label class="hoverlabel" for="q">Search</label>
+                        <input type="text" id="q" name="q" value="" x-webkit-speech />
+                        <input class="button altcolour normalwidth" type="submit" value="Search"/>
+                    </form>
+                </div>
+                
+                {% include 'notfound-products' %}
+                
+            {% else %}
+                {% assign productHTML = '' %}
+                {% assign pageHTML = '' %}
+                {% for item in search.results  %}
+
+                    {% if item.type %}
+                        {% capture productHTML %}{{ productHTML }}{% include 'product-list-repeatable-item' with item %}{% endcapture %}
+                    {% else %}
+                        {% capture pageHTML %}{{ pageHTML }}
+                            <li class="row">
+                                <h3 class="sixteen columns">{{ item.title | link_to: item.url }}</h3>
+                                {% if item.featured_image %}
+                                    <div class="three columns imagecont"><a href="{{item.url}}" title="">{{ item.featured_image | product_img_url: 'small' | img_tag }}</a></div>
+                                    <div class="thirteen columns">
+                                {% else %}
+                                    <div class="sixteen columns">
+                                {% endif %}
+                                    {% capture stripdesc %}{% include 'process-html-strip' with item.content %}{% endcapture %}
+                                    {{ stripdesc | strip_html | truncatewords: 40 | highlight: search.terms }}
+                                    <br /><span>View page: {{ item.title | link_to: item.url }} &rarr;</span>
+                                </div>
+                            </li>
+                        {% endcapture %}
+                    {% endif %}
+                {% endfor %}
+                {% unless productHTML == '' %}
+                   
+                <div class="productlist row">
+                    {{ productHTML }}
+                </div>
+                {% endunless %}
+                {% unless pageHTML == '' %}
+                {% if productHTML == '' %}
+                    <h3 class="sixteen columns nobordermargin">We found these pages:</h3>
+                {% else %}
+                    <h3 class="sixteen columns nobordermargin">... and these pages:</h3>
+                {% endif %}
+                <ol class="searchresults row">
+                    {{ pageHTML }}
+                </ol>
+                {% endunless %}
+            {% endif %}
+            
+                              
+                              
+                            
+                                <div class="ten columns alpha">
+              <div class="paging">
+              {% if paginate.pages > 1 %}
+                  {% if paginate.previous %}
+                      <a class="prev" href="{{ paginate.previous.url }}">&#8249; Previous &nbsp; </a>
+                  {% endif %}
+                  {% for part in paginate.parts %}
+                      {% if part.title != paginate.current_page %}
+                          <span class="page">{{ part.title | link_to: part.url }}</span>
+                      {% else %}
+                          <span class="page current">{{ part.title }}</span>
+                      {% endif %}        
+                  {% endfor %}      
+                  {% if paginate.next %}
+                      <a class="next" href="{{ paginate.next.url }}">Next &#8250; &nbsp;</a>
+                  {% endif %}
+              {% endif %}
+              </div>&nbsp;
+       
+            					</div>
+        {% endpaginate %}
+    {% else %}
+        <h6 class="sixteen columns middletext">Search for anything in our store:</h6>
+        <form class="middleit" action="/search">
+            <input type="text" name="q" class="middleit" placeholder="Search..." value="" x-webkit-speech />
+            <input class="button altcolour" type="submit" value="Search"/>
+        </form>
+        {% include 'notfound-products' %}
+    {% endif %}
+</div>

@@ -1,0 +1,38 @@
+{% if process-html-strip contains '[[start tab]]' %}{% assign processed-html = process-html-strip | replace: '<p>[[start tab]]</p>', '' %}{% assign processed-html = processed-html | replace: '[[start tab]]', '' %}{% assign processed-html = processed-html | replace: '<p>[[end tab]]</p>', '' %}{% assign processed-html = processed-html | replace: '[[end tab]]', '' %}{% assign processed-html = processed-html | replace: '<hr>','' %}{% assign processed-html = processed-html | replace: '<hr/>','' %}{% assign processed-html = processed-html | replace: '<hr />','' %}{% assign descreplsplit = processed-html | split: '<h' %}{% assign firstHtag = '<h' | append: descreplsplit[1].first %}{% assign firstHclosetag = '</h' | append: descreplsplit[1].first | append: '>' %}{% assign descreplsplit = processed-html | split: firstHclosetag %}{% for str in descreplsplit %}{% if forloop.first %}{% assign firstchunksplit = str | split: firstHtag %}{{ firstchunksplit.first }}{% else %}{% unless forloop.last %}{{ firstHclosetag }}{% endunless %}{{ str }}{% endif %}{% endfor %}{% else %}{{process-html-strip}}{% endif %}
+
+{% comment %}
+<!-- Tab heading replacement V2, features a huge speed increase, but only strips first heading -->
+{% if process-html-strip contains '[[start tab]]' %}
+
+{% assign processed-html = process-html-strip | replace: '<p>[[start tab]]</p>', '' %}
+{% assign processed-html = processed-html | replace: '[[start tab]]', '' %}
+{% assign processed-html = processed-html | replace: '<p>[[end tab]]</p>', '' %}
+{% assign processed-html = processed-html | replace: '[[end tab]]', '' %}
+
+{% assign processed-html = processed-html | replace: '<hr>','' %}
+{% assign processed-html = processed-html | replace: '<hr/>','' %}
+{% assign processed-html = processed-html | replace: '<hr />','' %}
+
+{% assign descreplsplit = processed-html | split: '<h' %}
+<!-- Avoid closing bracket, in case of inline-styles -->
+{% assign firstHtag = '<h' | append: descreplsplit[1].first %}
+{% assign firstHclosetag = '</h' | append: descreplsplit[1].first | append: '>' %}
+
+{% assign descreplsplit = processed-html | split: firstHclosetag %}
+{% for str in descreplsplit %}
+ {% if forloop.first %}
+  {% assign firstchunksplit = str | split: firstHtag %}
+  {{ firstchunksplit.first }}
+ {% else %}
+ {% unless forloop.last %}{{ firstHclosetag }}{% endunless %}
+  {{ str }}
+ {% endif %}
+{% endfor %}
+
+{% else %}
+
+{{process-html-strip}}
+
+{% endif %}
+
+{% endcomment %}

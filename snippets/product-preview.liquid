@@ -1,0 +1,364 @@
+<meta property="shoppad:always_desktop" content="true" />
+  {% include 'shappify-qb-no-select' %}
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}" />
+  <meta itemprop="image" content="{{ product.featured_image.src | product_img_url: 'grande' }}" />
+ 
+<br/>
+  
+  
+  
+  <div id="productinfo" class="cf" data-featimgurl="{{ product.featured_image | product_img_url: 'small' }}" itemscope itemtype="http://schema.org/Product">
+  
+    <div class="eight columns">
+  
+         
+            <!-- Dupp start -->  
+			<div id="preview-out"></div>
+			<!-- Dupp end --> 
+          <div class="default-preview">
+             
+              <a href="{{ product.featured_image | product_img_url: 'master' }}" target="_blank"><img src="{{ product.featured_image | product_img_url: 'large' }}" alt="{{ product.featured_image.alt }}" width="400px"/></a>
+              
+          </div> 
+          <!-- under gallery -->
+      </div>
+      
+      <div id="detail" class="seven columns offset-by-one">
+            
+        {% comment %}
+        {% if settings.show_social_product %}
+          <div class="social contentsection">
+              <span class="label">{{ settings.text_sharethis }}</span>
+            {% include 'social-sharing' %}
+          </div>
+          {% endif %}
+        {% endcomment %}
+  
+        
+       
+
+<!-- Dupp start -->
+<style>
+  #myPreview
+  {
+    width: 400px;
+    height: 300px;
+    background-color:red;
+  }
+</style>
+
+
+<!-- Dupp start -->
+<script type="text/javascript"  src='{{ 'customized-preview-mike.js' | asset_url }}'></script>
+<!-- Dupp end -->
+
+<div class="tags contentsection">
+  
+
+      <img width="400" onError="hideImage(this);" src="http://cdn.shopify.com/s/files/1/0238/6527/files/{{ product.variants.first.sku }}_details_HRw_large.jpg?sdfsd" />
+        <div id="pzhrtag"/><hr></div>  
+        </div>
+        
+        <form id="product-form-personalized" action="/cart/add" method="post">
+            <div class="options">
+             {% if shappify_qb_options_count == 1 %}
+                <input type="hidden" name="id" value="{{ product.variants.first.id }}" />
+                {% if settings.prod_show_opts_single %}<p>{{ product.options.first }}: {{ product.variants.first.title }}</p>{% endif %}
+            {% else %}
+                <div class="selectors">
+                  <label for="product-select"><b>{{ product.options.first }}:</b></label>
+                    <select id="product-select" name="id" class="noreplace">
+            			{% for variant in product.variants %}
+                      			{% if variant.metafields.shappify_qb.qb_hide == "1" %}{% else %}
+        				    <option value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
+        						{% endif %}
+                      {% endfor %}
+    				</select>
+                  <br />
+                </div>
+                {% assign option_to_match = 'Color' %}
+                {% assign option_index = 0 %}
+                {% for option in product.options %}
+                {% if option == option_to_match %}
+                {% assign option_index = forloop.index0 %}
+                {% endif %}
+                {% endfor %}
+                          <script type="text/javascript">
+                          $(document).on('mainimgloaded', '#rg-gallery .es-carousel ul li', function(){
+                          var optionValue = $(this).find('img').attr('alt');
+                          if(optionValue.length > 0) {
+                          $('#productinfo #detail .options .selectors select option[value="'+optionValue+'"]').each(function(){
+                          if($(this).parent().val() != $(this).attr('value')) {
+                          $(this).parent().val($(this).attr('value')).trigger('change');
+                          }
+                          });
+                          }
+                          });
+                          var selectCallback = function(variant, selector) {
+                          //Swapping images JS
+                          var optionValue = variant.options[{{ option_index }}];
+                          $matchingImg = $('#rg-gallery .es-carousel li:not(.selected) img[alt="'+optionValue+'"]').parent();
+                          if($matchingImg.length > 0) {
+                          $matchingImg.first().parent().trigger('click');
+                          }
+                          if (variant && variant.available == true) {
+                          // selected a valid variant
+                            $('#productinfo #detail #purchase').removeClass('disabled').removeAttr('disabled'); // remove unavailable class from add-to-cart button, and re-enable button
+                            var newHtml = Shopify.formatMoney(variant.price, "{{shop.money}}");
+                            if(variant.compare_at_price > variant.price) {
+                                newHtml += '<div class="was-price">was ' + Shopify.formatMoney(variant.compare_at_price, "{{shop.money}}") + '</div>';
+                            }
+                            $('#price-field').html(newHtml);  // update price field
+                        } else {
+                            // variant doesn't exist
+                            $('#productinfo #detail #purchase').addClass('disabled').attr('disabled', 'disabled'); // set add-to-cart button to unavailable class and disable button
+                            var message = variant ? "Sold Out" : "Unavailable";
+                            $('#price-field').text(message); // update price-field message
+                        }
+                    };
+                    
+                    //Set up product inputs
+                    $(function() {
+                        new Shopify.OptionSelectors("product-select", { product: {{ product | json }}, onVariantSelected: selectCallback });
+                        {% if settings.prod_enable_linked_options and product.options.size > 1 %}
+                        Shopify.linkOptionSelectors({{ product | json }});
+                        {% endif %}
+                        {% assign found_one_in_stock = false %}
+                        {% for variant in product.variants %}
+                            {% if variant.available and found_one_in_stock == false %}
+                                {% assign found_one_in_stock = true %}
+                                {% for option in product.options %}
+                                    jQuery('.single-option-selector:eq(' + {{ forloop.index0 }} + ')').val({{ variant.options[forloop.index0] | json }}).trigger('change');
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        //Hide original option label if we now have multiple options
+                        if($('.selector-wrapper .single-option-selector').length != 1) {
+                            $('#product-select').siblings('label[for="product-select"]').hide();
+                        }
+                        
+                        //Style any added select dropdowns
+                        $.selectReplace();
+                    });
+                </script>
+            {% endif %}
+            
+            {% comment %} START - Personalize option {% endcomment %}
+              
+              {% comment %} NOTE: all required fields must add personalize-option class {% endcomment %}
+             
+              
+              <script type="text/javascript">  
+                $("input[name=personalize-option]").click(function()
+                {                 
+                  	switch($(this).val())
+                    {
+                      case "yes":
+                        $(".personalize-full-form").css("display", "block");
+                        $(".personalize-option").removeClass("required");
+                        $(".personalize-option").addClass("required");
+                        break;
+                        
+                      case "no":
+                        $(".personalize-full-form").css("display", "none");
+                        $(".personalize-option").removeClass("required");
+                        break;
+                    }
+                    
+                });    
+                
+                // do a click just to make sure fields are set properly
+                $("input[name=personalize-option][value='yes']").trigger("click");
+              </script>
+            
+            {% comment %} END - Personalize option {% endcomment %}  
+              
+              
+              
+            {% comment %} If you are using Shopify's Line Item Properties, add them here! {% endcomment %}
+            
+        <div class="tags contentsection personalize-full-form">
+     	<script type="text/javascript">
+           $(function(){
+             /* $("#Font").change(function(){
+               var selectedValue = $(this).find(":selected").val();
+               console.log("the value you selected: " + selectedValue);
+               
+               if(selectedValue.trim() == "Dropshadow Type" || selectedValue.trim() == "Floral Type") {
+                 console.log("the value you selected: " + selectedValue);
+    
+                 $("#Step2").hide();
+                 $("#TextColor").val(" N/A");
+                 $("#TextColorLabelExtra").text("Text color will be as shown above for " + selectedValue.trim() + " graphic art.");
+               }
+               
+               else {
+               
+                 $("#Step2").show();
+                 $("#TextColor").val("");
+                 $("#TextColorLabelExtra").text("");
+        
+               }
+
+                               
+             });*/
+           });
+       </script>
+     
+        
+          {% assign stepnumber = 1 %} 
+              {% unless product.metafields.PZKeys.font == blank %}
+                {% assign availableFonts = product.metafields.PZKeys.font | split: ',' %} 
+                {% unless availableFonts.size < 2 %}
+                  <div>
+                    <label><b>Step 1. Choose Your Font:</b></label><br /><br />
+                    <select class="required personalize-option customFont" id="Font" name="properties[Font]" data-fieldname="Font">
+                                <option value="">Select Font ...</option> 
+                                  {% for font in availableFonts %}
+                                     <option value="{{ font | strip_newlines }}">{{ font | strip_newlines }}</option>
+                                {% endfor %}
+                        </select>
+                  </div>
+                  {% assign stepnumber = stepnumber | plus:1 %}
+          		{% endunless %}
+              {% endunless %}
+              
+              {% unless product.metafields.PZKeys.fontcolor == blank %}
+                {% assign availableFontColors = product.metafields.PZKeys.fontcolor | split: ',' %} 
+                {% unless availableFontColors.size < 2 %}
+          			<br />
+                  <div>
+                    <label id="TextColorLabel"><b>Step {{ stepnumber }}. Choose Your Text Color:</b></label><br /><br />
+                    <p style="margin-left:30px;margin-right:60px" id="TextColorLabelExtra"></p>
+                    	<div id="Step2">
+                    	<select class="required personalize-option customColor" id="TextColor" name="properties[Text Color]" data-fieldname="Text Color">
+                                <option value="">Select Text Color ...</option> 
+                                  {% for fontcolor in availableFontColors %}
+                                     <option value="{{ fontcolor | strip_newlines }}">{{ fontcolor | strip_newlines }}</option>
+                                {% endfor %}
+                        </select>
+                    	</div>  
+                  </div>
+          		 
+                  {% assign stepnumber = stepnumber | plus:1 %}
+              	{% endunless %}
+          	  {% endunless %}
+          
+              {% unless product.metafields.PZKeys.graphic_art == blank %}
+                {% assign availableArt = product.metafields.PZKeys.graphic_art | split: ',' %} 
+                {% unless availableArt.size < 2 %}
+                  <br />
+                  <div>
+                    <label><b>Step {{ stepnumber }}. Choose Your Graphic Art:</b></label><br /><br />
+                        <select class="required personalize-option customArt" id="Graphic Art" name="properties[Graphic Art]" data-fieldname="Graphic Art">
+                                <option value="">Select Graphic Art ...</option> 
+                                  {% for art in availableArt %}
+                                     <option value="{{ art | strip_newlines }}">{{ art | strip_newlines }}</option>
+                                {% endfor %}
+                        </select>
+                  </div>
+                  
+                  {% assign stepnumber = stepnumber | plus:1 %}
+          		{% endunless %}
+       		 {% endunless %}
+          
+             {% unless product.metafields.PZKeys.personalized_title == 0 or product.metafields.PZKeys.personalized_title == blank %}
+               
+                    <label><b>Step {{ stepnumber }}. Add Your Personalized Title:</b></label><br /><br />
+                        
+          <input class="required personalize-option customTitle" type="text" id="Personalized Title" name="properties[Personalized Title]" style="width:175px;" maxlength="12" data-fieldname="Personalized Title" /> <font size="-2">(Limit: 12 chars)</font>
+          <br /><br />        
+                  
+                  {% assign stepnumber = stepnumber | plus:1 %}
+          		
+       		 {% endunless %}
+              
+              
+          <label><b>{% if stepnumber == 1 %} 
+           				Add Your Personalized Text: 
+          {% else %}
+            <br />
+          				Step {{ stepnumber }}. Add Your Personalized Text:
+          {% endif %}
+          </b></label> <br /><br /><input class="required personalize-option customText" type="text" id="Personalized Text" name="properties[Personalized Text]" style="width:175px;" maxlength="{{ product.metafields.PZKeys.maxlength }}" data-fieldname="Personalized Text" /> <font size="-2">(Limit: {{ product.metafields.PZKeys.maxlength }} chars 
+          {% if product.metafields.PZKeys.text_case == "ALL UPPER" %}, ONLY CAPITAL LETTERS{% elsif product.metafields.PZKeys.text_case == "ALL LOWER"%} , ONLY LOWERCASE{% endif %}</font>)
+            
+              
+          {% unless product.metafields.PZKeys.birthdate == 0 or product.metafields.PZKeys.birthdate == blank %}
+          <br/><br/><label><b> Select Date: </b> &nbsp;<font size="-2">(&nbsp;Optional&nbsp;)</font></label><br /><br />
+          
+          <input type="text" class="customDate" id="datepicker" name="properties[Date]" style="width:175px;" data-fieldname="Date" />
+          {% endunless %}
+          
+          {% unless product.metafields.PZKeys.weight == 0 or product.metafields.PZKeys.weight == blank %}
+          <br/><br/><label><b> Enter Weight: </b> &nbsp;<font size="-2">(&nbsp;Optional&nbsp;)</font></label><br /><br />
+          
+          <input type="text" id="weight" name="properties[weight]" style="width:175px;" data-fieldname="weight" maxlength="20"/>
+          {% endunless %}
+          
+          {% unless product.metafields.PZKeys.year == 0 or product.metafields.PZKeys.year == blank %}
+          <br/><br/><label><b> Enter Year: </b></label><br /><br />
+          
+          <input class="required" type="text" id="Year" name="properties[Year]" style="width:175px;" data-fieldname="Year" maxlength="4"/>
+          {% endunless %}
+              
+          
+
+          
+          
+          	<!-- Dupp start -->      
+		  {% if product.metafields.PZKeys.template_id_map == blank and product.metafields.PZKeys.design_id == blank %}
+          	<div class="addbuttoncont">
+              <input type="hidden" id="custom-preview" class="button large plus" value="Preview" data-case-restriction="{{product.metafields.PZKeys.text_case}}" data-sku="{{product.variants.first.sku}}" data-template-lookup="{{product.metafields.PZKeys.template_id_map}}" data-design-lookup="{{product.metafields.PZKeys.design_id}}">
+            </div>
+          {% else %}
+          
+          	<div class="addbuttoncont">
+              <br/>
+              <input style="float:left;" id="custom-preview" class="button large plus" value="Preview Now ®" data-case-restriction="{{product.metafields.PZKeys.text_case}}" data-sku="{{product.variants.first.sku}}" data-template-lookup="{{product.metafields.PZKeys.template_id_map}}" data-design-lookup="{{product.metafields.PZKeys.design_id}}"><font color="red"><b>&nbsp;&nbsp;&#8678<font color="red"> Click to View <br/>&nbsp;&nbsp; Personalization</b></font></font>
+          	</div>
+               
+          {% endif %}
+          	<!-- Dupp end -->
+          
+          
+         </div>
+              
+              
+      </div>
+
+       <center>   
+         
+         
+      
+    
+        </form>
+         <div id="price-field" class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+              {% if product.variants.first.compare_at_price > product.variants.first.price %} 
+                   <font color="red" size="3">Sale Price:</font> 
+              {% endif %}
+              <span itemprop="price">{{ product.variants.first.price | money }}</span>
+              {% if product.variants.first.compare_at_price > product.variants.first.price %}
+                  <div class="was-price">Regular Price {{ product.variants.first.compare_at_price | money }}</div>
+            {% comment %}
+            (Save  
+            
+            {% capture save_percent %}{{ product.variants.first.compare_at_price | minus: product.variants.first.price | times: 100.0 | divided_by: product.variants.first.compare_at_price }}{% endcapture %}
+            {{ save_percent | truncate:2 }}% )
+            {% endcomment %}
+            
+            {% endif %}
+        </div>
+            <div class="addbuttoncont">
+              <div class="shopping-cart"></div>
+                <input type="submit" name ="add" id="shappify_add_to_cart_btn" class="button large plus" value="{{ settings.text_addtocart }}" />
+            </div>
+         
+              <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/>
+          <a class="product-page-link" href={{product.url | remove: '-email-preview' | remove: '-facebook-preview' }}> <input style="width:80%;" class="product-page-link button green" onClick="javascript:location.href = '{{product.url | remove: '-email-preview' | remove: '-facebook-preview' }}';" value=" << Back to Product Detail Page"/></a>
+
+</div>
+</div>
+
+

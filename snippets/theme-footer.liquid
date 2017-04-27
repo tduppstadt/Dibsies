@@ -1,0 +1,100 @@
+<footer id="pagefooter">
+    <div class="container">
+        {% if settings.enable_signup %}
+        <div class="registercont">
+            <h4>{{ settings.text_subscribetolist }}</h4>
+            {% form 'customer' %}
+                {% if form.posted_successfully? %}
+                    <p class="thanks">Thank you for your interest!</p>
+                    <script>window.scroll(0,1000000)</script>
+                {% else %}
+                    {% if form.errors %}
+                        <script>window.scroll(0,1000000)</script>
+                        {% for field in form.errors %}
+                        <p class="error">{{ field | capitalize }} - {{ form.errors.messages[field] }}</p>
+                        {% endfor %}
+                    {% else %}
+                        <a class="button altcolor showregister" href="#">Click here to sign-up</a>
+                    {% endif %}
+                        <div class="registerform formfields smarttextinput">
+                            <input type="hidden" id="contact_tags" name="contact[tags]" value="prospect,newsletter"/>
+                            <div class="inputrow">
+                                <label class="hoverlabel" for="mailinglist_email">Email address</label>
+                                <input type="email" class="required" data-fieldname="Email" value="" id="mailinglist_email" name="contact[email]" />
+                                <input type="submit" value="→" />
+                            </div>
+                        </div>
+                {% endif %}
+            {% endform %}
+        </div>
+        {% endif %}
+     
+        <div id="y-badges" class="yotpo badge badge-init randomtest">&nbsp;</div><br /><br />
+      
+        {% if linklists.footer.links.size > 0 %}
+        <nav class="sixteen columns">
+            <ul>
+            {% for link in linklists.footer.links %}
+                <li{% if forloop.first %} class="first"{% endif %}><a href="{{ link.url }}" title="{{ link.title }}">{{ link.title }}</a></li>
+            {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+    
+        <div class="sixteen columns copyright">
+            Copyright &copy; {{ "now" | date: "%Y" }} <a href="/">{{ shop.name }}. </a> | <a href="https://plus.google.com/108249360162666446118" rel="publisher">Google+</a>
+
+          <br /><br />* No Sales Tax Outside of Ohio
+          <br />* Free Shipping in Continental U.S. Only
+          {% comment %}<br /><br />† Black Friday Free Shipping Coupon Code only valid for orders which utilize the Standard Shipping option and ship to destinations within the Continental United States. {% endcomment %}
+
+          
+        	{% if settings.show_cc_link == true %}Original theme by <a href="http://www.cleancanvas.co.uk" target="_blank">Clean Canvas.</a>{% endif %} 
+            {{# powered_by_link }}
+          <br /><br />
+        </div>
+    	
+    </div>
+  
+
+</footer>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var google_conversion_id = 977323194;
+var google_custom_params = window.google_tag_params;
+var google_remarketing_only = true;
+/* ]]> */
+</script>
+<script async type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+</script>
+<noscript>
+<div style="display:inline;">
+<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/977323194/?value=0&amp;guid=ON&amp;script=0"/>
+</div>
+</noscript>
+
+<script>
+    window.onload = function() {
+        //Code for Google Analytics Dynamic Remarketing Setup/ / This is only applicable for Universal
+        //This is only applicable when your remarketing lists have "Automatically Created - Google Analytics" as Type
+        //Please make sure you see the Custom Dimensions defined on the Google Analytics Account
+        //Please make sure you place this code BELOW the existing Google AdWords Dynamic Remarketing Code
+        
+        var ecomm_prodid = window.google_tag_params.ecomm_prodid.toString() || "";
+        var ecomm_pagetype = window.google_tag_params.ecomm_pagetype.toString() || "";
+        var ecomm_totalvalue = window.google_tag_params.ecomm_totalvalue.toString() || "0.0";
+        try {
+            ga('set', 'dimension1',  ecomm_prodid); // Please make sure that Dimension 1 is set as the Custom Dimension for Product ID
+        } catch (e) {}
+        try {
+            ga('set', 'dimension2', ecomm_pagetype); // Please make sure that Dimension 2 is set as the Custom Dimension for Page Type
+        } catch (e) {}
+        try {
+            ga('set', 'dimension3', ecomm_totalvalue); // Please make sure that Dimension 3 is set as the Custom Dimension for Total Value
+        } catch (e) {}
+        ga('send', 'event', 'page', 'visit', window.google_tag_params.ecomm_pagetype.toString(), {
+            'nonInteraction': 1
+        });
+    }
+</script>

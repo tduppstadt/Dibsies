@@ -1,0 +1,221 @@
+<h1 class="sixteen columns">{{ settings.text_shoppingcart }}</h1>
+{% if cart.item_count == 0 %}
+    <p class="sixteen columns">Your basket is empty</p>
+    {% include 'notfound-products' %}
+{% else %}
+    <div class="sixteen columns">
+        <script type="text/javascript">
+        // <![CDATA[
+            function remove_item(id) {
+                if(confirm('Are you sure you want to remove this item?')) {
+                    document.getElementById('updates_'+id).value = 0;
+                    document.getElementById('cartform').submit();
+                }
+                return false;
+            }
+        // ]]>
+        </script>
+      
+      	<div id="shappify-qty-cart-msg"></div>
+        <form action="/cart" method="post" id="cartform">
+            <div id="basket" class="cf">
+                <ul style="list-style: none;">
+        		{% for item in cart.items %}
+                    <li>
+                		<div class="cartitem cf">
+                            <div class="image">
+                            {% comment %} Find image that matches variant, if variant chosen {% endcomment %}
+                            {% assign imagePicked = false %}
+                            {% if image.alt != item.product.title and image.alt != '' %}
+                              {% for image in item.product.images %}
+                                  {% if item.variant.title contains image.alt %}
+                                    <a href="{{ item.product.url }}"><img src="{{ image | product_img_url: 'medium' }}" alt="{{ image.alt | escape }}" /></a>
+                                    {% assign imagePicked = true %}
+                                    {% break %}  
+                                  {% endif %}
+                              {% endfor %}
+                            {% endif %}
+                            {% unless imagePicked %}
+                             
+                              	{% assign font = '' %}
+                              	{% assign text_color = '' %}
+                              	{% assign personalized_text = ''%}
+                              	{% assign birthdate_text = '' %}
+                              
+                            	{% for p in item.properties %}
+                                	{% unless p.last == blank %}
+                              			{% if p.first == 'Font' %}
+                              				{% assign font = p.last %}
+                              {% elsif p.first == 'Text Color' %}
+                              				{% assign text_color = p.last %}
+                                        {% elsif p.first == 'Personalized Text' %}
+                              				{% assign personalized_text = p.last %}
+                                         {% elsif p.first == 'Birthdate Text' %}
+                              				{% assign birthdate_text = p.last %}
+                              			{% endif %}
+                                    {% endunless %}
+                              	{% endfor %}
+                              
+                              {% if item.product.metafields.PZKeys.template_id_map != blank %}
+                                {% assign font = font | downcase | strip | remove: ' ' %}
+                                {% assign text_color = text_color | downcase | strip | remove: ' ' %}
+                                {% assign preview_url = 'https://res.cloudinary.com/dibsies/image/upload/' 
+                                | append: item.variant.sku 
+                                  | append: '_' 
+                                      | append: font 
+                                          | append: '_' 
+                                              | append: text_color 
+                                                  | append: '_' 
+                                                      | append: personalized_text 
+                                                          | append: '.jpg' %}
+                              {% elsif item.product.metafields.PZKeys.design_id != blank %}
+                             
+                                  {% assign preview_url = 'https://res.cloudinary.com/dibsies/image/upload/' 
+                                    | append: item.product.variants.first.sku 
+                                      | append: '_'
+                              			| append: personalized_text %}
+                              				{% if birthdate_text != blank %}
+                              					{% assign preview_url = preview_url | append: '_' | append: birthdate_text %}
+                              				{% endif %}
+                                           	
+                              				{% assign preview_url = preview_url | append: '.jpg' %}
+                              {% endif %}
+                              		
+                              <a href="{{ item.product.url }}"><img onError="this.onerror=null;this.src='{{ item.product.images.first | product_img_url: 'medium' }}';" src="{{ preview_url }}" alt="{{ item.title | escape }}" /></a>
+                             
+                            {% endunless %}
+                            </div>
+                            <div class="desc">
+            					<span class="title"><a href="{{ item.product.url }}">{{ item.title }}</a></span>
+                              
+                              {% assign is_personalized = 'false' %} 	
+                              
+                              	{% for p in item.properties %}
+                                	{% unless p.last == blank %}
+                              			{% assign is_personalized = 'true' %} 	
+                                      <br />
+                                		<b><u>{{ p.first }}:</u></b>
+                                        {% if p.last contains '/uploads/' %}
+                                        <a class="lightbox" href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                                        {% else %}
+                                        {{ p.last }}
+                                        {% endif %}
+                                    {% endunless %}
+                              	{% endfor %}
+                              
+                              {% if is_personalized == 'false' %}
+                              	<br />
+                              	<b><u>No Personalization</u></b>
+                              {% endif %}
+                              
+                              {% if item.product.vendor == "MyBambino" or item.product.vendor == "ProGiftSource.com" or item.product.vendor == "Baby Aspen" or item.product.vendor == "NA Bear" or item.product.vendor == "Letter Perfect" or item.product.vendor == "The Gift Partners" %}
+                              
+                                  {% assign item_gift_message = '' %}
+                                  {% assign sku_plus_item_id = item.variant.sku | append: "_" | append: item.id | strip %}
+                                  
+                   
+                                    {% for attribute in cart.attributes %}
+                                                
+                                            {% if attribute.first == sku_plus_item_id %}
+                                                    {% assign item_gift_message = attribute.last | strip %}
+                                            {% endif %}
+                                           
+                                    {% endfor %}
+                                  
+                                  {% if item_gift_message != blank %}
+                                  <br/><br/><b><u>Gift Message|:</u></b><br />
+                                    {{ item_gift_message }}
+                                  {% endif %}
+            
+                                  <p><a href="#giftnote{{ item.id }}" id="shownote{{item.id}}"><label for="giftnote{{ item.id }}">
+                                  {% if item_gift_message != blank %}
+                                    Edit Gift Message &rarr;
+                                  {% else %}
+                                    Add Gift Message &rarr;
+                                  {% endif %}
+                                    
+                                  </label></a></p>
+                                  <textarea style="width:200px;height:60px" rows="1" cols="40" maxlength="100" name="attributes[{{ item.variant.sku | append: "_" | append: item.id | strip}}]" id="giftnote{{ item.id }}" >{{item_gift_message}}</textarea>
+                                   <div class="updatecont"><input type="submit" class="button update altcolor" id="confirmgc{{ item.id }}" name="update" value="Confirm Gift Message" />&nbsp;</div>
+         
+                                    <script>
+                                      $('#giftnote{{ item.id }}').hide();
+                                      $('#confirmgc{{ item.id }}').hide();
+                                        $(function(){
+                                          $(document).on('click', '#shownote{{item.id}}', function(){
+                                            $('#giftnote{{item.id}}').show(200);
+                                            $('#confirmgc{{ item.id }}').show(200);
+                                                return false;
+                                            });
+                                        });
+                                    </script>
+                              {% endif %}
+                              
+                      
+                              {% if item.product.metafields.PZKeys.is_pz == "1" or item.product.metafields.PZKeys.is_pz == 1 %}
+                              {% comment %}<br/> <br/> <div style="line-height:1.2em;font-size:x-small">Note: Monogrammed and personalized items cannot be returned except when due to defect. </div>{% endcomment %}
+                              {% else %}
+                             	{% capture proddesc %}{% include 'process-html-strip' with item.product.description %}{% endcapture %}
+                                <p>{{ proddesc | strip_html | truncate: 120 }}</p>
+                              {% endif %}
+                			</div>
+                          	<div class="cart-info-container">
+                              <div class="qty">
+                                {% if item.properties.size > 0 %}
+                                  <label for="updates_{{ item.variant.id }}">Qty</label>
+                                  {{ item.quantity }}
+                                {% else %}  
+                                <label for="updates_{{ item.variant.id }}">Qty</label>
+                                  {% unless settings.hide_plusmin_hide %}
+                                  <a href="javascript:modifyQuantity('#updates_{{ item.variant.id }}', -1, {{ item.variant.id }})" class="minibutton">-</a>
+                                  {% endunless %}
+                                  <input class="short" type="text" size="4" name="updates[{{item.variant.id}}]" id="updates_{{ item.variant.id }}" value="{{ item.quantity }}" onfocus="this.select();"/>
+                                  {% unless settings.hide_plusmin_hide %}
+                                  <a href="javascript:modifyQuantity('#updates_{{ item.variant.id }}', 1, {{ item.variant.id }})" class="minibutton">+</a>
+                                  {% endunless %}
+                                {% endif %}
+                              </div>
+                              <div class="amt"><span class="amount" id="row_amt_{{ item.variant.id }}">{{ item.line_price | money_with_currency }}</span></div>
+                              <div class="remove-me"><a href="/cart/change?line={{ forloop.index }}&quantity=0">Remove</a></div>
+                          </div>
+                		</div>
+                    </li>
+                {% endfor %}
+                </ul>
+                <div class="foot">
+                    <div class="instructions">
+                        {% unless settings.cart_hide_note %}
+                            <p><a href="#note" id="shownote"><label for="note">{{ settings.text_telluscart }} &rarr;</label></a></p>
+                            <textarea name="note" id="note" rows="3" cols="60">{{cart.note}}</textarea>
+                            {% if cart.note && cart.note == '' %}
+                            {% else %}
+                                <script>
+                                    $('#note').hide();
+                                    $(function(){
+                                        $(document).on('click', '#shownote', function(){
+                                            $('#note').show(200);
+                                            return false;
+                                        });
+                                    });
+                                </script>
+                            {% endif %}
+                        {% endunless %}&nbsp;
+                    </div>
+                    <div class="updatecont"><input type="submit" class="button update altcolor" id="update-cart" name="update" value="Update" />&nbsp;</div>
+                    <div class="checkoutcont">
+                        <div class="total">{{ cart.total_price | money_with_currency }}</div>
+                        <input type="submit" class="button large" name="checkout" value="{{ settings.text_checkout }}" />
+                        {% if additional_checkout_buttons %}
+                            <div class="extrapaymentmethods">
+                                <p class="subtext">- or -</p>
+                                {{ content_for_additional_checkout_buttons }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+        	</div><!-- #basket -->
+        </form><!-- #cartform -->
+        {% include 'shipping-calculator' %}
+    </div>
+{% endif %}

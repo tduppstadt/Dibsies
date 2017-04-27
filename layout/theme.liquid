@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+<meta name="msvalidate.01" content="C61341BCE1B566027D2E7B9D89E0774A" /> 
+<meta name="google-site-verification" content="h7nRFdMPwg8G9RSMLQS4SAQEjVT97yhfJF_cpj-kcfA" />
+  
+  
+<script type="text/javascript">
+(function e(){var e=document.createElement("script");e.type="text/javascript",e.async=true,e.src="//staticw2.yotpo.com/eO6riG0YqLmArdCTD1uWz8DoPnuyKRrHl1an7Da4/widget.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)})();
+</script> 
+
+   <!-- 1Pe2kupetWxHYQq0-OopahG9XaI -->
+
+<!-- Clean v2.0.4 -->
+
+{% include 'theme-meta' %}
+{{ content_for_header }}
+
+{{ 'bootstrap.min.css' | asset_url | stylesheet_tag }}
+{{ 'bootstrap-theme.min.css' | asset_url | stylesheet_tag }} 
+{{ 'style.css' | asset_url | stylesheet_tag }}
+{{ 'skeleton.css' | asset_url | stylesheet_tag }}
+
+{% comment %} Google Web Font imports {% endcomment %}
+{% assign font_heading_type_split = settings.font_heading_type | split: '|' %}
+{% assign font_logo_type_split = settings.font_logo_type | split: '|' %}
+{% assign font_nav_type_split = settings.font_nav_type | split: '|' %}
+{% assign font_standard_type_split = settings.font_standard_type | split: '|' %}
+
+{% if settings.font_heading_type == 'GWF|CUSTOM' %}
+    <link href="https://fonts.googleapis.com/css?family={{ settings.font_heading_type_custom }}" rel="stylesheet" type="text/css"/>
+{% elsif font_heading_type_split.first == 'GWF' %}
+    <link href="https://fonts.googleapis.com/css?family={{ font_heading_type_split.last }}" rel="stylesheet" type="text/css"/>
+{% endif %}
+{% if settings.font_logo_type == 'GWF|CUSTOM' %}
+    <link href="https://fonts.googleapis.com/css?family={{ settings.font_logo_type_custom }}" rel="stylesheet" type="text/css"/>
+{% elsif font_logo_type_split.first == 'GWF' %}
+    <link href="https://fonts.googleapis.com/css?family={{ font_logo_type_split.last }}" rel="stylesheet" type="text/css"/>
+{% endif %}
+{% if settings.font_nav_type == 'GWF|CUSTOM' %}
+    <link href="https://fonts.googleapis.com/css?family={{ settings.font_nav_type_custom }}" rel="stylesheet" type="text/css"/>
+{% elsif font_nav_type_split.first == 'GWF' %}
+    <link href="https://fonts.googleapis.com/css?family={{ font_nav_type_split.last }}" rel="stylesheet" type="text/css"/>
+{% endif %}
+{% if settings.font_standard_type == 'GWF|CUSTOM' %}
+    <link href="https://fonts.googleapis.com/css?family={{ settings.font_standard_type_custom }}" rel="stylesheet" type="text/css"/>
+{% elsif font_standard_type_split.first == 'GWF' %}
+    <link href="https://fonts.googleapis.com/css?family={{ font_standard_type_split.last }}" rel="stylesheet" type="text/css"/>
+{% endif %}
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js "></script> 
+<script type="text/javascript"  src='{{ 'jquery.expander.js' | asset_url }}'></script>
+<script type="text/javascript">
+ $(function() {
+   $( "#datepicker" ).datepicker({dateFormat: {% if product.metafields.PZKeys.birthdate_format == 'numeric' %}"m/d/yy" {% elsif product.metafields.PZKeys.birthdate_format == 'numericdash' %} "m-d-yy" {% elsif product.metafields.PZKeys.birthdate_format == 'longform-abbreviatedmonth' %} "M d',' yy" {% else %}"MM d',' yy" {% endif %}  });
+ });
+</script>
+<!-- Load Plugin after jQuery library -->
+<script src='{{ 'sti.js' | asset_url }}'></script>
+  
+  <script src="//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.6.2.js"></script>  
+<script src='{{ 'modal.js' | asset_url }}'></script>
+<script src='{{ 'customized-global.js' | asset_url }}'></script>
+
+<!-- Plugin style sheet -->
+<link rel="stylesheet" href='{{ 'sti.css' | asset_url }}' />  
+
+<script type="text/javascript">
+if (navigator.userAgent.match(/Android/i) ||
+   navigator.userAgent.match(/webOS/i) ||
+   navigator.userAgent.match(/iPhone/i) ||
+   navigator.userAgent.match(/iPod/i) ||
+   navigator.userAgent.match(/BlackBerry/i) ||
+   navigator.userAgent.match(/Windows Phone/i))
+{
+   var robin_settings = { hide_tab: true };
+}
+</script>  
+  
+<!--<script language="javascript" type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.10.0/jquery.validate.min.js"></script>
+<script>
+$(function() {
+   $( "#product-form-personalized" ).validate();
+});
+</script>-->
+{{ 'api.jquery.js' | shopify_asset_url | script_tag }}
+{{ 'option_selection.js' | shopify_asset_url | script_tag }}
+
+<!--[if lte IE 7]>
+    {{ 'json2.js' | shopify_asset_url | script_tag }}
+<![endif]-->
+{% if template contains 'customers' %}
+    {{ "shopify_common.js" | shopify_asset_url | script_tag }}
+    {{ "customer_area.js"  | shopify_asset_url | script_tag }}
+{% endif %}
+
+{% comment %} Required before custom JS {% endcomment %}
+<script>
+var underIE9 = false;
+
+//Indicate to do image fade-in
+$('html').addClass('doimgfade');
+    
+//Global colours
+var color_body_bg = '{{ settings.color_bg_main }}';
+var color_divider = '{{ settings.color_general_divider }}';
+
+//For Ajax
+Shopify.money_format = '{{shop.money_format | replace: "'", '"'}}';
+
+//Acquire loading graphic asap
+var loadingGraphic = new Image();
+loadingGraphic.src = '{{ settings.loading_graphic | asset_url }}';
+{% if template == 'collection' or template == 'search' %}
+    var productsPerRow = {{ settings.products_per_row_coll }};
+{% elsif template == 'list-collections' %}
+    var productsPerRow = {{ settings.collrow_numperrow }};
+{% elsif template == 'search' %}
+    var productsPerRow = {{ settings.products_per_row_coll }};
+{% elsif template == 'product' %}
+    var productsPerRow = 4;
+{% else %}
+    var productsPerRow = {{ settings.products_per_row_home }};
+{% endif %}
+var vertSnapWidth = 768;//When window is under this width, everything is vertically aligned
+
+var thumbZoomOptions = {  
+    zoomType: 'innerzoom',  
+    lens:true,
+{% if settings.prod_preload_thumb_zoom %}
+    preloadImages: !!!('ontouchstart' in window) ? 1 : 0, //Only repload if not touch
+{% else %}
+    preloadImages: false,
+{% endif %}
+    alwaysOn:false,
+    title:false,
+    showEffect:'fadein',
+    hideEffect:'fadeout',
+    preloadText:'',
+    blockClicks: false
+};
+</script>
+
+<!--[if lte IE 9]>
+<script>
+underIE9 = true;
+</script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+<script>
+    document.createElement('header');
+	document.createElement('nav');
+	document.createElement('section');
+	document.createElement('article');
+	document.createElement('figure');
+	document.createElement('aside');
+    document.createElement('footer');
+    document.createElement('cite');
+    document.createElement('canvas');
+</script>
+<![endif]-->
+  
+  
+<script src="{{ 'slimbox2.js' | asset_url  }}"></script>
+<script src="{{ 'jquery.flexslider-min.js' | asset_url  }}"></script>
+<script src="{{ 'jquery.jqzoom-core-pack.js' | asset_url  }}"></script>
+  
+{% if template contains 'blog' and settings.blog_display != 'onecolumn_side' %}  
+	<script src="{{ 'jquery.masonry.min.js' | asset_url  }}"></script>
+{% endif %}
+{% if template contains 'collection' and settings.use_inf_scroll == true %}
+    <script src="{{ 'jquery.infinitescroll.min.js' | asset_url  }}"></script>
+{% endif %}
+<script src="{{ 'blackandwhite.js' | asset_url  }}"></script>
+
+
+
+
+<script>
+$(function(){
+    $(window).resize(function() {
+        //Do things when theme snaps - and on DOM ready
+        var $mainCont = $('#maincontent.container');
+        var contWidth = $mainCont.width();
+        if(typeof($mainCont.data('prevwidth')) == 'undefined'
+                || $mainCont.data('prevwidth') != contWidth) {
+            //When CSS framework 'snaps'
+            
+            var productsPerRowRightNow = $(window).width() >= vertSnapWidth ? productsPerRow : 1;
+            var collsPerRowRightNow = $(window).width() >= vertSnapWidth ? {{ settings.collrow_numperrow }} : 1;
+            
+            $('.productlist').normaliseHeights({
+                numPerRow:productsPerRowRightNow,
+                itemClass:'.product',
+                textRegionClasses:'.imgcont, .title, .desc, .price'
+            });
+            $('.widgets:not(.collection-row)').normaliseHeights({
+                numPerRow:productsPerRowRightNow,
+                itemClass:'.widget',
+                textRegionClasses:'h6, .title, .align',
+                affectOnlyDirectlyChildren: true
+            });
+            $('.widgets.collection-row').normaliseHeights({
+                numPerRow:collsPerRowRightNow,
+                itemClass:'.widget',
+                textRegionClasses:'.title, .align',
+                affectOnlyDirectlyChildren: true
+            });
+            $('#mainslider').each(function(){
+                //Images?
+                var $img = $(this).find('img:first');
+                if($img.length > 0) {
+                    $(this).find('.slides li').height($img[0].naturalHeight * $(this).width() / $img[0].naturalWidth);
+                    $(this).find('.slides').css('height', '');
+                }
+            });
+            //Product pile
+            $('.productpilewidget ul').normaliseHeights({
+                numPerRow:3,
+                itemClass:'li',
+                textRegionClasses:'a'
+            });
+            //Product thumb zoom
+            $('.zoomPad').each(function(){
+                var $img = $(this).children('img');
+                var w = $img.width();
+                var h = $img.height();
+                $(this).find('.zoomPup, .zoomWindow .zoomWrapper').width(w).height(h);
+            });
+            {% if template contains 'blog' and settings.blog_display != 'onecolumn_side' %}
+            //Masonry is used to tile blog articles
+            $('.masonry').masonry({
+                itemSelector : 'article',
+                columnWidth: function( containerWidth ) {
+                    {% if settings.blog_display == 'tiled_3' %}
+                        return containerWidth / 3;
+                    {% else %}
+                        return containerWidth / 2;
+                    {% endif %}
+                }
+            });
+            {% endif %}
+            
+            {% if settings.prod_thumb_hover_method == 'zoom' %}
+            //Rebuild product thumb zoom *if it already exists*
+            $('.productlist .product .delayedzoom').each(function(){
+                if(typeof($(this).data('jqzoom')) != 'undefined') {
+                    //Rebuild zoom
+                    $(this).find('.zoomPad > img').unwrap();
+                    $(this).data('jqzoom', null).find('.zoomPup, .zoomWindow, .zoomPreload').remove();
+                    $(this).jqzoom(thumbZoomOptions);
+                }
+            });
+            {% endif %}
+        }
+        $mainCont.data('prevwidth', contWidth);
+    }).trigger('resize');
+    
+    //Trigger again once any fonts are loaded - force resize event
+    $(window).load(function(){
+        $('#maincontent.container').data('prevwidth', null);
+        $(window).trigger('resize');
+    });
+    
+    {% if template contains 'blog' and settings.blog_display != 'onecolumn_side' %}
+    //Fade in images, and resize masonry
+    $('.masonry img').css('visibility', 'hidden');
+    $('.masonry').imagesLoaded(function(){
+        $('.masonry img').hide().css('visibility','visible').fadeIn(200);
+        $('.masonry').masonry({
+            itemSelector : 'article',
+            columnWidth: function( containerWidth ) {
+                {% if settings.blog_display == 'tiled_3' %}
+                    return containerWidth / 3;
+                {% else %}
+                    return containerWidth / 2;
+                {% endif %}
+            }
+        });
+    });
+    {% endif %}
+});
+</script>
+  
+  {% comment %}  custom ffmodern function to hide images if they don't exist {% endcomment %}
+    <script type="text/javascript">
+ 
+    function hideImage(img)
+    {
+       img.style.display = "none";
+       $('#pzhrtag').hide();
+    }
+ 
+	</script>
+     
+
+{% comment %} CSS that needs snippets {% endcomment %}
+<style type="text/css">
+{% assign hex2rgb_hex = settings.color_highlight_hover %}
+{% include 'hex2rgb' %}
+a.highlight:hover,
+input:focus, textarea:focus {
+    -webkit-box-shadow:inset 0px 0px 60px rgba({{ hex2rgb_r }},{{ hex2rgb_g }},{{ hex2rgb_b }}, 0.3);
+    -moz-box-shadow:inset 0px 0px 60px rgba({{ hex2rgb_r }},{{ hex2rgb_g }},{{ hex2rgb_b }}, 0.3);
+    box-shadow:inset 0px 0px 60px rgba({{ hex2rgb_r }},{{ hex2rgb_g }},{{ hex2rgb_b }}, 0.3);
+}
+
+{% assign hex2rgb_hex = settings.color_general_divider %}
+{% include 'hex2rgb' %}
+#util-bar #searchcont.slideout input.search,
+#pagefooter .registercont .registerform input[type=email] {
+    border-bottom:1px solid rgba({{ hex2rgb_r }},{{ hex2rgb_g }},{{ hex2rgb_b }}, 0.5);
+}
+
+{% assign hex2rgb_hex = settings.color_slider_mask %}
+{% include 'hex2rgb' %}
+#mainslider .overlay {
+    background:{{ settings.color_slider_mask }};
+    background:rgba({{ hex2rgb_r }},{{ hex2rgb_g }},{{ hex2rgb_b }}, 0.8);
+}
+</style>
+
+<!--[if IE]>
+<style type="text/css">
+#mainslider .lowerdesc {
+    background:transparent;
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99{{ settings.color_slider_mask | replace:'#','' }},endColorstr=#99{{ settings.color_slider_mask | replace:'#','' }});
+    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99{{ settings.color_slider_mask | replace:'#','' }},endColorstr=#99{{ settings.color_slider_mask | replace:'#','' }});
+    zoom: 1;
+} 
+</style>
+<![endif]-->
+
+
+<!-- Facebook Remarketing Tag Begin -->  
+<script>(function() {
+  var _fbq = window._fbq || (window._fbq = []);
+  if (!_fbq.loaded) {
+    var fbds = document.createElement('script');
+    fbds.async = true;
+    fbds.src = '//connect.facebook.net/en_US/fbds.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(fbds, s);
+    _fbq.loaded = true;
+  }
+  _fbq.push(['addPixelId', '268680113339108']);
+})();
+window._fbq = window._fbq || [];
+window._fbq.push(['track', 'PixelInitialized', {}]);
+</script>
+<noscript><img height="1" width="1" alt="" style="display:none" src="https://www.facebook.com/tr?id=268680113339108&amp;ev=NoScript" /></noscript>  
+<!-- Facebook Remarketing Tag End -->  
+
+{% comment %}<script src="//d3nhg2i1zayjpd.cloudfront.net/search/prod/dibsies.myshopify.com.min.js"></script>{% endcomment %}
+  
+</head>
+
+
+<body class="{% if customer %}customer-logged-in {% endif %}template-{{ template | split: '.' | first }}">
+
+
+<!-- Modal -->
+<div id="generalModal" class="modal fade" role="dialog"> </div>
+
+
+{% capture the_snippet_content %}{% endcapture %}
+{% unless the_snippet_content contains 'Liquid error' %}
+  
+{% endunless %}
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script> 
+    {% if product.handle contains 'email-preview' or product.handle contains 'facebook-preview' %}	
+    	{% include 'preview-header' %}
+	{% elsif product.handle == "sandbox-mike" %}
+  		{% include 'sandbox-header' %}
+  	{% else %}
+			{% include 'theme-header' %}    
+    {% endif %}
+          <div id="maincontent" class="container">
+          
+              {% if template == 'list-collections' %}
+                  {% include 'collection-listing' %}
+              {% else %}
+                  {{ content_for_layout }}
+              {% endif %}
+              {% if social_is_on_the_page and template != 'product' %}<div class="socialspacer"></div>{% endif %}
+          </div>
+      <!-- .bodywrap -->
+ {% if product.handle contains 'email-preview' or product.handle contains 'facebook-preview' %}	
+    	
+  	{% else %}
+		{% include 'theme-footer' %}
+    {% endif %}
+  
+    
+  {% comment %} <a id="scrolltotop" href="#util-bar">Scroll to top</a> {% endcomment %}
+
+
+<script type="text/javascript" async data-pin-color="white" data-pin-height="28" data-pin-hover="true" src="//assets.pinterest.com/js/pinit.js"></script>  
+
+  
+{% comment %}{% include 'findify-tagging' %}{% endcomment %}
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% include 'gts' %}
+
+{% comment %} templates {% endcomment %}
+{% include 'modal-dibsies-on-double' %}
+
+
+</body>
+</html>
+
+

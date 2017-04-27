@@ -1,0 +1,610 @@
+                  
+
+
+{% assign rushShippingAvailable = false %}
+  {% for c in product.collections %}
+    {% if c.handle == "eligible-for-expedited-shipping" %}		
+      {% assign rushShippingAvailable = true %}
+    {% endif %}
+  {% endfor %}
+
+
+
+
+{% comment %}  Use the Preview Snippet for Products marked Email Preview or Facebook Preview {% endcomment %}
+
+{% if product.handle contains 'email-preview' or product.handle contains 'facebook-preview' %}	
+    {% include 'product-preview' with product %}
+{% else %}
+
+  {% include 'shappify-qb-no-select' %}
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}" />
+  <meta itemprop="image" content="{{ product.featured_image.src | product_img_url: 'grande' }}" />
+  
+      
+  <div id="crumbs" class="sixteen columns">
+      <a href="/" title="Home">Home</a>
+      &raquo;
+      {% if collection %}
+      {{ collection.title | link_to: collection.url }} &raquo;
+      {% endif %}
+      <a href="{{ product.url }}">{{ product.title }}</a>
+  </div>
+  
+  
+  {% assign featured_image = product.selected_or_first_available_variant.featured_image | default: product.featured_image %}
+  <div id="productinfo" class="cf" data-featimgurl="{{ product.featured_image | product_img_url: 'small' }}" itemscope itemtype="http://schema.org/Product">
+  
+    <div class="eight columns">
+  
+
+
+
+
+
+	  {% if product.metafields.customimpression['UseCustomImpression'] == "true" %}
+		{% include 'customimpression_viewer' %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+          {% elsif product.images.size > 0 and settings.prod_det_gall_method != 'hide' %}
+      
+      
+      <div class="gallery mode-{{ settings.prod_det_gall_method }}">
+      <div class="main">
+
+        <a class="image main-image" href="{{ featured_image | img_url: 'master' }}" title="{{ featured_image.alt | escape }}">
+          <img src="{{ featured_image | img_url: 'master' }}" alt="{{ featured_image.alt | escape }}" />
+        </a>
+      </div>
+      {% if product.images.size > 1 %}
+      <div class="thumbnails">
+        {% for image in product.images %}
+        <a class="thumb" {% if image.src == featured_image %} class="active" {% endif %} title="{{ image.alt | escape }}" href="{{ image | product_img_url: 'master' }}">
+          <img src="{{ image | img_url: 'small' }}" alt="{{ image.alt | escape }}"/>
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div><!-- .product-photos -->
+          
+          {% endif %}
+      
+      	{% if product.metafields.product.videoEmbedCode != blank %}
+      <br/><br/>
+      <center>{{ product.metafields.product.videoEmbedCode }}</center>
+      {% endif %}
+          <!-- under gallery -->
+      <br/><br/>
+      <center>
+      <div style="width:300px;" class="yotpo yotpo-slider" data-product-id="{{ product.id }}"></div> 
+      </center>
+      {% include 'directed-edge' %}
+
+    </div>
+      <div id="detail" class="seven columns offset-by-one">
+            {% if settings.show_social_product %}
+          <div class="social contentsection">
+              <span class="label">{{ settings.text_sharethis }}</span>
+              {% include 'social-sharing' %}
+          </div>
+          {% endif %}
+  
+        <h1 itemprop="name">{{ product.title }}</h1> 
+        {% if product.handle != 'gift-card' %}
+          {% if product.metafields.PZKeys.is_pz == "1" or product.metafields.PZKeys.is_pz == 1 %}
+      
+        {% unless product.vendor contains "--DS" %}<center><b>Qualifies for DIBSIES On The DOUBLE™</b><div class="js-d-on-d-info d-on-d-info"></div></center>{% endunless %} 
+  
+        {% comment %}{% if rushShippingAvailable %}<br/><b>
+        <center><font color="red">♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥</font><br/> GET IT BY VALENTINE'S DAY! </b><br/>Use <u>Urgent Shipping</u> and <br/> Order By Feb 10 at 4pm EST <br/><b><font color="red">♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ </font></b>
+<br /></center>
+{% endif %}
+  {% endcomment %}
+    {% comment %}    {% if rushShippingAvailable %}<br/><font color="green">** Rush Delivery Options Also Available **</font>{% endif %}{% endcomment %}{% if product.variants.first.weight_in_unit != 5000 %}<br/><br/><a href="/collections/shipping-to-canada-available"><img style="vertical-align:middle" src="https://res.cloudinary.com/dibsies/image/upload/v1440717769/canadaflag_kkh2i3.gif" title="Shipping to Canada Available"/>&nbsp;&nbsp;Shipping to Canada Available</a>{% endif %}	     
+        <br/>{% if product.vendor == "NA Bear" or product.vendor == "Komet Creations" or product.vendor == "Gund" or product.vendor == "Mary Meyer" or product.vendor == "Stephen Joseph" or product.vendor == "Maison Chic" or product.vendor == "Stork Sales" %}
+{% comment %} 
+   </p>
+</center>
+{% endcomment %}   
+        
+        
+{% endif %}
+        {% comment %}{% if product.vendor == "MyBambino" %}<b>* Expect Delivery within 6 Business Days *</b>{% endif %}{% endcomment %}
+        	  
+        {% else %}
+         <b>Ships Within {% if product.vendor == "Wood Creations" %}5 to 7 Business Days {% elsif product.vendor == "Baby Aspen" %}3 to 5 Business Days{% else %}1 to 2 Business Days{% endif %} Business Days </b><br />
+        {% if rushShippingAvailable %}<br/><font color="green">** Rush Delivery Options Also Available **</font>{% endif %}	
+        {% comment %}{% if product.vendor == "MyBambino" %}<b>* Expect Delivery within 6 Business Days *</b>{% endif %}{% endcomment %}<br />
+          
+        
+        {% endif %}
+
+
+          {% if product.variants.first.inventory_management == 'shopify' and product.variants.first.inventory_quantity < 1 and product.variants.first.inventory_policy == 'continue' %}
+             <center><p style="font-size: larger;border: dotted 2px #959695;border-color: red;padding: 10px;color: red;">
+                <b> Currently <u style="font-weight:bold;">OUT</u> <u style="font-weight:bold;">OF</u> <u style="font-weight:bold;">STOCK</u><br /> But Available For Backorder </font></b> </p></center> 
+
+          {% else %} 
+          {% endif %}
+		{% endif %}
+          
+        </center>
+{% if product.handle != 'gift-card' %}  
+    <br/>
+                      <div class="yotpo bottomLine"
+    data-appkey="eO6riG0YqLmArdCTD1uWz8DoPnuyKRrHl1an7Da4"
+    data-domain="{{ shop.permanent_domain | escape }}"
+    data-product-id="{{ product.id }}"
+    data-product-models="{{ product.id }}"
+    data-name="{{ product.title | escape }}"
+    data-url="{{ page.url }}"
+    data-image-url="{{ product.featured_image | product_img_url: "large" |replace: '?', '%3F' | replace: '&','%26'}}"
+    data-description="{{ product.description | escape }}"
+    data-bread-crumbs="{% for tag in product.tags %}{{ tag | escape }};{% endfor %}">
+    </div>  
+  <br/><br/>
+          <div class='yotpo QABottomLine'
+      data-appkey='eO6riG0YqLmArdCTD1uWz8DoPnuyKRrHl1an7Da4'
+      data-product-id='{{ product.id }}'></div>
+
+  <br/><br/>
+{% else %}
+
+Sometimes the best gift is The Gift of Choice.  A Dibsies Personalization Station Gift Card will allow your loved one to personalize items to their own taste!
+<br/><br/>
+Gift cards are delivered by email and contain instructions to redeem them at checkout. Our gift cards have no additional processing fees.
+
+{% endif %}
+          {% if settings.prod_show_vendor %}
+              <p>By <span itemprop="brand">{{ product.vendor | link_to_vendor }}</span></p>
+          {% endif %}
+		
+          <div id="price-field" class="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+              {% if product.variants.first.compare_at_price > product.variants.first.price %} 
+                   <font color="red" size="3">Sale Price:</font> 
+              {% endif %}
+              <span itemprop="price">{{ product.variants.first.price | money }}</span>
+              {% assign isFreeShippingItem = false %}
+              {% for c in product.collections %}
+              {% if c.handle == "free-standard-shipping-items" %}		
+              {% assign isFreeShippingItem = true %}
+              {% endif %}
+              {% endfor %}
+              {% if isFreeShippingItem %}
+              	<b><font size="-1" color="green">&nbsp;&nbsp;( &#10004; FREE SHIPPING *)</font></b>
+              {% endif %}
+              
+            {% if product.variants.first.compare_at_price > product.variants.first.price %}
+                  <div class="was-price">Regular Price {{ product.variants.first.compare_at_price | money }}</div>
+            {% comment %}
+            (Save  
+            
+            {% capture save_percent %}{{ product.variants.first.compare_at_price | minus: product.variants.first.price | times: 100.0 | divided_by: product.variants.first.compare_at_price }}{% endcapture %}
+            {{ save_percent | truncate:2 }}% )
+            {% endcomment %}
+            
+            {% endif %}
+        </div>
+  
+  
+       {% if product.metafields.yotpo.reviews_count and product.metafields.yotpo.reviews_count != "0" %}
+       <div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+       <span itemprop="itemReviewed">{{ product.title }}</span>
+       has a rating of <span itemprop="ratingValue">{{ product.metafields.yotpo.reviews_average }}</span> stars
+       based on <span itemprop="ratingCount">{{ product.metafields.yotpo.reviews_count }}</span> reviews.
+       </div>
+       {% endif %}
+
+  
+          {% assign ffTagsHTML = '' %}
+          {% assign ffMostRecentTagHTML = '' %}
+          {% assign ffTagTitle = '' %}
+          {% for tag in product.tags %}
+              {% for currentCollection in product.collections %}
+                  {% if currentCollection.handle == tag %}
+                      {% capture ffTagTitle %}{{ currentCollection.title }}{% endcapture %}
+                  {% endif %}
+              {% endfor %}
+        
+              {% assign firstbit = tag | split: '-' | first %}
+              {% if firstbit == 'ff' %}
+                  {% capture ffMostRecentTagHTML %}<a href="/collections/all/{{ tag | handleize }}"><img style="vertical-align:middle" src="http://cdn.shopify.com/s/files/1/0238/6527/files/check_box.png?6157" align="bottom" />{{ ffTagTitle }}</a> {% endcapture %}
+                  {% capture ffTagsHTML %}{{ ffTagsHTML }}{{ ffMostRecentTagHTML }}{% endcapture %}
+              {% endif %}
+          {% endfor %} 
+        <!-- product.metafields.PZKeys.is_pz == {{ product.metafields.PZKeys.is_pz }} -->
+        {% if product.metafields.PZKeys.is_pz == "1" or product.metafields.PZKeys.is_pz == 1 %} {% comment %} If this is a personalized product, show page differently and include pz options. {% endcomment %}
+              {% if product.handle == "sandbox-thom" %}	
+                  {% include 'sandbox-thom' with product %}
+              {% elsif product.handle == "sandbox-mike" %}
+                  {% include 'sandbox-mike' with product %}
+              {% else %}
+				  {% if product.metafields.PZKeys.use_customization_engine == 1 %}
+			      {% else %}
+                    {% include 'product-pz-snippet' with product %}
+				  {% endif %}
+              {% endif %}
+
+    	{% else %} {% comment %} else if product is not personalized, do the regular format of the page {% endcomment %}
+        
+      
+            
+            {% if product.available %}
+            <form action="/cart/add" method="post" id="product-form">
+                <div class="options">
+                  	{% if product.handle != 'gift-card' %}
+                    <label for="quantity">Quantity:</label> 
+                    <a href="javascript:modifyQuantity('#quantity', -1)" class="minibutton">-</a>
+                    <input class="short" type="text" id="quantity" name="quantity" value="1" onfocus="this.select();" />
+                    <a href="javascript:modifyQuantity('#quantity', 1)" class="minibutton">+</a>
+                 	{% endif %}
+                 {% if product.variants.size == 1 %}
+                    <input type="hidden" name="id" value="{{ product.variants.first.id }}" />
+                    {% if settings.prod_show_opts_single %}<p>{{ product.options.first }}: {{ product.variants.first.title }}</p>{% endif %}
+                {% else %}
+                    <div class="selectors">
+                        <label for="product-select">{{ product.options.first }}:</label>
+                        <select id="product-select" name="id" class="noreplace">
+                            {% for variant in product.variants %}
+                                 
+                                <option value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
+                                
+                          {% endfor %}
+                        </select>
+                      <br/>
+                      		{% if product.handle != 'gift-card' %}
+                          <span style="font-size:medium;line-height:5px">( IN STOCK ) </span>
+                  			{% endif %} 
+                  </div>
+                    {% assign option_to_match = 'Color' %}
+                  	{% assign number_of_initials = 'Number of Initials' %}
+                    {% assign option_index = 0 %}
+                    {% for option in product.options %}
+                    {% if option == option_to_match %}
+                    {% assign option_index = forloop.index0 %}
+                    {% endif %}
+                    {% if option == number_of_initials %}
+                    {% assign option_noi_index = forloop.index0 %}
+                    {% endif %}
+                    {% endfor %}
+                              <script type="text/javascript">
+                              $(document).on('mainimgloaded', '#rg-gallery .es-carousel ul li', function(){
+                              var optionValue = $(this).find('img').attr('alt');
+                              if(optionValue.length > 0) {
+                              $('#productinfo #detail .options .selectors select option[value="'+optionValue+'"]').each(function(){
+                              if($(this).parent().val() != $(this).attr('value')) {
+                              $(this).parent().val($(this).attr('value')).trigger('change');
+                              }
+                              });
+                              }
+                              });
+                              var selectCallback = function(variant, selector) {
+                              //Swapping images JS
+                              var optionValue = variant.options[{{ option_index }}]; 
+                                             var optionNolValue = variant.options[{{ option_nol_index }}];  
+                                
+                            // Begin Number of Initials Dynamic Form Code
+
+                            switch(optionNolValue)
+                            {
+                              case "1 Initial":
+                                $(".two-initial-monogram").css("display", "none");
+                                $(".three-initial-monogram").css("display", "none");
+                                $(".full-name-monogram").css("display", "none");
+                                $(".one-initial-monogram").css("display", "block");
+                                break;                              
+                              case "2 Initials":
+                                $(".three-initial-monogram").css("display", "none");
+                                $(".one-initial-monogram").css("display", "none");
+                                $(".full-name-monogram").css("display", "none");
+                                $(".two-initial-monogram").css("display", "block");                              
+                                break;
+                              case "3 Initials":
+                                $(".two-initial-monogram").css("display", "none");
+                                $(".one-initial-monogram").css("display", "none");
+                                $(".full-name-monogram").css("display", "none");
+                                $(".personalize-option").removeClass("customText");
+                                $(".three-initial-monogram").css("display", "block"); 
+                                break;
+                         	  case "Full Name":
+                                $(".two-initial-monogram").css("display", "none");
+                                $(".one-initial-monogram").css("display", "none");
+                                $(".three-initial-monogram").css("display", "none");
+                                $(".full-name-monogram").css("display", "block");                              
+                                break;                                
+
+                            }   
+
+                            // End Number of Initials Dynamic Form Code  
+                                                              
+                              $matchingImg = $('#rg-gallery .es-carousel li:not(.selected) img[alt="'+optionValue+'"]').parent();
+                              if($matchingImg.length > 0) {
+                              $matchingImg.first().parent().trigger('click');
+                              }
+                              if (variant && variant.available == true) {
+                              // selected a valid variant
+                                $('#productinfo #detail #purchase').removeClass('disabled').removeAttr('disabled'); // remove unavailable class from add-to-cart button, and re-enable button
+                                var newHtml = Shopify.formatMoney(variant.price, "{{shop.money}}");
+                                if(variant.compare_at_price > variant.price) {
+                                    newHtml += '<div class="was-price">was ' + Shopify.formatMoney(variant.compare_at_price, "{{shop.money}}") + '</div>';
+                                }                                                               
+                                $('#price-field').html(newHtml);  // update price field
+                            } else {
+                                // variant doesn't exist
+                                $('#productinfo #detail #purchase').addClass('disabled').attr('disabled', 'disabled'); // set add-to-cart button to unavailable class and disable button
+                                var message = variant ? "Sold Out" : "Unavailable";
+                                $('#price-field').text(message); // update price-field message
+                            }
+                        };     
+                        
+                        //Set up product inputs
+                        $(function() {
+                            new Shopify.OptionSelectors("product-select", { product: {{ product | json }}, onVariantSelected: selectCallback });
+                            {% if settings.prod_enable_linked_options and product.options.size > 1 %}
+                            Shopify.linkOptionSelectors({{ product | json }});
+                            {% endif %}
+                            {% assign found_one_in_stock = false %}
+                            {% for variant in product.variants %}
+                                {% if variant.available and found_one_in_stock == false %}
+                                    {% assign found_one_in_stock = true %}
+                                    {% for option in product.options %}
+                                        jQuery('.single-option-selector:eq(' + {{ forloop.index0 }} + ')').val({{ variant.options[forloop.index0] | json }}).trigger('change');
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            //Hide original option label if we now have multiple options
+                            console.log("logthisshiznit" + $('.selector-wrapper .single-option-selector').length);
+                            if($('.selector-wrapper .single-option-selector').length != 1) {
+                                $('#product-select').siblings('label[for="product-select"]').hide();
+                            }
+                            
+                            //Style any added select dropdowns
+                            $.selectReplace();
+                        });
+                    </script>
+                {% endif %}
+                 	
+                  
+                  <br/><br/>
+                  
+                {% comment %} If you are using Shopify's Line Item Properties, add them here! {% endcomment %}
+                
+                </div>
+          <hr>
+              <br/>
+         <center> 
+           {% if product.handle != 'gift-card' %}
+              <center><b>Ships Within {% if product.vendor == "Wood Creations" %}5 to 7 Business Days {% elsif product.vendor == "Baby Aspen" %}3 to 5 Business Days{% else %}1 to 2 Business Days{% endif %}  </b><br /></center>
+         
+           {% if rushShippingAvailable %}<br/><center><font color="green">* Rush Delivery Options Also Available *</font></center>
+<center><font color="green">( Add to Cart for Details )</font></center>
+{% endif %}
+           
+           
+           {% comment %}
+           <center><font color="red">* Place Orders By {% if product.vendor == "Wood Creations" %}8 to 12{% elsif product.vendor == "HooHobbers" %}10 to 15{% elsif product.vendor == "MyBambino" %}December 12{% elsif product.vendor == "Little Colorado" %}December 10{% elsif product.vendor == "NA Bear" %}December 15{% elsif product.vendor == "Komet Creations" %}December 15{% else %}December 15{% endif %} For Delivery By Christmas *</font></center></b><br />
+           {% endcomment %}
+           {% comment %}{% if product.vendor == "MyBambino" %}<b>* Expect Delivery within 6 Business Days *</b>{% endif %}{% endcomment %}<br />
+           {% endif %}    
+          </center>	
+                <div class="addbuttoncont">
+                  <div class="shopping-cart"></div>
+ 					<input style="height:50px" type="submit" name ="add" id="shappify_add_to_cart_btn" class="button large plus" value="{{ settings.text_addtocart }}" />
+                </div>
+              <div class="payment-method-container">  
+              <div class="paymentmethods seven columns row">
+              {% if settings.payment_2co_enabled == true %}
+              <span class="2co"><span>2Checkout</span></span>
+              {% endif %}
+              {% if settings.payment_amex_enabled == true %}
+              <span class="amex"><span>American Express</span></span>
+              {% endif %}
+              {% if settings.payment_cirrus_enabled == true %}
+              <span class="cirrus"><span>Cirrus</span></span>
+              {% endif %}
+              {% if settings.payment_delta_enabled == true %}
+              <span class="delta"><span>Delta</span></span>
+              {% endif %}
+              {% if settings.payment_discover_enabled == true %}
+              <span class="discover"><span>Discover</span></span>
+              {% endif %}
+              {% if settings.payment_google_enabled == true %}
+              <span class="google"><span>Google Checkout</span></span>
+              {% endif %}
+              {% if settings.payment_maestro_enabled == true %}
+              <span class="maestro"><span>Maestro</span></span>
+              {% endif %}
+              {% if settings.payment_mastercard_enabled == true %}
+              <span class="mastercard"><span>Mastercard</span></span>
+              {% endif %}
+              {% if settings.payment_moneybookers_enabled == true %}
+              <span class="moneybook"><span>Moneybookers</span></span>
+              {% endif %}
+              {% if settings.payment_paypal_enabled == true %}
+              <span class="paypal"><span>PayPal</span></span>
+              {% endif %}
+              {% if settings.payment_sagepay_enabled == true %}
+              <span class="sage"><span>SagePay</span></span>
+              {% endif %}
+              {% if settings.payment_solo_enabled == true %}
+              <span class="solo"><span>Solo</span></span>
+              {% endif %}
+              {% if settings.payment_switch_enabled == true %}
+              <span class="switch"><span>Switch</span></span>
+              {% endif %}
+              {% if settings.payment_visa_enabled == true %}
+              <span class="visa"><span>Visa</span></span>
+              {% endif %}
+              {% if settings.payment_visaelectron_enabled == true %}
+              <span class="electron"><span>Visa Electron</span></span>
+              {% endif %}
+          </div></div>
+              
+                <script>
+                    Shopify.money_format = '{{shop.money_format | replace: "'", '"'}}';
+                    
+                    {% unless settings.prod_disable_ajax %}
+                    //Override for default Shopify function
+                    Shopify.onItemAdded = function(line_item) {
+                        //Make buttons usable again
+                        $('form input[type="submit"]').attr('disabled', false).removeClass('disabled');
+                        //Adding to cart successful, update cart
+                        Shopify.getCart();
+                        //Show 'item added'
+                        $('#purchase').siblings('.added').remove();
+                        $('<div>').addClass('added').html('<span class="yay">{{ settings.text_ty }}</span><a class="basket" href="/cart">{{ settings.text_cart }} &rarr;</a>')
+                            .insertBefore($('#purchase')).fadeIn(200).delay(5000).fadeOut(500, function(){ 
+                                $(this).remove();
+                            });
+                        return false;
+                    }
+                    
+                    //Override for default Shopify function
+                    Shopify.onError = function(XMLHttpRequest, textStatus) {
+                        //Make buttons usable again
+                        $('form input[type="submit"]').attr('disabled', false).removeClass('disabled');
+                        //Display error message
+                        var errmsg;
+                        var data = eval('(' + XMLHttpRequest.responseText + ')');
+                        if (!!data.message) {
+                            errmsg = data.message + '<br />' + data.description;
+                        } else {
+                            errmsg = Shopify.fullMessagesFromErrors(data).join('; ');
+                        }
+                        $('#purchase').siblings('.added').remove();
+                        $('<div>').addClass('added').addClass('error').html('<span>'+errmsg+'</span>')
+                            .insertBefore($('#purchase')).fadeIn(200).delay(5000).fadeOut(500, function(){ 
+                                $(this).remove();
+                            });
+                    };
+                    
+                    //Override for default Shopify function
+                    Shopify.onCartUpdate = function(cart) {
+                        //Update elements on screen that show cart info
+                        $('#headercartvals').html('(' + cart.item_count + ') ' + Shopify.formatMoney(cart.total_price));
+                    }
+                    
+                    //Define the function that adds to the cart
+                    function addToCart(e) {
+                        if (typeof e !== 'undefined') e.preventDefault();
+                        Shopify.addItemFromForm($(this).closest('form').attr('id'));
+                    }
+                    
+                    $(function(){
+                        //Action for clicking 'buy'
+                        $('#purchase').bind('click', addToCart);
+                    });
+                    {% endunless %}
+                  
+                </script>
+            </form>
+            {% else %}
+            <h3>{{ settings.text_soldout }}</h3>
+            {% endif %}
+          {% endif %}
+          
+          <div class="description contentsection" itemprop="description">{% include 'process-html' with product.description %}
+    
+            
+            {% if product.metafields.PZKeys.use_customization_engine == 1 %}
+     			{% include 'customization-engine-snippet' with product %}	  
+			{% endif %}
+
+            <b> Need More Info? &nbsp;</b> <u>No Problem</u>. Just Click "Ask A Question" Below and Submit Your Question. Previous Purchasers or Dibsies Customer Service will respond!<br /><br />  
+            <div class='yotpo QABottomLine'
+      data-appkey='eO6riG0YqLmArdCTD1uWz8DoPnuyKRrHl1an7Da4'
+      data-product-id='{{ product.id }}'></div>
+        
+          </div>
+
+          {% if settings.prod_show_type %}<div class="contentsection">See more: {{ product.type | link_to_type }}</div>{% endif %}
+          
+<br/>{% if settings.show_social_product %}
+          <div class="social contentsection">
+              <span class="label">{{ settings.text_sharethis }}</span>
+              {% include 'social-sharing' %}
+          </div>
+          {% endif %}
+          
+          {% comment %} List out product tags - don't show special 'related' tags {% endcomment %}
+          {% assign tagsHTML = '' %}
+          {% assign mostRecentTagHTML = '' %}
+          {% for tag in product.tags %}
+              {% assign firstbit = tag | split: '-' | first %}
+              {% unless firstbit == 'related'or firstbit == 'ff' %}
+                  {% capture mostRecentTagHTML %}<a href="/collections/all/{{ tag | handleize }}">{{ tag }},</a> {% endcapture %}
+                  {% capture tagsHTML %}{{ tagsHTML }}{{ mostRecentTagHTML }}{% endcapture %}
+              {% endunless %}
+          {% endfor %}
+          
+          {% if tagsHTML contains 'a' %}
+          {% assign mostRecentTagWithoutCommaHTML = mostRecentTagHTML | replace: ',','' %}
+          <div class="tags contentsection">
+              Tags: {{ tagsHTML | replace: mostRecentTagHTML, mostRecentTagWithoutCommaHTML }}
+          </div>
+          {% endif %}
+          
+          {% if collection %}
+              <div class="paging simpletext">
+              {% if collection.previous_product %}
+                  <span class="prevwrap"><a class="prev" href="{{ collection.previous_product }}">&#8249;</a> <a class="text" href="{{ collection.previous_product }}">Previous</a></span>
+              {% endif %}
+              {% if collection.next_product %}
+                  <span class="nextwrap"><a class="text" href="{{ collection.next_product }}">Next</a> <a class="next" href="{{ collection.next_product }}">&#8250;</a></span>
+              {% endif %}
+              </div>
+          {% endif %}
+      </div><!-- #detail -->
+  </div>
+  
+  
+  <br/>
+
+{% include 'directed-edge' %}
+
+  <br/>
+<div class="yotpo yotpo-main-widget"
+  data-product-id="{{ product.id }}"
+  data-name="{{ product.title | escape }}"
+  data-url="{{ page.url }}"
+  data-image-url="{{ product.featured_image | product_img_url: "large" |replace: '?', '%3F' | replace: '&','%26'}}"
+  data-description="{{ product.description | escape }}">
+</div>
+  
+
+  
+  {{ "gallery.js" | asset_url | script_tag }}
+  {{ "jquery.easing.1.3.js" | asset_url | script_tag }}
+  {{ "jquery.elastislide.js" | asset_url | script_tag }}
+  {{ "jquery.tmpl.min.js" | asset_url | script_tag }}
+  
+
+ 
+  
+  
+{% endif %}
+{% comment %} End Of the Preview Snippet If-Else Statement {% endcomment %}
+    
+<script type="text/javascript">
+var pri = '{{ product.price | money }}';
+var pric = pri.replace("$","").replace(",","");
+var price = parseFloat(pric);
+var id = document.querySelector('input[name="id"]').value;
+var google_tag_params = {
+ecomm_prodid: 'shopify_US_{{product.id}}_'+id,
+ecomm_pagetype: 'product',
+ecomm_totalvalue: price
+};
+</script>

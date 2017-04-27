@@ -1,0 +1,224 @@
+{% if search.performed and product-list-repeatable-item.variants.first.inventory_management == 'shopify' and product-list-repeatable-item.variants.first.inventory_quantity < 1 %}
+
+   {% comment %}  Don't show product if it is sold out {% endcomment %}
+ 
+{% else %}
+
+  {% if these_are_related_products %}
+      {% assign producturl = product-list-repeatable-item.url %}
+  {% else %}
+      {% assign producturl = product-list-repeatable-item.url | within: collection %}
+  {% endif %}
+  {% if forloop.last %}
+      {% assign lastclass = ' last' %}
+  {% else %}
+      {% assign lastclass = '' %}
+  {% endif %}
+
+  {% if row_limit == 2 %}
+      <div class="product eight columns{{ lastclass }}">
+      {% capture output %}
+          {% cycle '<div class="columnfluff"></div>', '' %}
+      {% endcapture %}
+      {% unless forloop.last %}{{ output }}{% endunless %}
+  {% elsif row_limit == 3 %}
+      <div class="product one-third column{{ lastclass }}">
+      {% capture output %}
+          {% cycle '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '' %}
+      {% endcapture %}
+      {% unless forloop.last %}{{ output }}{% endunless %}
+  {% elsif row_limit == 5 %}
+      <div class="product one-fifth column{{ lastclass }}">
+      {% capture output %}
+          {% cycle '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '' %}
+      {% endcapture %}
+      {% unless forloop.last %}{{ output }}{% endunless %}
+  {% else %}
+      <div class="product four columns{{ lastclass }}">
+      {% capture output %}
+          {% cycle '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '' %}
+      {% endcapture %}
+      {% unless forloop.last %}{{ output }}{% endunless %}
+  {% endif %}
+      {% assign product_thumb_size = 'large' %}
+      <div class="imgcont loadingimg">
+          {% if settings.prod_thumb_hover_method == 'zoom' %}
+              <a class="delayedzoom" href="{{ product-list-repeatable-item.featured_image | product_img_url: 'grande' }}" rel="" title="">
+                  <img src="{{ product-list-repeatable-item.featured_image | product_img_url: product_thumb_size }}" alt="{{ product-list-repeatable-item.featured_image.alt }}" />
+              </a>
+          {% elsif settings.prod_thumb_hover_method == 'duelimage' and product-list-repeatable-item.images.size > 1 %}
+              <a class="imgswitch" href="{{ producturl }}">
+                  <img src="{{ product-list-repeatable-item.featured_image | product_img_url: product_thumb_size }}" alt="{{ product-list-repeatable-item.featured_image.alt }}" />
+                  <div class= "altimgcont">
+                      <img class="altimg" src="{{ product-list-repeatable-item.images[1] | product_img_url: product_thumb_size }}" alt="{{ product-list-repeatable-item.images[1].alt }}" />
+                  </div>
+              </a>
+          {% else %}
+              <a href="{{ producturl }}" {% if settings.prod_thumb_hover_method == 'simple' %}class="highlight"{% endif %}>
+                  <img src="{{ product-list-repeatable-item.featured_image | product_img_url: product_thumb_size }}" alt="{{ product-list-repeatable-item.featured_image.alt }}" />
+              </a>
+          {% endif %}
+
+
+          {% if product-list-repeatable-item.variants.first.inventory_management == 'shopify' and product-list-repeatable-item.variants.first.inventory_quantity < 1 %}
+              {% if product.variants.first.inventory_policy == 'continue' %}
+                  <div class="preordercontainer"><a class="preorder" href="{{ producturl }}">Available For Backorder</a></div>
+              {% else %}
+
+                  <div class="soldoutcontainer"><a class="soldout" href="{{ producturl }}">Sold Out</a></div>
+              {% endif %}
+          {% endif %} 
+          {% if product-list-repeatable-item.compare_at_price_max > product-list-repeatable-item.price and settings.prod_sale_mode != 'none' %}
+              <div class="salecontainer"><a class="sale" href="{{ producturl }}">{{ settings.text_sale }}</a></div>
+          {% endif %}
+
+          {% if product-list-repeatable-item.metafields.PZKeys.template_id_map != blank or product-list-repeatable-item.metafields.PZKeys.design_id != blank %}
+
+                  {% comment %}<div class="previewfeaturecontainer"><a class="previewfeature" href="{{ producturl }}">Preview Now ®</a></div>{% endcomment %}
+
+          {% endif %} 
+
+
+          {% capture nowDateEpochTime %}{{ 'now' | date:"%s" }}  {% endcapture %}
+          {% capture publishedDateEpochTime %}{{ product-list-repeatable-item.published_at | date:"%s" }}  {% endcapture %}
+          {% capture daysSincePublished %} {{ nowDateEpochTime | minus: publishedDateEpochTime | divided_by: 86400 }}{% endcapture %}
+          {% assign daysSincePublishedInteger = daysSincePublished | plus:0 %}
+          {% if daysSincePublishedInteger < 60 %}
+
+
+                  <div class="newproductcontainer"><a class="newproduct" href="{{ producturl }}"> NEW </a></div>
+
+          {% endif %} 
+
+
+      </div>
+        
+<!--   For Google Adwords, apparel items must have a Color option.  Even if only one color is available for item.
+  When we add this color, it throws off the More Colors Available bar because it believes there are multiple
+  colors when the Color option exist.  To work around this, we need to go through all the variant option values 
+  and count them.  If any are equal to 1 we assume this is a situation where only a single color exists.  At the 
+  current time, it doesn't seem like Shopify has a way around this. -->
+   
+  {% assign o1Counter = 0 %}  
+  {% assign o2Counter = 0 %}  
+  {% assign o3Counter = 0 %}  
+
+  {% for v in product-list-repeatable-item.variants %}
+        {% unless v.option1 == o1 %}
+        	{% assign o1 = v.option1 %}
+        	{% assign o1Counter = o1Counter | plus: 1 %}        	
+        {% endunless %}
+        {% unless v.option2 == o2 %}
+        	{% assign o2 = v.option2 %}
+        	{% assign o2Counter = o2Counter | plus: 1 %}         	
+        {% endunless %}
+        {% unless v.option3 == o3 %}
+        	{% assign o3 = v.option3 %}
+        	{% assign o3Counter = o3Counter | plus: 1 %}      	
+        {% endunless %}
+  {% endfor %}       
+
+
+        
+  {% for o in product-list-repeatable-item.options %}	
+        {% if (o contains 'Color') and o1Counter != 1 and o2Counter != 1 and o3Counter != 1) %}
+          {% comment %}  If there is a combination of size and color variants, we don't 
+          have an easy way to tell them how many colors specifically are available. 
+          Instead, just show "more" colors available if a 'size' option also exists
+          {% endcomment %}
+
+       
+          <div class="seeMoreColors">
+            <a style="color:white;" href="{{ product-list-repeatable-item.url | within: collection }}">MORE COLORS AVAILABLE</a>
+          </div>
+
+       
+        
+        {% elsif (product-list-repeatable-item.options contains 'Choose Your Font' or product-list-repeatable-item.options contains 'Design') and product-list-repeatable-item.variants.size > 1 %}
+          <div class="seeMoreColors">3
+            <a style="color:white;" href="{{ product-list-repeatable-item.url | within: collection }}">{{product-list-repeatable-item.variants.size}} DESIGNS AVAILABLE</a>
+          </div>
+          {% break %}
+
+        {% endif %}
+        
+  {% endfor %}      
+  
+
+        {% comment %}{% endcomment %}
+          {% if product-list-repeatable-item.metafields.PZKeys.is_pz == "1" or product.metafields.PZKeys.is_pz == 1%}
+              <div class="personalize-me-spacer">
+                <a href="{{ producturl }}"><div class="personalize-me"></div></a>
+              </div>
+          {% endif%} 
+
+
+      <p class="title"><a href="{{ producturl }}">{{ product-list-repeatable-item.title }}</a></p>
+
+
+
+        <span style="margin-top:0px;">
+  <div class="yotpo bottomLine"
+  data-appkey="eO6riG0YqLmArdCTD1uWz8DoPnuyKRrHl1an7Da4"
+  data-domain="{{ shop.permanent_domain | escape }}"
+  data-product-id="{{ product-list-repeatable-item.id }}"
+  data-product-models="{{ product-list-repeatable-item.id }}"
+  data-name="{{ product-list-repeatable-item.title | escape }}"
+  data-url="{{ page.url }}"
+  data-image-url="{{ product-list-repeatable-item.featured_image | product_img_url: "large" |replace: '?', '%3F' | replace: '&','%26'}}"
+  data-description="{{ product-list-repeatable-item.description | escape }}"
+  data-bread-crumbs="{% for tag in product-list-repeatable-item.tags %}{{ tag | escape }};{% endfor %}">
+  </div> 
+          </span>
+
+
+
+        {% unless settings.prod_thumb_desc_chars == '0' %}
+        {% comment %} <a class="desc" href="{{ producturl }}">
+          {% capture proddesc %}{% include 'process-html-strip' with product-list-repeatable-item.description %}{% endcapture %}
+          {{ proddesc | strip_html | truncate: settings.prod_thumb_desc_chars }}
+        </a> {% endcomment %}
+      {% endunless %}
+
+
+
+
+      <div class="price">
+        {% if product-list-repeatable-item.compare_at_price_max > product-list-repeatable-item.price %} <span class="reducedfrom">Regular Price: {{ product-list-repeatable-item.compare_at_price_max | money }}</span>{% endif %}
+
+          {% if product-list-repeatable-item.compare_at_price_max > product-list-repeatable-item.price %}
+        <br/><font color="red">&nbsp;Sale:</font>
+          {% endif %}
+
+        {% if product-list-repeatable-item.price_varies %}<span class="from">from</span>{% endif %}	
+        <span class="actual">{{ product-list-repeatable-item.price | money }}</span>
+        {% assign isFreeShippingItem = false %}
+          {% for c in product-list-repeatable-item.collections %}
+              {% if c.handle == "free-standard-shipping-items" %}		
+                  {% assign isFreeShippingItem = true %}
+              {% endif %}
+          {% endfor %}
+        {% if isFreeShippingItem %}
+        <b><font size="-2" color="green">&nbsp;&nbsp; &#10004;&nbsp;FREE SHIPPING *</font></b>
+        {% endif %}
+
+      </div>
+
+        <hr>
+  </div>
+
+
+      {% comment %} Clear the row after each group - makes it look nicer while loading {% endcomment %}
+      {% if row_limit == 2 %}
+          {% cycle '', '<div class="cf"></div>' %}
+      {% elsif row_limit == 3 %}
+          {% cycle '', '', '<div class="cf"></div>' %}
+      {% elsif row_limit == 5 %}
+          {% cycle '', '', '', '', '<div class="cf"></div>' %}
+      {% else %}
+          {% cycle '', '', '', '<div class="cf"></div>' %}
+      {% endif %}
+
+{% endif %}
+       
+           

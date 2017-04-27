@@ -1,0 +1,189 @@
+<div id="customization-btn-wrapper" style="">
+  <br/>
+  <button 
+    class="customization-btn"
+    type="button"
+    style=""
+    onclick="openCustomizationWindow();">Customize</button>
+</div>
+<br/>
+<div id="customization-info-container"></div>
+<script>
+  var cePropertiesString = "";
+  function yarUrlParams(){
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+      vars[key] = value;
+    });
+    
+    return vars;
+  }
+  
+  function yarUrldecode(url) {
+    return decodeURIComponent(url.replace(/\+/g, " "));
+  }
+  
+  function openCustomizationWindow(){
+    var variantIdString = '';
+    var selectedVariantId = jQuery('select[name="id"]').val();
+    if(typeof selectedVariantId != 'undefined'){
+      variantIdString = '/variant_id/'+selectedVariantId;
+    }
+    window.scrollTo(0,0);
+    var element = document.getElementById("designer-window-container");
+    element.style.display="block";
+    
+    var iframe = document.getElementById("designer-window-frame");
+    var urlProtocol = window.location.protocol === "https" ? "https" :"http";
+    var url = "/cese/ce/shopify/widget/index/client_id/1186/product_id/__productId__";
+    url = url.replace('__productId__','{{product.id}}');
+    url = "//www.customizationengine.com"+url+variantIdString;
+    url = url+"?redirect="+window.location;
+    url = url+"&"+cePropertiesString;
+    iframe.src = url;
+  }
+  function closeCustomizationEngineDesignerContainer(){
+    element = document.getElementById("designer-window-container");
+    element.style.display="none";
+  }
+  
+  window.onload = function(){
+    if(!(window.jQuery)){
+      var s = document.createElement("script");
+      s.setAttribute("src", "http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js");
+      s.setAttribute("type", "text/javascript");
+      document.getElementsByTagName("head")[0].appendChild(s);
+      jQuery.noConflict();
+    }
+    urlParams = yarUrlParams();
+    html = "";
+    formHtml = "";
+    quantityValue = 0;
+    var submitForm = true;
+    for (var key in urlParams) {
+      value = yarUrldecode(urlParams[key]);
+      key = yarUrldecode(key);
+      if(key == "submitForm"){
+        if(value == "false"){
+          submitForm = false;
+        }
+      }
+      if(key.indexOf("properties") == 0){
+        cePropertiesString =+ key+"="+value;
+        parts = key.split("[");
+        
+        if(typeof parts[1] !== "undefined"){
+          fieldName = parts[1].replace("]","");
+          if(typeof document.getElementsByName("properties["+fieldName+"]")[0] != "undefined"){
+            document.getElementsByName("properties["+fieldName+"]")[0].value = quantityValue;
+          }
+          else{
+            fieldDisplay = "";
+            if(fieldName.indexOf("{-") > 0){
+              fieldDisplay = "display:none";
+            }
+            html += "<div class=\"property-wrapper\" style=\""+fieldDisplay+"\">"+
+              "<span>"+fieldName+"</span>:&nbsp;&nbsp;"+
+              "<span>"+value+"</span>"+
+              "</div>";
+            formHtml += "<textarea name=\"properties["+fieldName+"]\" style=\"display:none\">"+value+"</textarea>";
+            
+          }
+        }
+      }        
+      if(key.indexOf("quantity_breakdown") == 0){
+        intValue = parseInt(value);
+        quantityValue = quantityValue+intValue;
+        parts = key.split("[");
+        
+        if(typeof parts[1] !== "undefined"){
+          fieldName = parts[1].replace("]","");
+          if(typeof document.getElementsByName("properties["+fieldName+"{- Quantity -}]")[0] != "undefined"){
+            document.getElementsByName("properties["+fieldName+"{- Quantity -}]")[0].value = quantityValue;
+          }
+          else{
+            html += "<div class=\"property-wrapper\">"+ 
+              "<span>"+fieldName+" {- Quantity -}</span>:&nbsp;&nbsp;"+
+              "<span>"+value+"</span>"+                            
+              "</div>";
+            formHtml += "<input type=\"hidden\" name=\"properties["+fieldName+" {- Quantity -}]\" value=\""+value+"\" />";
+            
+          }
+        }
+      }        
+      if(key.indexOf("variant_id") == 0){
+        var variantValue = value;
+        jQuery("select").each(function(index,element){
+          if($(element).attr("name") == "id"){
+            $(element).val(variantValue);
+            return;
+          }
+        })
+      }
+      
+    }   
+    if(quantityValue > 0){
+      if(typeof document.getElementsByName("quantity")[0] != "undefined"){
+        document.getElementsByName("quantity")[0].value = quantityValue;
+      }
+      else{
+        html += "<div class=\"property-wrapper\">"+
+          "<label for=\"\">Quantity</label>"+
+          "</div>";
+        formHtml += "<input type=\"text\" name=\"quantity\" value=\""+quantityValue+"\" />";
+        
+      }
+    }
+    if(html){
+      document.getElementById("customization-info-container").innerHTML = "<h4>Customization Options:</h4>"+ html;
+      cartForm = jQuery("form[action=\"/cart/add\"]").first();
+      if(cartForm.length > 0){
+        jQuery(cartForm).append(formHtml);
+      }
+      if(submitForm){
+        submitButtonIdentified = false;
+        submitButton =jQuery("form[action=\"/cart/add\"] button[type=\"submit\"]");
+        if(submitButton.length == 0){
+          submitButton =jQuery("form[action=\"/cart/add\"] input[type=\"submit\"]").first();
+          if(submitButton.length == 0){
+            submitButton =jQuery("form[action=\"/cart/add\"] input[type=\"submit\"]").first();
+          }
+        }
+        if(submitButton.length > 0){
+          jQuery(submitButton).click();
+        }
+      }
+      else{
+        jQuery(".customization-btn").click();
+      }
+      
+      
+    }
+    customizationInfoFragment = document.getElementById("customization-info-container");
+    
+    windowContainerFragment = document.getElementById("designer-window-container");
+    document.body.appendChild(windowContainerFragment);
+    
+    
+  }
+  
+</script>
+<div id="designer-window-container"
+  onclick="closeCustomizationEngineDesignerContainer();"
+  style="position:absolute;top:0;left:0;width:100%;height:300%;display:none;
+background:url(http://www.customizationengine.com/ces/static/lightbox-bg.png) repeat;z-index: 1000000">
+  <div style="width:98%;max-width:1200px;height:96%;margin-top:.5%;margin-left:auto;margin-right:auto;position: relative;padding:10px;background:none;">
+    <iframe id="designer-window-frame"
+      name="designer-window-frame" 
+      src="" 
+      frameborder="0" 
+      scrolling="no"
+      seamless="yes"
+      style="position:relative;margin:auto;height:96%;width:100%;background:none;"
+      ></iframe>
+    <div style="float:right">
+      <a href="#" onclick="closeCustomizationEngineDesignerContainer()"
+        style="position:absolute;top:10px;right:5px"></a>
+    </div>
+  </div>
+</div>

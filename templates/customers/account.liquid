@@ -1,0 +1,58 @@
+{% layout settings.customer_layout %}
+<div id="crumbs" class="sixteen columns">
+    <a href="/" title="Home">Home</a>
+    &raquo;
+    <a href="/account">Account</a>
+</div><!-- #crumbs -->
+
+<div class="sixteen columns">
+    <h1>Account Details and Order History</h1>
+    <div class="six columns alpha">
+        <div id="customer_detail" class="group content-block">
+          <h5 class="name">{{ customer.name }}</h5>
+          <p class="email note">{{ customer.email }}</p>
+          <div class="address note">
+            {% if customer.default_address != nil %}
+              <p>{{ customer.default_address.address1 }}</p>
+              {% if customer.default_address.address2 != "" %}
+                <p>{{ customer.default_address.address2 }}</p>
+              {% endif %}
+              <p>{{ customer.default_address.city}}, {% if address.province_code %}{{customer.default_address.province_code}}, {% endif %}{{customer.default_address.country}}</p>
+              <p>{{ customer.default_address.zip}}</p>
+              <p>{{ customer.default_address.phone }}</p>
+            {% endif %}
+            <a id="view_address" href="/account/addresses">Manage addresses ({{ customer.addresses_count }})</a>
+          </div>
+        </div>
+    </div>
+
+  <div class="ten columns omega">
+    {% if customer.orders.size != 0 %}
+    <table width="100%">
+      <thead>
+        <tr>
+          <th class="order_number">Order</th>
+          <th class="date">Date</th>
+          <th class="payment_status">Payment Status</th>
+          <th class="fulfillment_status">Order Status</th>
+          <th class="total">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in customer.orders %}
+        <tr class="{% cycle 'odd', 'even' %} {% if order.cancelled %}cancelled_order{% endif %}">
+          <td>{{ order.name | link_to: order.customer_url }}</td>
+          <td><span class="note">{{ order.created_at | date: "%b %d, %Y" }}</span></td>
+          <td><span class="status_{{ order.financial_status }}">{{ order.financial_status | replace: 'paid', 'PAID' | replace: 'pending', 'PENDING' | replace: 'authorized', 'AUTHORIZED' | replace: 'abandoned', 'ABANDONED' | replace: 'refunded', 'REFUNDED' | replace: 'voided', 'VOIDED' }}</span></td>
+          <td><span class="status_{{ order.fulfillment_status }}">{{ order.fulfillment_status | replace: 'unfulfilled', 'AWAITING SHIPMENT' | replace: 'fulfilled', 'SHIPPED' | replace: 'partial', 'PARTIALLY SHIPPED' }}</span></td>
+          <td><span class="total money">{{ order.total_price | money }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p>You haven't placed any orders yet.</p>
+    {% endif %}
+  </div>
+
+</div>

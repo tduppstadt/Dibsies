@@ -1,0 +1,265 @@
+/** 
+ * Black & White
+ * Checkout CSS
+ */
+ 
+{% assign font_heading_type_split = settings.font_heading_type | split: '|' %}
+{% if font_heading_type_split.first == 'GWF' %}
+    {% if font_heading_type_split.last == 'CUSTOM' %}
+        {% capture font_heading_type %}'{{ settings.font_heading_type_custom | split: ':' | first | replace:'+',' ' }}'{% endcapture %}
+    {% else %}
+        {% capture font_heading_type %}'{{ font_heading_type_split.last | split: ':' | first | replace:'+',' ' }}'{% endcapture %}
+    {% endif %}
+{% else %}
+    {% assign font_heading_type = settings.font_heading_type %}
+{% endif %}
+
+{% assign font_logo_type_split = settings.font_logo_type | split: '|' %}
+{% if font_logo_type_split.first == 'GWF' %}
+    {% if font_logo_type_split.last == 'CUSTOM' %}
+        {% capture font_logo_type %}'{{ settings.font_logo_type_custom | split: ':' | first | replace:'+',' ' }}'{% endcapture %}
+    {% else %}
+        {% capture font_logo_type %}'{{ font_logo_type_split.last | split: ':' | first | replace:'+',' ' }}'{% endcapture %}
+    {% endif %}
+{% else %}
+    {% assign font_logo_type = settings.font_logo_type %}
+{% endif %}
+
+{% assign font_standard_type_split = settings.font_standard_type | split: '|' %}
+{% if font_standard_type_split.first == 'GWF' %}
+    {% if font_standard_type_split.last == 'CUSTOM' %}
+        {% capture font_standard_type %}'{{ settings.font_standard_type_custom | split: ':' | first | replace:'+',' ' }}'{% endcapture %}
+    {% else %}
+        {% capture font_standard_type %}'{{ font_standard_type_split.last | split: ':' | first | replace:'+',' ' }}'{% endcapture %}
+    {% endif %}
+{% else %}
+    {% assign font_standard_type = settings.font_standard_type %}
+{% endif %}
+
+{% if settings.font_heading_type == 'GWF|CUSTOM' %}
+    @import url(//fonts.googleapis.com/css?family={{ settings.font_heading_type_custom }});
+{% elsif font_heading_type_split.first == 'GWF' %}
+    @import url(//fonts.googleapis.com/css?family={{ font_heading_type_split.last }});
+{% endif %}
+{% if settings.font_logo_type == 'GWF|CUSTOM' %}
+    @import url(//fonts.googleapis.com/css?family={{ settings.font_logo_type_custom }});
+{% elsif font_logo_type_split.first == 'GWF' %}
+    @import url(//fonts.googleapis.com/css?family={{ font_logo_type_split.last }});
+{% endif %}
+{% if settings.font_standard_type == 'GWF|CUSTOM' %}
+    @import url(//fonts.googleapis.com/css?family={{ settings.font_standard_type_custom }});
+{% elsif font_standard_type_split.first == 'GWF' %}
+    @import url(//fonts.googleapis.com/css?family={{ font_standard_type_split.last }});
+{% endif %}
+
+body {
+    background:{{ settings.color_bg_main }}
+    {% if settings.bg_image_body && settings.bg_image_body != '' %}
+    url({{ settings.bg_image_body | asset_url }}) {{ settings.bg_repeat }} center {{ settings.bg_offset_y }}
+    {% endif %};
+    font:{{ settings.font_standard_style }} {{ settings.font_standard_size }}px {{ font_standard_type }}, sans-serif;
+    line-height: 1.4em;
+}
+
+a {
+    color:#000;
+    text-decoration:underline;
+}
+
+#info-bar {
+    padding:10px 0;
+    background:{{ settings.color_bg_header }};
+    color:{{ settings.color_head_general }};
+}
+
+#header #tagline .title {
+    color:{{ settings.color_body_shoptitle }};
+    font:{{ settings.font_logo_style }} {{ settings.font_logo_size }}px {{ font_logo_type }}, sans-serif;
+}
+
+{% if settings.use_logo_image %}
+#header #logo {
+    display:block;
+    height:{{ settings.logo_height }}px;
+    background:url({{ 'logo.png' | asset_url }}) no-repeat
+    {% if settings.logo_margin_left == 'center' or settings.logo_margin_left == 'centre' %}
+    center
+    {% else %}
+    {{ settings.logo_margin_left }}px
+    {% endif %} 0;
+    margin-top:{{ settings.logo_margin_top }}px;
+}
+#header #tagline .title {
+    display:none;
+}
+{% endif %}
+
+#header #tagline .subtitle {
+    display:block;
+}
+
+#header,
+#main,
+#footer,
+#container.slim #main,
+#container.slim #header,
+#container.slim #footer {
+    background:none;
+}
+
+#container {
+    font-size:100%;
+}
+
+input[type=submit] {
+    border:0;
+    background:{{ settings.color_btn_bg }};
+    font:1.05em Arial,sans-serif;
+    color: {{ settings.color_btn_text }};
+    padding:7px 15px;
+    cursor:pointer;
+    display:inline-block;
+    zoom:1;
+    *display:inline;
+    
+    -webkit-box-shadow: 0 0 2px 0 #000;
+    -moz-box-shadow: 0 0 2px 0 #000;
+    box-shadow: 0 0 2px 0 #000;
+
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+
+#buttons input {
+    font-weight:normal;
+    padding:7px 15px;
+}
+
+#email label,
+.group h3,
+.pgroup h3,
+#cost,
+#order-num,
+#steps,
+#header #tagline .subtitle {
+    font: {{ settings.font_heading_style }} 24px {{ font_heading_type }}, sans-serif;
+    line-height:30px;
+    border-bottom:1px solid {{ settings.color_general_divider }};
+    margin-bottom: 20px;
+    padding-top:20px;
+    padding-bottom:10px;
+    color:#333;
+}
+
+#cost, #order-num {
+    font-size:400%;
+    border:none;
+    text-shadow:none;
+}
+
+#steps {
+}
+
+#thumbs div,
+#products {
+    border-color:{{ settings.color_general_divider }};
+}
+
+#overview {
+    background:none;
+    border:none;
+}
+
+#buttons {
+    background:#f7f7f7;
+    border:1px solid #ccc;
+}
+
+h4.active-customer,
+#header #tagline .subtitle,
+#overview h2,
+#footer,
+#thumbs h3,
+#thumbs span,
+#overview .hint,
+#thumbs h3 span,
+#cost,
+#steps {
+    color:{{ settings.color_body_standard }};
+}
+
+#wallet {
+    background-image:none !important;
+    background-color:transparent !important;
+}
+
+label {
+    font-weight:normal;
+}
+
+.form td {
+    vertical-align:middle;
+}
+
+.form td input {
+    padding:4px;
+}
+
+form ul.inline li:first-child {display:none}
+
+/* Enable the following styles if the sides of your logo
+ * get cut off in the checkout due to it being very wide
+ */
+
+/*
+#container.slim,
+#container.slim #header,
+#container.slim #main,
+#container.slim #footer{
+    width:776px;
+}
+*/
+
+/* Hide "You're Purchasing This..." text  
+
+#overview h2 {
+
+    display:none;
+
+}
+*/
+
+/**/
+#overview h2 {
+display: block !important;
+text-indent: -999em !important;
+overflow: hidden !important;
+height: 72px !important;
+}
+
+#overview #products h2 {
+background: url(http://cdn.shopify.com/s/files/1/0286/2132/files/ordersummary.png?5947) top left no-repeat !important;
+width: 500px !important;
+}
+
+#thumbs div {
+display:none;
+}
+
+
+/* Hide cart items from checkout pages altogether. 
+
+#products {
+display:none;
+}
+
+#wallet {
+margin-left:0;
+}
+
+*/
+
+
+
+

@@ -1,0 +1,15 @@
+{% if blog[data].handle == '' or blogs[data].articles.size == 0 %}
+<div class="blogwidget widget{% if template == 'index' %} one-third column{% endif %}">&nbsp;
+{% else %}
+<div class="blogwidget flexslider widget{% if template == 'index' %} one-third column{% endif %}">
+    <ul class="slides">
+        {% for article in blogs[data].articles limit: 6 %}
+        <li>
+            <a href="{{ article.url }}"><h6>{{ article.title }}</h6></a>
+            <div class="desc">{{ article.excerpt_or_content | strip_html | truncate: 200 }}</div>
+            <span><a href="{{ article.url }}">{{ article.published_at | date: "%B %d %Y" }}</a></span>
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+</div>

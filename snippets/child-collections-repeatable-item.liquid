@@ -1,0 +1,54 @@
+{% if row_limit == 2 %}
+  <div class="product eight columns{{ lastclass }}">
+    {% capture output %}
+    {% cycle '<div class="columnfluff"></div>', '' %}
+    {% endcapture %}
+    {% unless forloop.last %}{{ output }}{% endunless %}
+{% elsif row_limit == 3 %}
+  <div class="product one-third column{{ lastclass }}">
+    {% capture output %}
+    {% cycle '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '' %}
+    {% endcapture %}
+    {% unless forloop.last %}{{ output }}{% endunless %}
+{% elsif row_limit == 5 %}
+  <div class="product one-fifth column{{ lastclass }}">
+    {% capture output %}
+    {% cycle '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '' %}
+    {% endcapture %}
+    {% unless forloop.last %}{{ output }}{% endunless %}
+{% else %}
+  <div class="product four columns{{ lastclass }}">
+    {% capture output %}
+    {% cycle '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '' %}
+    {% endcapture %}
+    {% unless forloop.last %}{{ output }}{% endunless %}
+    {% endif %}
+    {% assign product_thumb_size = 'large' %}
+  <div class="imgcont loadingimg">
+          
+          <a href="{{ thiscollection.url }}" class="highlight">
+            
+            
+            {% if thiscollection.products.length == 0 %}
+         
+              <img src="{{ thiscollection.image | collection_img_url: product_thumb_size }}" alt="{{ thiscollection.products.first.featured_image.alt }}" />
+            
+            {% else %}
+            
+            <img src="{{ thiscollection.products.first.featured_image | product_img_url: product_thumb_size }}" alt="{{ thiscollection.products.first.featured_image.alt }}" />
+            {% endif %}
+    	  </a>
+          
+        </div>
+        
+        <p class="title"><a href="{{ thiscollection.url }}">{{ thiscollection.title }}</a></p>
+        <a class="desc" href="{{ thiscollection.url }}">
+          
+           	{% if thiscollection.products.length > 0 %}
+             	( {{ thiscollection.all_products_count }} Items )
+            {% endif %}
+
+        </a> 
+        
+        <hr>
+      </div>

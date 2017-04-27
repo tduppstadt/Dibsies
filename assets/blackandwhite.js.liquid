@@ -1,0 +1,778 @@
+/* This file:
+* 1. jQuery imagesLoaded plugin
+* 2. jQuery cookie plugin
+* 3. Bespoke theme jQuery extensions
+* 4. Common theme code
+*/
+
+// *************
+// Original plugin Gist: https://gist.github.com/268257
+// Current repos: https://github.com/desandro/imagesloaded
+// fix in response to: https://github.com/desandro/imagesloaded/issues/8
+// 
+// In case this is useful to anyone.
+// *************
+
+
+/*!
+ * jQuery imagesLoaded plugin v1.0.4
+ * http://github.com/desandro/imagesloaded
+ *
+ * MIT License. by Paul Irish et al.
+ */
+
+(function($, undefined) {
+
+  // $('#my-container').imagesLoaded(myFunction)
+  // or
+  // $('img').imagesLoaded(myFunction)
+
+  // execute a callback when all images have loaded.
+  // needed because .load() doesn't work on cached images
+
+  // callback function gets image collection as argument
+  //  `this` is the container
+  
+  $.fn.imagesLoaded = function( callback ) {
+    var $this = this,
+        $images = $this.find('img').add( $this.filter('img') ),
+        len = $images.length,
+        blank = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+      
+    // some browsers (IE9) fail to trigger image loaded when using cached images 
+    // This flag is so we can account for this dumb MSIE situation.
+    var can_use_cached_images = confirm_can_use_cached_images();
+
+    function confirm_can_use_cached_images() {
+      var result = 'Good browser';
+      var arr_known_browsers_with_issues = ['ie9','ie10','ie11'];
+    
+      // block to check for specific know buggy browsers.
+      if ($.browser.msie) {
+        result = 'ie' + parseInt($.browser.version, 10);
+      }
+    
+      return ($.inArray(result, arr_known_browsers_with_issues) == -1);  // -1 means no match found.
+    }
+  
+    function triggerCallback() {
+      callback.call( $this, $images );
+    }
+
+    function imgLoaded( event ) {
+      if ( --len <= 0 && event.target.src !== blank ){
+        setTimeout( triggerCallback );
+        $images.unbind( 'load error', imgLoaded );
+      }
+    }
+
+    if ( !len ) {
+      triggerCallback();
+    }
+
+    $images.bind( 'load error',  imgLoaded ).each( function() {
+      if (can_use_cached_images == false) { 
+        this.src = this.src.split('?')[0];
+      }
+
+      // cached images don't fire load sometimes, so we reset src.
+      if (this.complete || typeof this.complete === "undefined"){
+        var src = this.src;
+        // webkit hack from http://groups.google.com/group/jquery-dev/browse_thread/thread/eee6ab7b2da50e1f
+        this.src = blank;
+        this.src = src;
+      }
+    });
+
+    return $this;
+  };
+
+})(jQuery);
+
+/*!
+* jQuery Cookie Plugin
+* https://github.com/carhartl/jquery-cookie
+*
+* Copyright 2011, Klaus Hartl
+* Dual licensed under the MIT or GPL Version 2 licenses.
+* http://www.opensource.org/licenses/mit-license.php
+* http://www.opensource.org/licenses/GPL-2.0
+*/
+(function($) {
+    $.cookie = function(key, value, options) {
+
+        // key and at least value given, set cookie...
+        if (arguments.length > 1 && (!/Object/.test(Object.prototype.toString.call(value)) || value === null || value === undefined)) {
+            options = $.extend({}, options);
+
+            if (value === null || value === undefined) {
+                options.expires = -1;
+            }
+
+            if (typeof options.expires === 'number') {
+                var days = options.expires, t = options.expires = new Date();
+                t.setDate(t.getDate() + days);
+            }
+
+            value = String(value);
+
+            return (document.cookie = [
+                encodeURIComponent(key), '=', options.raw ? value : encodeURIComponent(value),
+                options.expires ? '; expires=' + options.expires.toUTCString() : '', // use expires attribute, max-age is not supported by IE
+                options.path ? '; path=' + options.path : '',
+                options.domain ? '; domain=' + options.domain : '',
+                options.secure ? '; secure' : ''
+            ].join(''));
+        }
+
+        // key and possibly options given, get cookie...
+        options = value || {};
+        var decode = options.raw ? function(s) { return s; } : decodeURIComponent;
+
+        var pairs = document.cookie.split('; ');
+        for (var i = 0, pair; pair = pairs[i] && pairs[i].split('='); i++) {
+            if (decode(pair[0]) === key) return decode(pair[1] || ''); // IE saves cookies with empty string as "c; ", e.g. without "=" as opposed to EOMB, thus pair[1] may be undefined
+        }
+        return null;
+    };
+})(jQuery);
+
+// http://www.jacklmoore.com/notes/naturalwidth-and-naturalheight-in-ie
+// adds .naturalWidth() and .naturalHeight() methods to jQuery
+// for retrieving a normalized naturalWidth and naturalHeight.
+(function($){
+  var
+  props = ['Width', 'Height'],
+  prop;
+
+  while (prop = props.pop()) {
+    (function (natural, prop) {
+      $.fn[natural] = (natural in new Image()) ? 
+      function () {
+        return this[0][natural];
+      } : 
+      function () {
+        var 
+        node = this[0],
+        img,
+        value;
+
+        if (node.tagName.toLowerCase() === 'img') {
+          img = new Image();
+          img.src = node.src,
+          value = img[prop];
+        }
+        return value;
+      };
+    }('natural' + prop, prop.toLowerCase()));
+  }
+}(jQuery));
+
+$(function(){
+    //Normalise heights for product thumb details
+    $.fn.normaliseHeights = function(options) {
+        //options = { numPerRow:4, itemClass:'.product', textRegionClasses:'.title, .desc', affectOnlyDirectlyChildren:false }
+        var settings = { affectOnlyDirectlyChildren: false, changedIndex: -1 };
+        $.extend(settings, options);
+
+        $(this).each(function(){
+            var itemsToAssess = settings.textRegionClasses.split(',');
+            var $outerthis = $(this);
+            $.each(itemsToAssess, function(index, value){
+                if(settings.affectOnlyDirectlyChildren) {
+                    var $allChunks = $outerthis.find(settings.itemClass + ' > ' + value);
+                } else {
+                    var $allChunks = $outerthis.find(settings.itemClass + ' ' + value);
+                }
+                for (i = 0; i < $allChunks.length; i += settings.numPerRow) {
+                    var end = Math.min(i + settings.numPerRow, $allChunks.length);
+                    if(settings.changedIndex < 0 || (settings.changedIndex >= i && settings.changedIndex < end)) {
+                        var tallest = 0;
+                        $allChunks.slice(i, end).each(function(){
+                            var thisHeight = $(this).css('height', '').height();
+                            if(thisHeight > tallest) {
+                                tallest = thisHeight;
+                            }
+                        });
+                        //If just one per row - auto height
+                        if(settings.numPerRow > 1) {
+                            $allChunks.slice(i, end).each(function(){
+                                $(this).css('height', tallest);
+                            });
+                        }
+                    }
+                }
+            });
+        });
+        return $(this);
+    };
+    
+  /// Gallery
+  $('#productinfo .gallery').on('click', '.thumbnails .thumb', function(e){
+    e.preventDefault();
+    var $mainA = $(this).closest('.gallery').find('.main a');
+    var newImg = $(this).attr('href');
+    if($mainA.attr('href') != newImg) {
+      var $main = $mainA.closest('.main');
+      var newTitle = $(this).attr('title');
+      //Fix height
+      $main.height($main.height());
+      //Remove old
+      $main.children().fadeOut(function(){
+        $(this).remove();
+        //Add new
+        var $newLink = $('<a class="image"/>').attr({ href: newImg, title: newTitle }).append($('<img/>').attr('src', newImg)).css('opacity', 0).appendTo($main);
+        $newLink.imagesLoaded(function(){
+          //Height
+          $main.animate({height:$newLink.height()}, 200, function(){
+            $(this).css('height', '');
+          });
+          //Reveal
+          $newLink.animate({opacity:1}, 200, function(){
+            //Features
+            $(this).closest('.gallery').trigger('initzoomorlightbox');
+          });
+        });
+      });
+      //Active thumb class
+      $(this).addClass('active').siblings('.active').removeClass('active');
+    }
+  });
+  
+  //Zoom or LB
+    $('#productinfo .gallery').on('initzoomorlightbox', function(){
+      //Zoom
+      if($(this).hasClass('mode-zoom')) {
+        var opts = {};
+        $.extend(opts, thumbZoomOptions);
+        opts.blockClicks = true;
+        $(this).find('.main a').jqzoom(opts);
+      }
+      //LB
+      $(this).find('.main a').slimbox();
+    }).trigger('initzoomorlightbox');
+  
+  
+    //Adjust image size so it crops itself into a box nicely.
+    $.fn.cropCentral = function(options){
+        var settings = {alignTop:false};
+        $.extend(settings, options);
+        $(this).imagesLoaded(function(imgs){
+            $(imgs).each(function(){
+                $(this).css({width:'auto', height:'auto'});
+                if($(this).outerWidth() > $(this).outerHeight()) {
+                    $(this).css({width:'auto',height:'100%'});
+                    $(this).css({
+                        marginLeft:-($(this).outerWidth()-$(this).parent().width())/2
+                    });
+                } else {
+                    $(this).css({width:'100%',height:'auto'});
+                    var marginTop = -($(this).outerHeight()-$(this).parent().height())/2;
+                    if(settings.alignTop) marginTop = Math.min(marginTop, 0);
+                    $(this).css({
+                        marginTop:marginTop
+                    });
+                }
+            });
+            return $(this);
+        });
+        return $(this);
+    };
+    
+    //From a select dropdown get selected OR FIRST item text
+    $.fn.selectedOrFirstText = function(){
+      var $opts = $(this).find('option');
+      if($opts.filter(':selected').length > 0) {
+        return $opts.filter(':selected').text();
+      } else {
+        return $($opts[0]).text();
+      }
+    };
+  
+    //Restyle all select dropdowns
+    $.selectReplace = function(){
+      $('select:not(.replaced, .noreplace)').each(function(){
+        //Add formatting containers
+        var firstText = $(this).selectedOrFirstText();
+        if(typeof($(this).data('default')) != 'undefined') {
+          firstText = $(this).data('default');
+        }
+        $(this).addClass('replaced').wrap('<div class="selectreplace">').parent().addClass('id-'+$(this).attr('id'))
+        .append('<span class="selectpicker">'+firstText+'<span class="arr">&#711;</span></span>');
+      });
+      if(!$('body').hasClass('selectreplaced')) {
+        $(document).on('mousedown', '.selectreplace .selectpicker', function(){
+          $(this).siblings('select').click();
+        });
+        $(document).on('change keyup', '.selectreplace select', function(){
+          $(this).siblings('.selectpicker').html($(this).selectedOrFirstText() + '<span class="arr">&#711;</span>');
+        });
+      }
+    };
+    
+    //Do it, do it now!
+    $.selectReplace();
+    
+    //Login dropdown
+    $('#util-bar .actions .logindrop').click(function(){
+        if($(this).toggleClass('open').hasClass('open')) {
+            $('#util-bar .util-bar-upperarea').slideDown(200);
+        } else {
+            $('#util-bar .util-bar-upperarea').slideUp(200);
+        }
+        return false;
+    });
+    
+    //Default text
+    $('input.defaulttextjs').each(function(){
+        $(this).data('deftext', $(this).val());
+    }).focus(function(){
+        if($(this).val() == $(this).data('deftext')) {
+            $(this).val('');
+        }
+    }).blur(function(){
+        if($(this).val() == '') {
+            $(this).val($(this).data('deftext'));
+        }
+    });
+    
+    //Form hover labels
+    $('.formfields').addClass('dohover').find('.hoverlabel').each(function(){
+        //On click, focus to input
+        var $label = $(this);
+        var $input = $(this).siblings('input[id="'+$(this).attr('for')+'"]');
+        
+        $label.css('opacity', 0.5).click(function(){
+            $input.focus();
+        });
+        $input.focus(function(){
+            $label.stop(true,true).fadeOut(100);
+        }).focusout(function(){
+            if($(this).val().length == 0) {
+                $label.stop(true,true).fadeIn(250);
+            } else {
+                $label.stop(true,true).hide();
+            }
+        }).focusout();
+    });
+    
+    //Sliders
+    $('.flexslider').each(function(){
+        var isMainSlider = $(this).parent().is('#mainslider');
+        if(isMainSlider) {
+            var $slider = $(this);
+            if($slider.find('.slides li').length > 0) {
+                //Create a new img from first <img> or background image
+                var loadImg = new Image();
+                var $imgs = $slider.find('img:first');
+                if($imgs.length > 0) {
+                    loadImg.src = $imgs.attr('src');
+                } else {
+                    loadImg.src = $slider.find('.product:first').css('background-image').replace(/"/g,"").replace(/url\(|\)$/ig, "");
+                }
+                $(loadImg).imagesLoaded(function(imgs){
+                    if(imgs.length > 0) {
+                        var newHeight = $(imgs[0]).naturalHeight() * $slider.width() / $(imgs[0]).naturalWidth();
+                        //$slider.parent().animate({ height:newHeight }, 300, function(){
+                            //Height of slide is ih * sw/iw
+                            $slider.find('li').height(newHeight);
+                            $slider.css('height', '');
+                            $slider.flexslider({
+                                animation:'{{ settings.mainslider_anim }}',
+                                slideshow:true
+                            });
+                        //});
+                    } else {
+                        $slider.css('height', '');
+                        $slider.flexslider({
+                            animation:'{{ settings.mainslider_anim }}',
+                            slideshow:true
+                        });
+                    }
+                });
+            }
+        } else {
+            $(this).flexslider({
+                animation:'slide', slideshow:false,
+                smoothHeight: true,
+                nextText:'&#8250;',
+                prevText:'&#8249;'
+            });
+        }
+    });
+    
+    function resetPosOfDropdown($dropdown) {
+        var navWidth = $('#pageheader nav').outerWidth(true);
+        var $parent = $dropdown.parent();
+        var parentLeft = $parent.position().left;
+        var parentWidth = $parent.outerWidth(true);
+        if( $dropdown.length > 0 && parentLeft + $dropdown.width() > navWidth ) {
+            $dropdown.css({ 'left':'auto', 'right':-(navWidth-(parentLeft+parentWidth))});
+        } else {
+            $dropdown.css({ 'left':'', 'right':''});
+        }
+    };
+    
+    //Do certain things differently if touch events are enabled
+    if( ! !!('ontouchstart' in window) ? 1 : 0 ) {
+        //IF NOT TOUCH
+        
+        //Scroll-to-top button for long pages
+        $(window).scroll(function(){
+            if(window.scrollY > 500) {
+                $('#scrolltotop').css('bottom', -8);
+            } else {
+                $('#scrolltotop').css('bottom', -100);
+            }
+        });
+        $('#scrolltotop').click(function(){
+            $('html:not(:animated),body:not(:animated)').animate({ scrollTop: 0}, 500 );
+            return false;
+        });
+    
+        //Normal hover nav
+        $('#pageheader nav > ul > li:has(ul, .multi-column)').hover(function () {
+            var $dropdown = $(this).children('ul, .multi-column').stop(true, true);
+            resetPosOfDropdown($dropdown);
+            $dropdown.fadeIn(100);
+        }, function () {
+            $(this).children('ul, .multi-column').stop(true, true).fadeOut(200);
+        });
+        
+        //Preload all slider images (mobile hides slider, so don't do for that) - prevents browsers from not downloading hidden images
+        $('#mainslider li').each(function(){
+            var src = $(this).css('background-image').replace(/"/g,"").replace(/url\(|\)$/ig, "");
+            if(src.length > 6) {
+                var bigimg = new Image();
+                bigimg.src = src;
+            }
+        });
+    } else {
+        //IF TOUCH
+        
+        //Clicky nav for tablets
+        $('#pageheader nav > ul > li:has(ul, .multi-column) > a').click(function () {
+            var $thisSubNav = $(this).siblings('ul, .multi-column');
+            var wasVisible = $thisSubNav.is(':visible');
+            $(this).closest('ul').children('li').removeClass('open').children('ul, .multi-column').fadeOut(200);
+            if(!wasVisible) {
+                resetPosOfDropdown($thisSubNav);
+                $thisSubNav.fadeIn(100);
+                $(this).parent().addClass('open');
+            }
+            return false;
+        });
+        
+        //Remove scroll-to-top
+        $('#scrolltotop').remove();
+    }
+    
+    //Dropdown nav
+    $('#pageheader nav #dropdownNav').change(function(){
+        if($(this).val().length > 0) {
+            window.location = $(this).val();
+        }
+    });
+    
+    //Tabs in content blocks
+    var tabiter = 0;
+    $('.content-block').each(function(){
+        var $alltabs = $(this).find('.jstab');
+        if($alltabs.length > 1) {
+            $alltabs.not(':first').hide();
+            //Create the buttons from the first <h1...6>
+            var $tabbtnholder = $('<ul>').addClass('tabs');
+            $alltabs.each(function(){
+                var thisid = 'tab-'+tabiter;
+                var $thistitle = $(this).find('h1,h2,h3,h4,h5,h6').first();
+                $(this).attr('id', thisid);
+                $tabbtnholder.append($('<li>').append($('<a>').attr('href', '#' + thisid).click(function(){
+                    $('#' + thisid).show().closest('.content-block').find('.jstab:not(#'+thisid+')').hide();
+                    $(this).closest('ul').find('a').removeClass('active');
+                    $(this).addClass('active');
+                    return false;
+                }).html($thistitle.text())));
+                $thistitle.remove();
+                tabiter++;
+            });
+            $tabbtnholder.find(':first a').addClass('active');
+            $($alltabs[0]).before($tabbtnholder);
+        }
+    });
+    
+    //Clicks in zoom
+    $(document).on('click', '.productlist .product a.delayedzoom', function(){
+        window.location = $(this).closest('.product').find('.title a').attr('href');
+        return false;
+    });
+    
+    //Process product images after load
+    $(document).on('initprodimg', '.productlist .product .imgcont img:not(.altimg)', function(){
+        $(this).data('doload', true);
+        $(this).imagesLoaded(function($this){
+            var $cont = $this.closest('.imgcont');
+            $this.animate({opacity:1}, 400, function(){
+                $this.closest('.loadingimg').removeClass('loadingimg');
+                {% if settings.prod_sale_mode == 'middle' %}
+                //Position sale graphic half way up (again after fade in, to fix IE opacity/height bug)
+                $cont.find('.salecontainer').css('top', $this.height() / 2);
+                {% endif %}
+            });
+            //Resize rows to fit
+            $('#maincontent.container').data('prevwidth', null);
+            //Resize other images on page
+            var productsPerRowRightNow = $(window).width() >= vertSnapWidth ? productsPerRow : 1;
+            $('.productlist').normaliseHeights({
+                numPerRow:productsPerRowRightNow,
+                itemClass:'.product',
+                textRegionClasses:'.imgcont, .title, .desc, .price',
+                changedIndex: $(this).closest('.product').index('.product')
+            });
+            {% if settings.prod_sale_mode == 'middle' %}
+            //Position sale graphic half way up
+            $cont.find('.salecontainer').css('top', $this.height() / 2);
+            {% endif %}
+            {% if settings.prod_thumb_hover_method == 'zoom' %}
+            //Trigger inner zoom on product lists (if not touch)
+            if( !!!('ontouchstart' in window) ? 1 : 0 ) {
+                $this.closest('a.delayedzoom').jqzoom(thumbZoomOptions);
+            }
+            {% endif %}
+        });
+    });
+    $('.productlist .product .imgcont img:not(.altimg)').each(function(){
+        $(this).trigger('initprodimg');
+    });
+    
+    //Image hover switchout
+    $(document).on("mouseenter", ".productlist .product .imgcont:has(.imgswitch)", function(){
+        $(this).find('img:first').stop(true,true).animate({opacity:0}, 200);
+        $(this).find('img.altimg').stop(true,true).animate({opacity:1}, 200);
+    }).on("mouseleave", ".productlist .product .imgcont:has(.imgswitch)", function(){
+        $(this).find('img:first').stop(true,true).animate({opacity:1}, 200);
+        $(this).find('img.altimg').stop(true,true).animate({opacity:0}, 200);
+    });
+    
+    //Hide sale flag on mouseover
+    $(document).on('mouseenter', '.productlist .product .imgcont', function(){
+        $(this).find('.salecontainer').stop(true,true).fadeOut(0);
+    });
+    $(document).on('mouseleave', '.productlist .product .imgcont', function(){
+        $(this).find('.salecontainer').stop(true,true).fadeIn(300);
+    });
+    
+    //Show/hide search box
+    $('.searchbtn').click(function(){
+        if($(this).toggleClass('expanded').hasClass('expanded')) {
+            $('#searchcont').animate({width:$(this).parent().find('#searchinput').width()}, 400);
+        } else {
+            $('#searchcont').animate({width:0}, 400);
+        }
+        return false;
+    });
+    
+    //Register button
+    $('#pagefooter .showregister').click(function(){
+        $(this).fadeOut(200, function(){
+            $(this).siblings('.registerform').fadeIn(200);
+        });
+        return false;
+    }).siblings('.registerform').fadeOut(0);
+    
+    {% if settings.enable_recent_products %}
+    //Recently viewed products
+    if(window.location.pathname.indexOf('/products/') > -1) {
+        //Current page is product page, push this to top of list
+        //Store as csv of handle|url|title|image
+        var maxItems = 10;
+        var recent = $.cookie('recent_prod');
+        if(recent == null) {
+            recent = Array();
+        } else {
+            recent = recent.split('~');
+        }
+        //Remove any existing occurrences
+        var spliturl = window.location.pathname.split('/');
+        var prodhdl = spliturl[spliturl.length-1];
+        for(i=0; i<recent.length; i++) {
+            if(recent[i].split('|')[0] == prodhdl || i >= maxItems) {
+                recent.splice(i,1);
+                i--;
+            }
+        }
+        //Add to top position
+        recent.splice(0,0,
+            prodhdl + '|' + window.location + '|'
+            + $('#productinfo #detail h1').text() + '|'
+            + $('#productinfo').data('featimgurl'));
+        
+        $.cookie('recent_prod', recent.join('~'), { expires: 7, path: '/' });
+    }
+    //Show recently viewed products
+    $('#recentproducts').remove();
+    var recent = $.cookie('recent_prod');
+    if(recent != null) {
+        var recentProdsHTML = '<h4>{{ settings.text_recentlyviewed }}</h4><ul>';
+        recent = recent.split('~');
+        for(i=0; i < Math.min(recent.length, 5); i++) {
+            var spl = recent[i].split('|');
+            recentProdsHTML += '<li'+(i==0?' class="first"':'')+'><a class="highlight showpopuptext" href="'+spl[1]+'" data-popuptext="'+spl[2]+'"><img src="'+spl[3]+'" /></a></li>';
+        }
+        recentProdsHTML += '</ul>';
+        $('#pagefooter .container:first').prepend('<div id="recentproducts" class="sixteen columns row">'+recentProdsHTML+'</div>');
+        $('#pagefooter #recentproducts, #pagefooter #recentproducts li').hide().find('img').imagesLoaded(function($this){
+            $('#pagefooter #recentproducts').fadeIn(1000);
+            $this.closest('li').show();
+        });
+    }
+    {% endif %}
+    
+    //Fade in large widget images, and productpile
+    $('.widget.fullwidthimg img, .widget.productpilewidget img').each(function(){
+        $(this).css('visibility', 'hidden').imagesLoaded(function($this){
+            $this.hide().css('visibility', 'visible').fadeIn(200);
+            $('#maincontent.container').data('prevwidth', null);
+            $(window).trigger('resize');
+        });
+    });
+    
+    //Popup text for products
+    $(document).on('mouseenter', '.showpopuptext', function(){
+        //Create if it doesn't exist
+        var $popup = $('#simplepopuptext');
+        if($popup.length == 0) {
+            $('body').append($('<div>').attr('id', 'simplepopuptext').append('<span />').append('<canvas class="notch" height="10" width="20" />'));
+            $popup = $('#simplepopuptext');
+            //Draw the notch on canvas
+            $popup.find('canvas.notch').each(function(){
+                if (this.getContext){
+                    var ctx = this.getContext('2d');
+                    if(ctx) {
+                        ctx.beginPath();
+                        ctx.fillStyle = color_body_bg;
+                        ctx.moveTo(0,0);
+                        ctx.lineTo(10,10);
+                        ctx.lineTo(20,0);
+                        ctx.fill();
+                        ctx.beginPath();
+                        ctx.strokeStyle = color_divider;
+                        ctx.moveTo(0,0);
+                        ctx.lineTo(10,10);
+                        ctx.lineTo(20,0);
+                        ctx.stroke();
+                    }
+                } else {
+                    $popup.find('canvas.notch').remove();
+                }
+            });
+        }
+        
+        //Set position & dimensions of popup title
+        $popupspan = $popup.find('span');
+        $popupspan.html($(this).data('popuptext'));
+        
+        //Set this to have a large width so the child span can find its natural width
+        $popup.css('visibility', 'hidden').show().css('width', 600);
+        $popup.width($popupspan.width() + 16);
+        $popup.hide().css('visibility', '');
+        //Now we have width, offset x
+        var w = $popup.width();
+        var contw = $(this).width(); //The item to show popup above
+        $popup.css({ 
+            top: $(this).offset().top - 30,
+            left: $(this).offset().left + contw/2 - w/2 - 10
+        });
+        $popup.show();
+    });
+    $(document).on('mouseleave', '.showpopuptext', function(){
+        $('#simplepopuptext').hide();
+    });
+    
+    //Validate any form fields
+    $('form').submit(function(event){
+        var $frm = $(this);
+        var errsFound = false;
+        $frm.find('.error').remove();
+        $frm.find('input[type!=submit], input[type!=button], input[type!=image], select, textarea').each(function(){
+          if($(this).hasClass('required') && $(this).val() == '') {
+            $frm.prepend($('<p class="error"/>').html($(this).data('fieldname') + ' is required'));
+            errsFound = true;
+          } else if($(this).is('[minlength]') && $(this).val().length < parseInt($(this).attr('[minlength]'))) {
+            $frm.prepend($('<p class="error"/>').html($(this).data('fieldname') + ' must be ' + $(this).attr('minlength') + ' characters or over'));
+            errsFound = true;
+          } else if($(this).is('[maxlength]') && $(this).val().length > parseInt($(this).attr('[maxlength]'))) {
+            $frm.prepend($('<p class="error"/>').html($(this).data('fieldname') + ' must be ' + $(this).attr('maxlength') + ' characters or under'));
+            errsFound = true;
+          }
+        });
+        if(errsFound){
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    });
+    
+    {% if settings.nav_split_en %}
+    //Nav splits into multiple columns if too long
+    var navColLimit = {{ settings.nav_split_count }};
+    $('#pageheader nav > ul > li:has(ul)').each(function(){
+        var $list = $(this).children('ul');
+        var $children = $list.children();
+        if($children.length > navColLimit) {
+            $list.wrap('<div class="multi-column" />');
+            var $bucketCont = $list.parent();
+            var $buckets = $bucketCont.children();
+            var bucketIndex = 0;
+            $children.each(function(index){
+                bucketIndex = Math.floor(index / navColLimit);
+                if(bucketIndex > 0) {
+                    if(typeof($buckets.get(bucketIndex)) == 'undefined') {
+                        $buckets = $bucketCont.append('<ul />').children();
+                    }
+                    $($buckets.get(bucketIndex)).append($(this));
+                }
+            });
+            $bucketCont.addClass('columns-' + (bucketIndex+1));
+        }
+    });
+    {% endif %}
+});
+
+
+
+
+//Modify numeric input amounts, update cart if variant ID supplied
+function modifyQuantity(sel, amt, varID) {
+    var curr = parseInt($(sel).val());
+    if(curr == NaN) {
+        curr == 0;
+    }
+    
+    var newVal = Math.max(1, curr+amt);
+    $(sel).val(newVal);
+    
+    if(typeof(varID) != 'undefined') {
+        function updateCart(jqXHR, data) {
+            if(jqXHR.statusText != 'OK') {
+                alert('There was a small problem updating the cart. Please use the Update button.');
+            }
+            if(typeof(data) == 'undefined') {
+                data = eval('(' + jqXHR.responseText + ')');
+            }
+            
+            var totalString = Shopify.formatMoney(data.total_price);
+            $('#headercartvals').html('('+data.item_count+') ' + totalString);
+            $('#basket .foot .total').html(totalString);
+            for(i=0; i<data.items.length; i++) {
+                if(data.items[i].id == varID) {
+                    $('#row_amt_' + varID).html(Shopify.formatMoney(data.items[i].line_price));
+                }
+            }
+        }
+        var jqxhr = $.post('/cart/change.js', { 'quantity':newVal, 'id':varID }, function(data, textStatus, jqXHR) {
+            updateCart(jqXHR, data);
+        }, 'json').error(function(jqXHR){
+            updateCart(jqXHR);
+        });
+    }
+}
+

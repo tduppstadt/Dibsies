@@ -1,0 +1,18 @@
+{% assign collection = collections[settings.notfound_collection] %}
+{% assign row_limit = settings.products_per_row_coll | plus: 0 %}
+{% paginate collection.products by row_limit %}
+{% if collection and collection.products.size > 0 %}
+    <div class="widget">
+        {% if collection.products.size > row_limit %}
+        <a href="{{ collection.url }}"><h3 class="sixteen columns">{{ collection.title }}</h3></a>
+        {% else %}
+        <h6 class="sixteen columns">{{ collection.title }}</h6>
+        {% endif %}
+        <div class="productlist">
+        {% for product in collection.products %}
+            {% include 'product-list-repeatable-item' with product %}
+        {% endfor %}
+        </div><!-- .productlist -->
+    </div><!-- .widget -->
+{% endif %}
+{% endpaginate %}

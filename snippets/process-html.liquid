@@ -1,0 +1,6 @@
+{% comment %} Processes html and adds in any tabs {% endcomment %}
+{% assign processed-html = process-html | replace: '<p>[[start tab]]</p>', '<div class="jstab">' %}
+{% assign processed-html = processed-html | replace: '[[start tab]]', '<div class="jstab">' %}
+{% assign processed-html = processed-html | replace: '<p>[[end tab]]</p>', '</div>' %}
+{% assign processed-html = processed-html | replace: '[[end tab]]', '</div>' %}
+<div class="content-block">{{ processed-html }}</div>

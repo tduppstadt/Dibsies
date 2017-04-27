@@ -1,0 +1,24 @@
+
+<script>
+    // Function to hide hidden variants
+    var scnHiddenVariants = [" (BK ","Free Gift"];
+    function scnProduct(product) {
+        var newVariants = [], i, isValid, variantIndex;
+        for (variantIndex in product.variants) {
+            var variant = product.variants[variantIndex];
+            isValid = true;
+            for (i in scnHiddenVariants) {
+                //Is variant hidden item
+                if (variant && variant.title.indexOf(scnHiddenVariants[i]) != -1) {
+                    isValid = false;
+                }
+            }
+            if (isValid) {
+                newVariants.push(variant);
+            }
+        }
+
+        product.variants = newVariants;
+        return product;
+    }
+</script>

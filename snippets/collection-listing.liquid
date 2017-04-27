@@ -1,0 +1,25 @@
+<section class="widgets cf collection-row">
+    {% for collection in collections %}
+        {% assign handlefirst = collection.handle | split: '-' | first %}
+        {% if collection.handle != 'all' and handlefirst != 'frontpage' %}
+            {% if settings.collrow_numperrow == '2' %}
+                <div class="widget fullwidthimg eight columns">
+            {% elsif settings.collrow_numperrow == '3' %}
+                <div class="widget fullwidthimg one-third column">
+            {% elsif settings.collrow_numperrow == '5' %}
+                <div class="widget fullwidthimg one-fifth column">
+            {% else %}
+                <div class="widget fullwidthimg four columns">
+            {% endif %}
+                <h1 class="title">{{ collection.title }}</h1>
+                <a class="highlight align" href="{{ collection.url }}">
+                {% if collection.image %}
+                    {{ collection.image.src | collection_img_url: 'large' | img_tag: collection.image.alt }}
+                {% else %}
+                    {{ collection.products.first.featured_image | product_img_url: 'large' | img_tag: collection.image.alt }}
+                {% endif %}
+                </a>
+            </div>
+        {% endif %}
+    {% endfor %}
+</section>

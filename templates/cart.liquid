@@ -1,0 +1,525 @@
+
+<!-- Bold Apps: Premium Options -->
+<script>function update_qty_builder(builder_id, qty){ jQuery('.'+builder_id+"_qty").val(qty.value); } function remove_product_builder(builder_id){ jQuery('.'+builder_id+"_qty").val(0); jQuery('.'+builder_id+"_qty").parents("form").submit(); }</script>
+
+<br />
+<div id="nudge-container"></div>
+<br /><div class="checkoutcont">
+<input style="float:left;" type="submit" class="button" onClick="if(document.referrer.indexOf(window.location.hostname) != -1){history.go(-1);return true;}else{document.location.href='/';return true;}" name="Continue Shopping" value="&#8678 Continue Shopping" />
+{% include 'cart-shipping-charge' %}
+</div>
+
+<br />
+
+<h1 class="sixteen columns">{{ settings.text_shoppingcart }}</h1>
+
+
+{% if cart.item_count == 0 %}
+    <p class="sixteen columns">Your basket is empty</p>
+    {% include 'notfound-products' %}
+{% else %}
+    <div class="sixteen columns">
+        <script type="text/javascript">
+        // <![CDATA[
+            function remove_item(id) {
+                if(confirm('Are you sure you want to remove this item?')) {
+                    document.getElementById('updates_'+id).value = 0;
+                    document.getElementById('cartform').submit();
+                }
+                return false;
+            }
+        // ]]>
+        </script>
+      <script>
+        
+       var ids= new Array();
+      </script>
+      	<div id="shappify-qty-cart-msg"></div>
+        <form action="/cart" method="post" id="cartform">
+            <div id="basket" class="cf">
+                <ul style="list-style: none;">
+        		{% for item in cart.items %}
+                  {% if item.properties.master_builder == blank %} <!-- Bold Apps: Premium Options (Step 9) -->
+                  
+                  {% if item.properties.builder_id == blank %}
+                  	<li>
+                  {% else %}
+					<li style="display:none" class="item {{ item.product.handle }}">
+				  {% endif %}  
+                		<div class="cartitem cf">
+                            <div class="image">
+                                                            
+                            {% comment %} Find image that matches variant, if variant chosen {% endcomment %}
+                            {% assign imagePicked = false %}
+                            {% if image.alt != item.product.title and image.alt != '' %}
+                              {% for image in item.product.images %}
+                                  {% if item.variant.title contains image.alt %}
+                                    <a href="{{ item.product.url }}"><img src="{{ image | product_img_url: 'medium' }}" alt="{{ image.alt | escape }}" /></a>
+                                    {% assign imagePicked = true %}
+                                    {% break %}  
+                                  {% endif %}
+                              {% endfor %}
+                            {% endif %}
+                            {% unless imagePicked %}
+                             
+                              	{% assign font = '' %}
+                              	{% assign text_color = '' %}
+                              	{% assign personalized_text = ''%}
+                              	{% assign date_text = '' %}
+                                {% assign preview_url = '' %}
+                              	{% assign preview_img_url = '' %}
+                              
+                            	{% for p in item.properties %}
+                              
+                                	{% unless p.last == blank %}
+                              			{% if p.first == 'Font' %}
+                              				{% assign font = p.last %}
+                              			{% elsif p.first == 'Text Color' %}
+                              				{% assign text_color = p.last %}
+                                        {% elsif p.first == 'Personalized Text' %}
+                              				{% assign personalized_text = p.last %}
+                                         {% elsif p.first == 'Date' %}
+                              				{% assign date_text = p.last %}
+                              			{% elsif p.first == 'preview-image-url' %}	
+                              				{% assign preview_img_url = p.last %}
+                              			{% endif %}
+                                    {% endunless %}
+                              	{% endfor %}
+                              
+                              {% if item.product.metafields.PZKeys.template_id_map != blank %}
+                                {% assign font = font | downcase | strip | remove: ' ' %}
+                                {% assign text_color = text_color | downcase | strip | remove: ' ' %}
+                                {% if font == blank %}
+                                  {% assign font = 'default' %}
+                                {% endif %}
+                              	{% if text_color == blank %}
+                                  {% assign text_color = 'default' %}
+                                {% endif %}
+                                {% assign preview_url = 'https://res.cloudinary.com/dibsies/image/upload/' 
+                                | append: item.variant.sku 
+                                  | append: '_' 
+                                      | append: font 
+                                          | append: '_' 
+                                              | append: text_color 
+                                                  | append: '_' 
+                                                      | append: personalized_text 
+                                                          | append: '.jpg' %}
+                              {% elsif item.product.metafields.PZKeys.design_id != blank %}
+                             
+                                  {% assign preview_url = 'https://res.cloudinary.com/dibsies/image/upload/' 
+                                    | append: item.product.variants.first.sku 
+                                      | append: '_'
+                              			| append: personalized_text %}
+                              				{% if date_text != blank %}
+                              					{% assign preview_url = preview_url | append: '_' | append: date_text %}
+                              				{% endif %}
+                                           	
+                              				{% assign preview_url = preview_url | append: '.jpg' %}
+                              {% endif %}
+                              		
+                              <a href="{{ item.product.url }}"><img onError="this.onerror=null;this.src='{{ item | img_url: 'small' }}';" src="{{ preview_img_url }}" alt="{{ item.title | escape }}" /></a>
+                             
+
+                              
+                            {% endunless %}
+
+                    
+                              
+                            </div>
+                            <div class="desc">
+                      
+                              
+                            
+                              
+                              <span class="title"><a href="{{ item.product.url }}">{{ item.title }}</a></span>
+                              
+                              {% unless item.product.vendor contains "--DS" %}<center><b>Qualifies for DIBSIES On The DOUBLE™</b><div class="js-d-on-d-info d-on-d-info"></div></center>{% endunless %} 
+
+                              {% assign is_personalized = 'false' %} 	
+                              
+                              	{% for p in item.properties %}
+                                	{% unless p.last == blank or p.first == 'preview-image-url' %}
+                              			{% assign is_personalized = 'true' %} 	
+                                      <br />
+                                		<b><u>{{ p.first }}:</u></b>
+                                        {% if p.last contains '/uploads/' %}
+                                        <a class="lightbox" href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                                        {% else %}
+                                        {{ p.last }}
+                                        {% endif %}
+                                    {% endunless %}
+                              	{% endfor %}
+
+                     
+                              
+                              {% if item.product.variants.first.inventory_management == 'shopify' and item.product.variants.first.inventory_quantity < 1 and item.product.variants.first.inventory_policy == 'continue' %}
+                              <br /><b><u>Availability:</u></b><font color="red"><b> OUT OF STOCK | BACKORDERED </b></font>
+                              
+                              {% else %} 
+                              {% endif %}
+                              
+
+                              {% assign rushShippingAvailable = false %}
+                              {% for c in item.product.collections %}
+                                {% if c.handle == "eligible-for-expedited-shipping" %}		
+                                  {% assign rushShippingAvailable = true %}
+                                {% endif %}
+                              {% endfor %}
+
+                              {% if rushShippingAvailable %}
+                              
+                                  {% assign item_gift_message = '' %}
+                                  {% assign sku_plus_item_id = item.variant.sku | append: "_" | append: item.id | strip %}
+                                  
+                   
+                                    {% for attribute in cart.attributes %}
+                                                
+                                            {% if attribute.first == sku_plus_item_id %}
+                                                    {% assign item_gift_message = attribute.last | strip %}
+                                            {% endif %}
+                                           
+                                    {% endfor %}
+                                  
+                                  {% if item_gift_message != blank %}
+                                  <br/><br/><b><u>Gift Message:</u></b><br />
+                                    {{ item_gift_message }}
+                                  {% endif %}
+            
+                                  <p><a href="#giftnote{{ item.id }}" id="shownote{{item.id}}"><label for="giftnote{{ item.id }}">
+                                    
+                                  </label></a></p>
+                                  <textarea style="width:200px;height:60px" rows="1" cols="40" maxlength="100" name="attributes[{{ item.variant.sku | append: "_" | append: item.id | strip}}]" id="giftnote{{ item.id }}" >{{item_gift_message}}</textarea>
+                                   <div class="updatecont">
+                                      {% if item_gift_message != blank %}
+                                         <input type="submit" class="button update altcolor" id="confirmgc{{ item.id }}" name="update" value="Update Gift Message" />&nbsp;</div>
+         
+                                      {% else %}
+                                        <input type="submit" class="button update altcolor" id="confirmgc{{ item.id }}" name="update" value="Add Gift Message" />&nbsp;</div>
+         
+                                      {% endif %}
+                          		
+                          			
+                          {% comment %}{% include 'gift-box' %}{% endcomment %}
+                                     
+                                   
+                              {% endif %}                              
+                           
+                             
+                                         
+                			</div>
+                          	<div class="cart-info-container">
+                              <script>ids.push('{{ item.variant.id }}');</script>
+                              <div class="qty">
+                                {% if item.properties.size > 0 %}
+                                  <label for="updates_{{ item.variant.id }}">Qty</label>
+                                  {{ item.quantity }}
+                                {% else %}  
+                                <label for="updates_{{ item.variant.id }}">Qty</label>
+                                  {% unless settings.hide_plusmin_hide %}
+                                  <a href="javascript:modifyQuantity('#updates_{{ item.variant.id }}', -1, {{ item.variant.id }})" class="minibutton">-</a>
+                                  {% endunless %}
+                                  {% if item.properties.builder_id == blank %}
+                                  	<input class="short" type="text" size="4" name="updates[{{item.variant.id}}]" id="updates_{{ item.variant.id }}" value="{{ item.quantity }}" onfocus="this.select();"/>
+                                  {% else %}
+                                	<input class="short {{ item.properties.builder_id }}_qty" type="text" size="4" name="updates[{{item.variant.id}}]" id="updates_{{ item.variant.id }}" value="{{ item.quantity }}" onfocus="this.select();"/>
+								  {% endif %}
+                                	{% unless settings.hide_plusmin_hide %}
+                                  <a href="javascript:modifyQuantity('#updates_{{ item.variant.id }}', 1, {{ item.variant.id }})" class="minibutton">+</a>
+                                  {% endunless %}
+                                {% endif %}
+                              </div>
+                              <div class="amt"><span class="amount" id="row_amt_{{ item.variant.id }}">{{ item.line_price | money_with_currency }}</span></div>
+                              <div class="remove-me">
+                                {% if item.properties.builder_id == blank %}
+                                	<a href="/cart/change?line={{ forloop.index }}&quantity=0">Remove</a>
+                                {% else %}
+                                	<a class="{{ item.properties.builder_id }}_remove" href="/cart/change?line={{ forloop.index }}&quantity=0">Remove</a>
+								{% endif %}
+                              </div>
+                          </div>
+                      {% comment %}<br/>{% if item.product.vendor == "Dibsies Personalization Station" or product.vendor == "Cotton Age" or product.vendor == "ProGiftSource.com" or product.vendor == "PGS Fathers Day"%}
+                      <b> <center style="float:right;"><font color="red">✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮</font><br/>GET THIS ITEM BY FATHER'S DAY!</b> {% comment %}<br/><b><strike><u>Standard:</u></strike>  Arrives After Fathers Day </b><br/><b><strike><u>Rush:</u></strike> Arrives After Fathers Day</b><br/><b><strike><u>Express Shipping:</u></strike> Arrives After Fathers Day</b><br/>{% endcomment %}<br/>Use Urgent Shipping & Order By June 16  <br/><b><font color="red">✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮ ✮</font></b>
+  {% endif %}  <br />{% endcomment %}
+                		</div>
+              
+                    </li>
+          			{% else %} <!-- Bold Apps: Premium Options (Step 10) --> 
+          
+          			{% if item.properties.builder_info %}
+                    {% assign builder = item.properties.builder_info | split: '~~' %}
+                    {% endif %}
+                    {% assign item_price = 0 %}
+                    {% assign item_line_price = 0 %}
+                    {% for price_item in cart.items %}
+                    {% unless price_item.properties.builder_id == blank %}
+                    {% if price_item.properties.builder_id == item.properties.builder_id %}
+                    {% capture temp %}{{ item_price | plus: price_item.price }}{% endcapture %}
+                    {% assign item_price = temp %}
+                    {% capture temp %}{{ item_line_price | plus: price_item.line_price }}{% endcapture %}
+                    {% assign item_line_price = temp %}
+                    {% endif %}
+                    {% endunless %}
+                    {% endfor %}
+					<li class="item {{ builder[2] }}">
+                		<div class="cartitem cf">
+                            <div class="image">
+                            {% comment %} Find image that matches variant, if variant chosen {% endcomment %}
+                            {% assign imagePicked = false %}
+                            {% if image.alt != item.product.title and image.alt != '' %}
+                              {% for image in item.product.images %}
+                                  {% if item.variant.title contains image.alt %}
+                              <a href="{{ item.product.url }}">
+                                {% if builder[0] %}
+									<img src="{{ builder[1] }}" alt="{{ builder[0] }}" />
+								{% else %}
+                                	<img src="{{ image | product_img_url: 'medium' }}" alt="{{ image.alt | escape }}" />
+                                {% endif %}
+                          		</a>
+                                    {% assign imagePicked = true %}
+                                    {% break %}  
+                                  {% endif %}
+                              {% endfor %}
+                            {% endif %}
+                            {% unless imagePicked %}
+                             
+                              	{% assign font = '' %}
+                              	{% assign text_color = '' %}
+                              	{% assign personalized_text = ''%}
+                              	{% assign date_text = '' %}
+                                {% assign preview_url = '' %}
+                              	{% assign preview_img_url = '' %}
+                              
+                            	{% for p in item.properties %}
+                              
+                                	{% unless p.last == blank %}
+                              			{% if p.first == 'Font' %}
+                              				{% assign font = p.last %}
+                              			{% elsif p.first == 'Text Color' %}
+                              				{% assign text_color = p.last %}
+                                        {% elsif p.first == 'Personalized Text' %}
+                              				{% assign personalized_text = p.last %}
+                                         {% elsif p.first == 'Date' %}
+                              				{% assign date_text = p.last %}
+                              			{% elsif p.first == 'preview-image-url' %}	
+                              				{% assign preview_img_url = p.last %}
+                              			{% endif %}
+                                    {% endunless %}
+                              	{% endfor %}
+                              
+                              {% if item.product.metafields.PZKeys.template_id_map != blank %}
+                                {% assign font = font | downcase | strip | remove: ' ' %}
+                                {% assign text_color = text_color | downcase | strip | remove: ' ' %}
+                                {% if font == blank %}
+                                  {% assign font = 'default' %}
+                                {% endif %}
+                              	{% if text_color == blank %}
+                                  {% assign text_color = 'default' %}
+                                {% endif %}
+                                {% assign preview_url = 'https://res.cloudinary.com/dibsies/image/upload/' 
+                                | append: item.variant.sku 
+                                  | append: '_' 
+                                      | append: font 
+                                          | append: '_' 
+                                              | append: text_color 
+                                                  | append: '_' 
+                                                      | append: personalized_text 
+                                                          | append: '.jpg' %}
+                              {% elsif item.product.metafields.PZKeys.design_id != blank %}
+                             
+                                  {% assign preview_url = 'https://res.cloudinary.com/dibsies/image/upload/' 
+                                    | append: item.product.variants.first.sku 
+                                      | append: '_'
+                              			| append: personalized_text %}
+                              				{% if date_text != blank %}
+                              					{% assign preview_url = preview_url | append: '_' | append: date_text %}
+                              				{% endif %}
+                                           	
+                              				{% assign preview_url = preview_url | append: '.jpg' %}
+                              {% endif %}
+                              		
+                              <a href="{{ item.product.url }}">
+                                {% if builder[0] %}
+									<img src="{{ builder[1] }}" alt="{{ builder[0] }}" />
+								{% else %}
+                                	<img onError="this.onerror=null;this.src='{{ item.product.images.first | product_img_url: 'medium' }}';" src="{{ preview_img_url }}" alt="{{ item.title | escape }}" /></a>
+                                {% endif %}
+
+                              
+                            {% endunless %}
+                            </div>
+                            <div class="desc">
+            					<span class="title"><a href="{{ item.product.url }}">{{ item.title }}</a></span>
+                              
+                              {% unless item.product.vendor contains "--DS" %}<center><b>Qualifies for DIBSIES On The DOUBLE™</b><div class="js-d-on-d-info d-on-d-info"></div></center>{% endunless %} 
+                              
+                              {% assign is_personalized = 'false' %} 	
+                              
+                              	{% for p in item.properties %}
+                              		{% if p.first == "builder_id" or p.first == "builder_info" or p.first == "master_builder" or p.last == "" %}
+                                    {% else %}
+                                    	{% unless p.last == blank or p.first == 'preview-image-url' %}
+                              			{% assign is_personalized = 'true' %} 	
+                                      <br />
+                                		<b><u>{{ p.first }}:</u></b>
+                                        {% if p.last contains '/uploads/' %}
+                                        <a class="lightbox" href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                                        {% else %}
+                                        {{ p.last }}
+                                        {% endif %}
+                                    {% endunless %}
+                                    {% endif %}
+                                	
+                              	{% endfor %}
+
+                              
+                              
+                              {% if item.product.variants.first.inventory_management == 'shopify' and item.product.variants.first.inventory_quantity < 1 and item.product.variants.first.inventory_policy == 'continue' %}
+                              <br /><b><u>Availability:</u></b><font color="red"><b> OUT OF STOCK | BACKORDERED </b></font>
+                              
+                              {% else %} 
+                              {% endif %}
+                              
+							  {% assign rushShippingAvailable = false %}
+                              {% for c in item.product.collections %}
+                                {% if c.handle == "eligible-for-expedited-shipping" %}		
+                                  {% assign rushShippingAvailable = true %}
+                                {% endif %}
+                              {% endfor %}
+
+                              {% if rushShippingAvailable %}
+                            	 
+                                  {% assign item_gift_message = '' %}
+                                  {% assign sku_plus_item_id = item.variant.sku | append: "_" | append: item.id | strip %}
+                                  
+                   
+                                    {% for attribute in cart.attributes %}
+                                                
+                                            {% if attribute.first == sku_plus_item_id %}
+                                                    {% assign item_gift_message = attribute.last | strip %}
+                                            {% endif %}
+                                           
+                                    {% endfor %}
+                                  
+                                  {% if item_gift_message != blank %}
+                                  <br/><br/><b><u>Gift Message:</u></b><br />
+                                    {{ item_gift_message }}
+                                  {% endif %}
+            
+                                  <p><a href="#giftnote{{ item.id }}" id="shownote{{item.id}}"><label for="giftnote{{ item.id }}">
+                                    
+                                  </label></a></p>
+                                  <textarea style="width:200px;height:60px" rows="1" cols="40" maxlength="100" name="attributes[{{ item.variant.sku | append: "_" | append: item.id | strip}}]" id="giftnote{{ item.id }}" >{{item_gift_message}}</textarea>
+                                   <div class="updatecont">
+                                      {% if item_gift_message != blank %}
+                                         <input type="submit" class="button update altcolor" id="confirmgc{{ item.id }}" name="update" value="Update Gift Message" />&nbsp;</div>
+         
+                                      {% else %}
+                                        <input type="submit" class="button update altcolor" id="confirmgc{{ item.id }}" name="update" value="Add Gift Message" />&nbsp;</div>
+         
+                                      {% endif %}
+                                     
+                                     
+                                   
+                              {% endif %}                              
+                           
+                             
+                              
+                			</div>
+                          	<div class="cart-info-container">
+                              <div class="qty">
+                                {% if item.properties.size > 0 %}
+                                  <label for="updates_{{ item.variant.id }}">Qty</label>
+                                  {{ item.quantity }}
+                                {% else %}  
+                                <label for="updates_{{ item.variant.id }}">Qty</label>
+                                  {% unless settings.hide_plusmin_hide %}
+                                  <a href="javascript:modifyQuantity('#updates_{{ item.variant.id }}', -1, {{ item.variant.id }})" class="minibutton">-</a>
+                                  {% endunless %}
+                                  <input class="short {{ item.properties.builder_id }}_qty" type="text" size="4" name="updates[{{item.variant.id}}]" id="updates_{{ item.variant.id }}" value="{{ item.quantity }}" onfocus="this.select();" onchange="update_qty_builder('{{item.properties.builder_id}}', this);"/>
+                                  {% unless settings.hide_plusmin_hide %}
+                                  <a href="javascript:modifyQuantity('#updates_{{ item.variant.id }}', 1, {{ item.variant.id }})" class="minibutton">+</a>
+                                  {% endunless %}
+                                {% endif %}
+                              </div>
+                              <div class="amt"><span class="amount" id="row_amt_{{ item.variant.id }}">{{ item_line_price | money_with_currency }}</span></div>
+                              <div class="remove-me"><a class="{{ item.properties.builder_id }}_remove" onclick="remove_product_builder('{{item.properties.builder_id}}');" href="#">Remove</a></div>
+                          </div>
+                		</div>
+              			{% comment %}<b>{% if item.vendor == "Lucky Clover" or item.vendor == "Trend Lab" or item.vendor == "Aurora World" or item.vendor == "Burton and Burton" or item.vendor == "Creature Comforts" or item.vendor == "NA Bear" or item.vendor == "Stork Sales" or item.vendor == "Kids Preferred" or item.vendor == "Komet Creations" %}
+<center><font color="blue">♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦</font><br/><font color="green"> GET THIS ITEM BY EASTER! </font><br/><u><b>Standard Shipping:</u> <font color="purple">Order By March 19</b></font> <br/><u><b>Rush Shipping:</u> <font color="purple">Order By March 20</b></font><br/><u><b>Express Shipping:</u><font color="purple"> Order By March 21</b></font><br/><u><b>Urgent Shipping:</u> <font color="purple">Order By March 24</b></font>  <br/><font color="blue">♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦ ♦</font>
+  {% endif %}  </b><br />{% endcomment %}
+                    </li>
+					{% endif %}
+                {% endfor %}
+                </ul>
+                <div class="foot">
+                    <div class="instructions">
+                        {% unless settings.cart_hide_note %}
+                            <p><a href="#note" id="shownote"><label for="note">{{ settings.text_telluscart }} &rarr;</label></a></p>
+                            <textarea name="note" id="note" rows="3" cols="60">{{cart.note}}</textarea>
+                            {% if cart.note && cart.note == '' %}
+                            {% else %}
+                                <script>
+                                    $('#note').hide();
+                                    $(function(){
+                                        $(document).on('click', '#shownote', function(){
+                                            $('#note').show(200);
+                                            return false;
+                                        });
+                                    });
+                                </script>
+                            {% endif %}
+                        {% endunless %}&nbsp;
+                    </div>
+                    <div class="updatecont"><input type="submit" class="button update altcolor" id="update-cart" name="update" value="Update" />&nbsp;</div>
+                    <div class="checkoutcont">
+                        <div class="total">{{ cart.total_price | money_with_currency }}</div>
+                        <input type="submit" class="button large" name="checkout" value="{{ settings.text_checkout }}" />
+                        {% if additional_checkout_buttons %}
+                            <div class="extrapaymentmethods">
+                                <p class="subtext">- or -</p>
+                                {{ content_for_additional_checkout_buttons }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+        	</div><!-- #basket -->
+        </form><!-- #cartform -->
+        {% include 'shipping-calculator' %}
+
+<h3></h3>
+
+<div class="yotpo yotpo-reviews-carousel" 
+data-mode="manual" 
+data-type="both" 
+data-review-ids="5724095,6213492,7328016,7427901,7801078,8812644,8980907,6582935,8670891" 
+data-show-bottomline="1" 
+data-autoplay-enabled="1" 
+data-autoplay-speed="3000" 
+data-show-navigation="1" 
+data-header-customisation-enabled="1" 
+data-header-customisation-text="More Products Our Customers Love" 
+data-header-customisation-font-size="18" 
+data-header-customisation-color="#498cbc" 
+data-header-customisation-alignment="left" 
+data-background-color="#ffffff">&nbsp;</div>
+
+
+    </div>
+{% endif %}
+<script type="text/javascript">
+var pri = '{{ cart.total_price | money_without_currency}}';
+var pric = pri.replace("$","").replace(",","");
+var productIDs = new Array();
+var price = parseFloat(pric);
+var i;
+{% for item in cart.items %}
+productIDs.push('shopify_US_{{item.product.id}}_{{item.variant.id}}');
+{% endfor %}
+var google_tag_params = {
+ecomm_prodid: productIDs,
+ecomm_pagetype: 'cart',
+ecomm_totalvalue: price
+};
+</script>

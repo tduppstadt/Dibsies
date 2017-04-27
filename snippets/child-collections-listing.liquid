@@ -1,0 +1,242 @@
+
+  <div class="sixteen columns">
+      <div id="crumbs">
+          <a href="/" title="Home">Home</a>
+          &raquo;
+          <a href="{{ collection.url }}">{{ collection.title | escape }}</a>
+      </div><!-- #crumbs -->
+      
+      {% if settings.show_social_coll %}
+      <div class="social floating">
+          <span class="label">{{ settings.text_sharethis }}</span>
+          {% include 'social-sharing' %}
+      </div>
+      {% endif %}
+      
+
+    <h1>{{ collection.title | escape }}</h1>
+  
+
+<script>
+$(document).ready(function() {
+
+  // override default options (also overrides global overrides)
+  $('.expandable').expander({
+    slicePoint:       200,  // default is 100
+    expandPrefix:     ' ... ', // default is '... '
+    expandText:       '[Read More]', // default is 'read more'
+    userCollapseText: ''  // default is 'read less'
+  });
+
+});
+</script>    
+    
+    
+    <p><strong style="color: #006ea0; font-size: medium;">Choose a Collection Below To See All Items In That Category:</strong></p>
+<p style="text-align: center;"> </p>
+
+  </div>
+  
+
+  <div class="productlist">  
+    
+    {% for link in linklists.main-menu.links %}
+    
+
+    	{% if link.active %}
+    	
+   
+    	{% assign link_found = 1 %}
+    	
+    
+
+    	{% for sublink in linklists[link.handle].links %}
+
+    		{% assign mycollection = sublink.object %} 
+
+    		
+      
+      		
+            {% if row_limit == 2 %}
+            <div class="product eight columns{{ lastclass }}">
+              {% capture output %}
+              {% cycle '<div class="columnfluff"></div>', '' %}
+              {% endcapture %}
+              {% unless forloop.last %}{{ output }}{% endunless %}
+              {% elsif row_limit == 3 %}
+              <div class="product one-third column{{ lastclass }}">
+                {% capture output %}
+                {% cycle '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '' %}
+                {% endcapture %}
+                {% unless forloop.last %}{{ output }}{% endunless %}
+                {% elsif row_limit == 5 %}
+                <div class="product one-fifth column{{ lastclass }}">
+                  {% capture output %}
+                  {% cycle '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '' %}
+                  {% endcapture %}
+                  {% unless forloop.last %}{{ output }}{% endunless %}
+                  {% else %}
+                  <div class="product four columns{{ lastclass }}">
+                    {% capture output %}
+                    {% cycle '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '' %}
+                    {% endcapture %}
+                    {% unless forloop.last %}{{ output }}{% endunless %}
+                    {% endif %}
+                    {% assign product_thumb_size = 'large' %}
+                    <div class="imgcont loadingimg">
+                      
+                      <a href="{{ mycollection.url }}" class="highlight">
+                        <img src="{{ mycollection.products.first.featured_image | product_img_url: product_thumb_size }}" alt="{{ collection.products.first.featured_image.alt }}" />
+                      </a>
+                      
+                    </div>
+                    
+                    <div class="seeMoreColors">
+                      <a style="color:white;" href="{{ mycollection.url }}">
+                          COLLECTION CONTAINS {{ mycollection.all_products_count }} ITEMS
+                      </a> 
+                    </div>
+                    
+                    <p class="title"><a href="{{ mycollection.url }}">{{ mycollection.title }}</a></p>
+                    
+
+         
+                    <hr>
+                  </div>
+                  
+                  {% if template contains 'collection' %}
+                  {% comment %} Clear the row after each group - makes it look nicer while loading {% endcomment %}
+                  {% if row_limit == 2 %}
+                  {% cycle '', '<div class="cf"></div>' %}
+                  {% elsif row_limit == 3 %}
+                  {% cycle '', '', '<div class="cf"></div>' %}
+                  {% elsif row_limit == 5 %}
+                  {% cycle '', '', '', '', '<div class="cf"></div>' %}
+                  {% else %}
+                  {% cycle '', '', '', '<div class="cf"></div>' %}
+                  {% endif %}
+                  {% endif %}    
+                  
+    
+    
+			{% endfor %}    
+    
+      	{% endif %}
+    
+      
+      {% endfor %}
+                  
+      {% if link_found != 1 %}
+                  
+                  
+        {% for link in linklists.has_children.links %}
+    
+
+                  
+        {% if link.object.title == collection.title %}
+                  
+               
+    	{% for sublink in linklists[link.handle].links %}
+                  
+                  
+
+    		{% assign mysublinkcollection = sublink.object %} 
+                  
+                  
+      
+            {% if row_limit == 2 %}
+            <div class="product eight columns{{ lastclass }}">
+              {% capture output %}
+              {% cycle '<div class="columnfluff"></div>', '' %}
+              {% endcapture %}
+              {% unless forloop.last %}{{ output }}{% endunless %}
+              {% elsif row_limit == 3 %}
+              <div class="product one-third column{{ lastclass }}">
+                {% capture output %}
+                {% cycle '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '' %}
+                {% endcapture %}
+                {% unless forloop.last %}{{ output }}{% endunless %}
+                {% elsif row_limit == 5 %}
+                <div class="product one-fifth column{{ lastclass }}">
+                  {% capture output %}
+                  {% cycle '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '' %}
+                  {% endcapture %}
+                  {% unless forloop.last %}{{ output }}{% endunless %}
+                  {% else %}
+                  <div class="product four columns{{ lastclass }}">
+                    {% capture output %}
+                    {% cycle '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '<div class="columnfluff"></div>', '' %}
+                    {% endcapture %}
+                    {% unless forloop.last %}{{ output }}{% endunless %}
+                    {% endif %}
+                    {% assign product_thumb_size = 'large' %}
+                    <div class="imgcont loadingimg">
+                      
+                      <a href="{{ mysublinkcollection.url }}" class="highlight">
+                        
+                        {% if mysublinkcollection.image %}
+                          <img src="{{ mysublinkcollection | img_url: 'large' }}"  alt="{{ mysublinkcollection.title | escape }}" display="block" />
+                          
+                        {% else %}
+                          <img src="{{ mysublinkcollection.products.first.featured_image | product_img_url: product_thumb_size }}" alt="{{ collection.products.first.featured_image.alt }}" />
+                        {% endif %}
+                        
+                        
+                        
+                        
+                        
+                      </a>
+                      
+                    </div>
+         
+                    <div class="seeMoreColors">
+                      <a style="color:white;" href="{{ mysublinkcollection.url }}">
+                          COLLECTION CONTAINS {{ mysublinkcollection.all_products_count }} ITEMS
+                      </a> 
+                    </div>
+                    
+                    <p class="title"><a href="{{ mysublinkcollection.url }}">{{ mysublinkcollection.title }}</a></p>
+
+                    
+                    <hr>
+                  </div>
+                  
+                  {% if template contains 'collection' %}
+                  {% comment %} Clear the row after each group - makes it look nicer while loading {% endcomment %}
+                  {% if row_limit == 2 %}
+                  {% cycle '', '<div class="cf"></div>' %}
+                  {% elsif row_limit == 3 %}
+                  {% cycle '', '', '<div class="cf"></div>' %}
+                  {% elsif row_limit == 5 %}
+                  {% cycle '', '', '', '', '<div class="cf"></div>' %}
+                  {% else %}
+                  {% cycle '', '', '', '<div class="cf"></div>' %}
+                  {% endif %}
+                  {% endif %}    
+                  
+    
+    
+			{% endfor %}    
+    
+      	{% endif %}
+    
+      
+      {% endfor %}
+                  
+      {% endif %}
+      
+    
+    
+  </div><!-- .productlist -->
+                
+{% if collection.description != '' %}
+
+          <div class="content-block row" style="clear:both;">
+              <div class="expandable">{{ collection.description }}</div>
+          </div><!-- .pagecontent -->
+
+{% endif %}
+
+
+    
+   

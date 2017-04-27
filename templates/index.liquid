@@ -1,0 +1,175 @@
+{% comment %} Generate the product row html first - we don't know where they are going yet {% endcomment %}
+{% if collections[settings.productrow_1_collection].products.size > 0 %}
+{% capture row1_html %}
+<section class="widgets row">
+    <div class="widget productlist">
+        {% assign collection = collections[settings.productrow_1_collection] %}
+        {% assign row_limit = settings.products_per_row_home | plus: 0 %}
+        {% assign number_to_show = settings.products_per_row_home | times: settings.productrow_1_rows %}
+        {% assign number_to_show_plusone = number_to_show | plus: 1 %}
+        {% paginate collection.products by number_to_show_plusone %}
+        {% unless settings.prodrow_hide_titles %}
+            {% if collection.products.size > number_to_show %}<a href="{{ collection.url }}">{% endif %}
+      <h6 class="sixteen columns"><strong>{{ collection.title }}</strong></h6>
+            {% if collection.products.size > number_to_show %}</a>{% endif %}
+        {% endunless %}
+        {% for product in collection.products limit: number_to_show %}
+            {% include 'product-list-repeatable-item' with product %}
+        {% endfor %}
+        {% endpaginate %}
+    </div>
+</section><br/>
+{% endcapture %}
+{% endif %}
+
+{% if collections[settings.productrow_2_collection].products.size > 0 %}
+{% capture row2_html %}
+<section class="widgets row">
+    <div class="widget productlist">
+        {% assign collection = collections[settings.productrow_2_collection] %}
+        {% assign row_limit = settings.products_per_row_home | plus: 0 %}
+        {% assign number_to_show = settings.products_per_row_home | times: settings.productrow_2_rows %}
+        {% assign number_to_show_plusone = number_to_show | plus: 1 %}
+        {% paginate collection.products by number_to_show_plusone %}
+        {% unless settings.prodrow_hide_titles %}
+            {% if collection.products.size > number_to_show %}<a href="{{ collection.url }}">{% endif %}
+            <h6 class="sixteen columns">{{ collection.title }}</h6>
+            {% if collection.products.size > number_to_show %}</a>{% endif %}
+        {% endunless %}
+        {% for product in collection.products limit: number_to_show %}
+            {% include 'product-list-repeatable-item' with product %}
+        {% endfor %}
+        {% endpaginate %}
+    </div>
+</section>
+{% endcapture %}
+{% endif %}
+
+{% if settings.collrow_list != '' %}
+{% capture collrow_html %}
+<section class="widgets row collection-row">
+    {% for link in linklists[settings.collrow_list].links %}
+        {% if settings.collrow_numperrow == '2' %}
+            <div class="widget fullwidthimg eight columns">
+        {% elsif settings.collrow_numperrow == '3' %}
+            <div class="widget fullwidthimg one-third column">
+        {% elsif settings.collrow_numperrow == '5' %}
+            <div class="widget fullwidthimg one-fifth column">
+        {% else %}
+            <div class="widget fullwidthimg four columns">
+        {% endif %}
+            {% unless settings.collrow_hide_titles %}
+            <a href="{{ link.url }}"><h6>{{ link.title }}</h6></a>
+            {% endunless %}
+            <a class="highlight align" href="{{ link.url }}">{{ link.object.image.src | collection_img_url: 'large' | img_tag: link.object.image.alt }}</a>
+        </div>
+    {% endfor %}
+              </section><br/>
+{% endcapture %}
+{% endif %}
+
+
+{% if settings.collrow_position == '0' %}{{ collrow_html }}{% endif %}
+{% if settings.productrow_1_position == '0' %}{{ row1_html }}{% endif %}
+{% if settings.productrow_2_position == '0' %}{{ row2_html }}{% endif %}
+
+{% if settings.mainslider_on %}
+<section id="mainslider" class="sixteen columns slideshow row">
+    <div class="flexslider">
+        <ul class="slides">
+            {% if settings.mainslider_en_1 %}
+            {% assign slideimage = 'mainslider_img_1.jpg' %}
+            {% assign slidetext_title = settings.mainslider_img_1_overlay_t %}
+            {% assign slidetext_class = settings.mainslider_img_1_overlay_pos %}
+            {% include 'homepage-slide' with settings.mainslider_handle_1 %}
+            {% endif %}
+            
+            {% if settings.mainslider_en_2 %}
+            {% assign slideimage = 'mainslider_img_2.jpg' %}
+            {% assign slidetext_title = settings.mainslider_img_2_overlay_t %}
+            {% assign slidetext_class = settings.mainslider_img_2_overlay_pos %}
+            {% include 'homepage-slide' with settings.mainslider_handle_2 %}
+            {% endif %}
+            
+            {% if settings.mainslider_en_3 %}
+            {% assign slideimage = 'mainslider_img_3.jpg' %}
+            {% assign slidetext_title = settings.mainslider_img_3_overlay_t %}
+            {% assign slidetext_class = settings.mainslider_img_3_overlay_pos %}
+            {% include 'homepage-slide' with settings.mainslider_handle_3 %}
+            {% endif %}
+            
+            {% if settings.mainslider_en_4 %}
+            {% assign slideimage = 'mainslider_img_4.jpg' %}
+            {% assign slidetext_title = settings.mainslider_img_4_overlay_t %}
+            {% assign slidetext_class = settings.mainslider_img_4_overlay_pos %}
+            {% include 'homepage-slide' with settings.mainslider_handle_4 %}
+            {% endif %}
+            
+            {% if settings.mainslider_en_5 %}
+            {% assign slideimage = 'mainslider_img_5.jpg' %}
+            {% assign slidetext_title = settings.mainslider_img_5_overlay_t %}
+            {% assign slidetext_class = settings.mainslider_img_5_overlay_pos %}
+            {% include 'homepage-slide' with settings.mainslider_handle_5 %}
+            {% endif %}
+    	</ul>
+      {% comment %}<br/><center><a href="/collections/fathers-day"><img src="http://res.cloudinary.com/dibsies/image/upload/v1401523698/Untitled_ahjvmq.jpg"/></a></center><br/><br/>{% endcomment %}
+    </div>
+</section>
+{% endif %}
+              
+
+{% if settings.collrow_position == '1' %}{{ collrow_html }}{% endif %}
+{% if settings.productrow_1_position == '1' %}{{ row1_html }}{% endif %}
+{% if settings.productrow_2_position == '1' %}{{ row2_html }}{% endif %}
+
+{% if settings.widget_1_3_on %}
+<section class="widgets row">
+    {% assign data = settings.widget_1_handle %}
+    {% include settings.widget_1_type %}
+    
+    {% if settings.widget_1_type != 'widget-page-full-threecol' %}
+        {% assign data = settings.widget_2_handle %}
+        {% include settings.widget_2_type %}
+        
+    	{% assign data = settings.widget_3_handle %}
+        {% include settings.widget_3_type %}
+    {% endif %}
+</section>
+{% endif %}
+
+{% if settings.collrow_position == '2' %}{{ collrow_html }}{% endif %}
+{% if settings.productrow_1_position == '2' %}{{ row1_html }}{% endif %}
+{% if settings.productrow_2_position == '2' %}{{ row2_html }}{% endif %}
+
+    {% assign data = 'personalized-gifts-for-children' %}
+    {% include 'widget-custom' %}
+    
+    
+    {% assign data = 'top-personalized-gift-ideas-for-kids' %}
+    {% include 'widget-custom' %}         
+              
+{% if settings.widget_4_6_on %}
+<section class="widgets row">
+	{% assign data = settings.widget_4_handle %}
+    {% include settings.widget_4_type %}
+    
+    {% assign data = settings.widget_5_handle %}
+    {% include settings.widget_5_type %}
+    
+    {% assign data = settings.widget_6_handle %}
+    {% include settings.widget_6_type %}
+</section>
+{% endif %}
+              
+
+
+{% if settings.collrow_position == '3' %}{{ collrow_html }}{% endif %}
+{% if settings.productrow_1_position == '3' %}{{ row1_html }}{% endif %}
+{% if settings.productrow_2_position == '3' %}{{ row2_html }}{% endif %}
+<script type="text/javascript">
+var google_tag_params = {
+ecomm_prodid: '',
+ecomm_pagetype: 'home',
+ecomm_totalvalue: 0.0
+};
+</script>

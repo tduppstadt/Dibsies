@@ -1,0 +1,300 @@
+if('{{ settings.prod_det_gall_method }}' != 'hide') {
+    $(function() {
+    	// gallery container
+    	var $rgGallery			= $('#rg-gallery'),
+    	// carousel container
+    	$esCarousel			= $rgGallery.find('div.es-carousel-wrapper'),
+    	// the carousel items
+    	$items				= $esCarousel.find('ul > li'),
+    	// total number of items
+    	itemsCount			= $items.length;
+    	if(itemsCount > 0) {
+        	Gallery				= (function() {
+        			// index of the current item
+    		var current			= 0,
+    			// mode : carousel || fullview
+    			mode 			= 'carousel',
+    			// control if one image is being loaded
+    			anim			= false,
+    			init			= function() {
+    				
+    				// (not necessary) preloading the images here... //Disabled for theme
+    				//$items.add('<img src="images/ajax-loader.gif"/><img src="images/black.png"/>').imagesLoaded( function() {
+    					// add options
+    					//_addViewModes(); //Disabled for theme
+    					
+    					// add large image wrapper
+    					_addImageWrapper();
+    					
+    					// show first image
+    					_showImage( $items.eq( current ) );
+    						
+    				//});
+    				
+    				// initialize the carousel
+    				if( mode === 'carousel' )
+    					_initCarousel();
+    				
+    			},
+    			_initCarousel	= function() {
+    				
+    				// we are using the elastislide plugin:
+    				// http://tympanus.net/codrops/2011/09/12/elastislide-responsive-carousel/
+    				$esCarousel.show().elastislide({
+    					imageW 	: 80,
+    					onClick	: function( $item ) {
+    						if( anim ) return false;
+    						anim	= true;
+    						// on click show image
+    						_showImage($item);
+    						// change current
+    						current	= $item.index();
+    					}
+    				});
+    				
+    				// set elastislide's current to current
+    				$esCarousel.elastislide( 'setCurrent', current );
+    				
+    			},
+    			_addViewModes	= function() {
+    				
+    				// top right buttons: hide / show carousel
+    				
+    				var $viewfull	= $('<a href="#" class="rg-view-full"></a>'),
+    					$viewthumbs	= $('<a href="#" class="rg-view-thumbs rg-view-selected"></a>');
+    				
+    				$rgGallery.prepend( $('<div class="rg-view"/>').append( $viewfull ).append( $viewthumbs ) );
+    				
+    				$viewfull.on('click.rgGallery', function( event ) {
+    						if( mode === 'carousel' )
+    							$esCarousel.elastislide( 'destroy' );
+    						$esCarousel.hide();
+    					$viewfull.addClass('rg-view-selected');
+    					$viewthumbs.removeClass('rg-view-selected');
+    					mode	= 'fullview';
+    					return false;
+    				});
+    				
+    				$viewthumbs.on('click.rgGallery', function( event ) {
+    					_initCarousel();
+    					$viewthumbs.addClass('rg-view-selected');
+    					$viewfull.removeClass('rg-view-selected');
+    					mode	= 'carousel';
+    					return false;
+    				});
+    				
+    				if( mode === 'fullview' )
+    					$viewfull.trigger('click');
+    					
+    			},
+    			_addImageWrapper= function() {
+    				
+    				// adds the structure for the large image and the navigation buttons (if total items > 1)
+    				// also initializes the navigation events
+    				
+    				$('#img-wrapper-tmpl').tmpl( {itemsCount : itemsCount} ).prependTo( $rgGallery );
+    				
+    				if( itemsCount > 1 ) {
+    					// addNavigation
+    					var $navPrev		= $rgGallery.find('a.rg-image-nav-prev'),
+    						$navNext		= $rgGallery.find('a.rg-image-nav-next'),
+    						$imgWrapper		= $rgGallery.find('div.rg-image');
+    						
+    					$navPrev.on('click.rgGallery', function( event ) {
+    						_navigate( 'left' );
+    						return false;
+    					});	
+    					
+    					$navNext.on('click.rgGallery', function( event ) {
+    						_navigate( 'right' );
+    						return false;
+    					});
+    				
+    					// add touchwipe events on the large image wrapper
+    					$imgWrapper.touchwipe({
+    						wipeLeft			: function() {
+    							_navigate( 'right' );
+    						},
+    						wipeRight			: function() {
+    							_navigate( 'left' );
+    						},
+    						preventDefaultEvents: false
+    					});
+    				
+    					$(document).on('keyup.rgGallery', function( event ) {
+    						if (event.keyCode == 39)
+    							_navigate( 'right' );
+    						else if (event.keyCode == 37)
+    							_navigate( 'left' );	
+    					});
+    					
+    				}
+    				
+    			},
+    			_navigate		= function( dir ) {
+    				
+    				// navigate through the large images
+    				
+    				if( anim ) return false;
+    				anim	= true;
+    				
+    				if( dir === 'right' ) {
+    					if( current + 1 >= itemsCount )
+    						current = 0;
+    					else
+    						++current;
+    				}
+    				else if( dir === 'left' ) {
+    					if( current - 1 < 0 )
+    						current = itemsCount - 1;
+    					else
+    						--current;
+    				}
+    				
+    				_showImage( $items.eq( current ) );
+    				
+    			},
+    			_showImage		= function( $item ) {
+    				
+    				// shows the large image that is associated to the $item
+    				
+    				var $loader	= $rgGallery.find('div.rg-loading').show();
+    				
+    				$items.removeClass('selected');
+    				$item.addClass('selected');
+    					 
+    				var $thumb		= $item.find('img'),
+    					largesrc	= $thumb.data('large'),
+                        zoomsrc    = $thumb.data('zoom'),
+    					title		= $thumb.data('description');
+                        
+                    //Set new Pinit URL
+                    $('#productinfo .social a[href][class^="PIN_"]').each(function(){
+                        var thisHref = $(this).attr('href');
+                        var qMarkPos = thisHref.indexOf('?');
+                        var newHref = thisHref.substr(0, qMarkPos) + '?';
+                        thisHref = thisHref.substr(qMarkPos + 1);
+                        var splitQuery = thisHref.split('&');
+                        for(var i=0; i<splitQuery.length; i++) {
+                            if(i>0) {
+                                newHref += '&';
+                            }
+                            var splitItem = splitQuery[i].split('=');
+                            if(splitItem[0] == 'media') {
+                                newHref += 'media=' + zoomsrc;
+                            } else {
+                                newHref += splitItem[0] + '=' + splitItem[1];
+                            }
+                        }
+                        $(this).attr('href', newHref);
+                    });
+    				
+    				$('<img/>').load( function() {
+                        var $rgimgcont = $rgGallery.find('div.rg-image');
+                        //For first-run
+                        if($rgimgcont.find('a').length == 0) {
+                            $rgimgcont.append($('<a>').hide());
+                        }
+                        //No zoom/lb for touch devices
+    					if('{{ settings.prod_det_gall_method }}' == 'zoom' && !('ontouchstart' in window) ? 1 : 0) {
+                            //Add zoom
+        					$rgimgcont.find('a').fadeOut(400, function(){
+                                $(this).remove();
+            				    $rgimgcont.append('<a class="zoomouter" href="' + zoomsrc + '" target="_blank"><img id="main-img" src="' + largesrc + '"/></a>');
+                				if(title){
+            						$rgGallery.find('div.rg-caption').show().children('p').empty().text( title );
+            					}
+            					$loader.hide();
+                                var opts = {};
+                                $.extend(opts, thumbZoomOptions);
+                                opts.blockClicks = true;
+                                $rgimgcont.find('a').jqzoom(opts);
+                                $rgimgcont.find('img').animate({opacity:1}, 400, function(){
+                                    $(this).closest('.loadingimg').removeClass('loadingimg')
+                                });
+                                
+                                //Init lightbox in gallery mode
+                                $rgimgcont.find('a').click(function(){
+                                    //Build gallery image list
+                                    var gallImgs = Array();
+                                    var thisItemIndex = 0;
+                                    var $allGallImgs = $('#rg-gallery .es-carousel img');
+                                    for(var i=0; i<$allGallImgs.length; i++) {
+                                        var thisZoomSrc = $($allGallImgs[i]).data('zoom');
+                                        gallImgs.push([thisZoomSrc]);
+                                        if(zoomsrc == thisZoomSrc) { thisItemIndex = i; }
+                                    }
+                                    $.slimbox(gallImgs, thisItemIndex, {loop: true});
+                                    return false;
+                                });
+                                //Yes, this was just copied from a few lines below  *_*
+        					});
+    					} else if(('{{ settings.prod_det_gall_method }}' == 'lightbox' || '{{ settings.prod_det_gall_method }}' == 'hide') && !('ontouchstart' in window) ? 1 : 0) {
+                            //Add lightbox only
+            				$rgimgcont.find('a').fadeOut(400, function(){
+                                $(this).remove();
+                                $rgimgcont.append('<a href="' + zoomsrc + '" target="_blank"><img id="main_img" src="' + largesrc + '"/></a>');
+                				if( title ){
+            						$rgGallery.find('div.rg-caption').show().children('p').empty().text( title );
+            					}
+                                //Init lightbox in gallery mode
+                                $rgimgcont.find('a').click(function(){
+                                    //Build gallery image list
+                                    var gallImgs = Array();
+                                    var thisItemIndex = 0;
+                                    var $allGallImgs = $('#rg-gallery .es-carousel img');
+                                    for(var i=0; i<$allGallImgs.length; i++) {
+                                        var thisZoomSrc = $($allGallImgs[i]).data('zoom');
+                                        gallImgs.push([thisZoomSrc]);
+                                        if(zoomsrc == thisZoomSrc) { thisItemIndex = i; }
+                                    }
+                                    $.slimbox(gallImgs, thisItemIndex, {loop: true});
+                                    return false;
+                                });
+                                $loader.hide();
+                                $rgimgcont.find('img').animate({opacity:1}, 400, function(){
+                                    $(this).closest('.loadingimg').removeClass('loadingimg')
+                                });
+            				});
+    					} else {
+                            //Add just the image
+                        	$rgimgcont.find('a').fadeOut(400, function(){
+                                $(this).remove();
+                    		    $rgimgcont.append('<a href="' + zoomsrc + '" target="_blank"><img id="main-image" src="' + largesrc + '"/></a>');
+                				if( title ){
+            						$rgGallery.find('div.rg-caption').show().children('p').empty().text( title );
+            					}
+            					$loader.hide();
+                                $rgimgcont.find('img').animate({opacity:1}, 400, function(){
+                                    $(this).closest('.loadingimg').removeClass('loadingimg')
+                                });
+                			});
+                        }
+    					if( mode === 'carousel' ) {
+    						$esCarousel.elastislide( 'reload' );
+    						$esCarousel.elastislide( 'setCurrent', current );
+    					}
+    					anim = false;
+                      $item.trigger('mainimgloaded');//Added for variant-images
+    				}).attr( 'src', largesrc );
+    				
+    			},
+    			addItems		= function( $new ) {
+    			
+    				$esCarousel.find('ul').append($new);
+    				$items 		= $items.add( $($new) );
+    				itemsCount	= $items.length; 
+    				$esCarousel.elastislide( 'add', $new );
+    			
+    			};
+    		
+    		return { 
+    			init 		: init,
+    			addItems	: addItems
+    		};
+    	
+    	})();
+            Gallery.init();
+    	}
+    });
+}

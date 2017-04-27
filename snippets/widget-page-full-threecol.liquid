@@ -1,0 +1,6 @@
+<br/><br/><br/>{% if pages[data].handle != '' %}
+<div class="pagesnippetwidget widget sixteen columns">
+    <a href="{{ pages[data].url }}"><h6>{{ pages[data].title }}</h6></a>
+    {% include 'process-html' with pages[data].content %}
+</div>
+{% endif %}

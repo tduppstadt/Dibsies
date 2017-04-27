@@ -1,0 +1,31 @@
+<div>
+{% for item in product.metafields.product_customizer %}
+    <div>
+    {% assign words = {{item.first}} | split: '_' %}
+    {% capture item_name %}{{words[1]}}{% endcapture %}
+    {% if item_name == empty %} {% assign item_name = {{item.first}} %} {% endif %}
+    {% capture line_item_name %}properties[{{item_name}}]{% endcapture %}
+    
+    {% capture customizer_id %}customizer_{{item.first | handleize}}{% endcapture %}
+                    
+    <label for="{{customizer_id}}">{{item_name}}</label>
+    {% if item.last contains "select" %}
+        <select id="{{customizer_id}}" name="{{line_item_name}}"></select>
+            
+    {% elsif item.last contains "text" %}
+        <input type="text" id="{{customizer_id}}" name="{{line_item_name}}"/>
+                    
+    {% elsif item.last contains "file" %}
+        <input type="file" id="{{customizer_id}}" name="{{line_item_name}}"/>
+        
+    {% elsif item.last contains "multiline" %}
+        <textarea id="{{customizer_id}}" name="{{line_item_name}}"></textarea>
+    {% endif %}
+    </div>
+{% endfor %}
+<script type='text/javascript'>
+if (typeof product_customizer == 'undefined'){
+    product_customizer = {{product.metafields.product_customizer | json}};
+}
+</script>
+</div>

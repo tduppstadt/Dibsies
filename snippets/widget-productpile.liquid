@@ -1,0 +1,23 @@
+{% assign split_data = data | split: '|' %}
+{% if split_data.size == 2 %}
+{% assign num_to_show = split_data[1] | plus: 0 %}
+{% else %}
+{% assign num_to_show = 9 %}
+{% endif %}
+{% paginate collections[split_data.first].products by num_to_show %}
+{% if collections[split_data.first].products.size > 0 %}
+<div class="productpilewidget widget cf{% if template == 'index' %} eight columns{% endif %}">
+    <a href="{{ collections[split_data.first].url }}"><h6>{{ collections[split_data.first].title }}</h6></a>
+    <ul>
+    {% assign counter = 0 %}
+    {% for product in collections[split_data.first].products limit: num_to_show %}
+    <li class="product{% if counter == 1 %} middle{% endif %}">
+        <a class="showpopuptext" data-popuptext="{{ product.title }}" href="{{ product.url }}">{{ product.featured_image | product_img_url: 'compact' | img_tag: product.featured_image.alt }}</a>
+    </li>
+    {% assign counter = counter | plus: 1 %}
+    {% if counter == 3 %}{% assign counter = 0 %}{% endif %}
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endpaginate %}

@@ -1,0 +1,49 @@
+{% assign social_is_on_the_page = true %}
+
+<span class="socialitem facebookcont">
+   <fb:share-button type="button_count"></fb:share-button>
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+</span>
+
+{% if template contains 'product' %}
+    <a href="http://pinterest.com/pin/create/button/?url={{ shop.url }}{{ product.url }}&media={{ product.featured_image | product_img_url: 'master' }}&description={{ product.title | escape }}" class="pin-it-button" target="_blank" count-layout="none"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a>
+    <script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>
+{% elsif template contains 'article' or template contains 'blog' or template contains 'page' or template contains 'collection' %}
+    {% if template contains 'blog' %}{% assign shareitem = blog.articles.first %}{% endif %}
+    {% if template contains 'article' %}{% assign shareitem = article %}{% endif %}
+    {% if template contains 'page' %}{% assign shareitem = page %}{% endif %}
+    {% if template contains 'collection' %}{% assign shareitem = collection %}{% endif %}
+    {% if shareitem.content contains '<img' %}
+        {% assign media_url = shareitem.content | split: 'src="' %}
+        {% assign media_url = media_url[1] | split: '"' | first | replace: '//cdn', 'http://cdn' | replace: '//static', 'http://static' | replace: 'http:http://', 'http://' %}
+    {% elsif settings.use_logo_image == true %}
+        {% assign media_url = 'logo.png' | asset_url %}
+    {% endif %}
+    {% if media_url %}
+        <a href="http://pinterest.com/pin/create/button/?url={{ shop.url }}{{ shareitem.url }}&media={{ media_url }}&description={{ shareitem.title | escape }}" class="pin-it-button" target="_blank" count-layout="none"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a>
+        <script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>
+    {% endif %}
+{% endif %}
+
+<span class="socialitem twittercont">
+    <a href="https://twitter.com/share" class="twitter-share-button" data-count="none">Tweet</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</span>
+
+<span class="socialitem plusonecont">
+    <g:plusone size="medium" annotation="none"></g:plusone>
+    <script>
+      (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+      })();
+    </script>
+</span>

@@ -1,0 +1,26 @@
+{% comment %} Minified: 
+<div class="paging">{% if paginate.pages > 1 %}{% if paginate.previous %}<a class="prev" href="{{ paginate.previous.url }}">&#8249;</a>{% endif %}{% for part in paginate.parts %}{% if part.is_link %}<span class="page">{{ part.title | link_to: part.url }}</span>{% else %}<span class="page current">{{ part.title }}</span>{% endif %}{% endfor %}{% if paginate.next %}<a class="next" href="{{ paginate.next.url }}">&#8250;</a>{% endif %}{% endif %}</div>&nbsp;
+{% endcomment %}
+
+{% comment %} Original:{% endcomment %}
+<div class="paging">
+{% if paginate.pages > 1 %}
+    {% if paginate.previous %}
+        <a class="prev" href="{{ paginate.previous.url }}">&#8249;</a>
+    {% endif %}
+    {% for part in paginate.parts %}
+        {% if part.is_link %}
+            <span class="page">{{ part.title | link_to: part.url }}</span>
+        {% else %}
+  		{% if part.title == ' … ' %}
+            	<span class="page">{{ part.title | link_to: part.url }}</span>
+  			{% else %}
+  				<span class="page current">{{ part.title }}</span>
+  			{% endif %}	
+        {% endif %}        
+    {% endfor %}      
+    {% if paginate.next %}
+        <a class="next" href="{{ paginate.next.url }}">&#8250;</a>
+    {% endif %}
+{% endif %}    
+</div>&nbsp;

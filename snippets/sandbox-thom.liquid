@@ -1,0 +1,567 @@
+<meta property="shoppad:always_desktop" content="true" />
+{% comment %}
+<div class="tags contentsection">
+  <span style="font-size:125%; color:#2957A4">Buy 2 or more Personalized Items and SAVE! </span><br/>
+</div> 
+
+
+<div id="shappify-qty-msg"></div>
+{% endcomment %}
+ 
+</br>
+
+<!-- Dupp start -->
+<style>
+  #myPreview
+  {
+    width: 400px;
+    height: 300px;
+    background-color:red;
+  }
+</style>
+
+
+<!-- Dupp start -->
+<script type="text/javascript"  src='{{ 'customized-preview-mike.js' | asset_url }}'></script>
+<!-- Dupp end -->
+<div class="tags contentsection">
+  <span style="font:normal 16px/28px 'Trocchi', sans-serif;color:#2957A4"><b>DIBSIES Personalization Options</b></span>
+  <b> <font color="#2957A4">&nbsp; &nbsp; (Free!)</font></b><br/><hr>
+
+  <img width="400" id="pzOptionsKey" onError="hideImage(this);" src="http://cdn.shopify.com/s/files/1/0238/6527/files/{{ product.variants.first.sku }}_details_HRw_large.jpg?sdf" />
+        <div id="pzhrtag"/><hr></div>  
+        </div>
+        
+
+        {% if product.available %}
+
+		{% for option in product.options %}
+        	{% if option == 'Color' %}
+        		{% assign color_option_index = forloop.index0 %}
+        	{% endif %}
+        {% endfor %}
+
+        <form id="product-form-personalized" action="/cart/add" method="post">
+            <div class="options">
+             {% if shappify_qb_options_count == 1 %}
+                <input type="hidden" name="id" value="{{ product.variants.first.id }}" />
+                {% if settings.prod_show_opts_single %}<p>{{ product.options.first }}: {{ product.variants.first.title }}</p>{% endif %}
+            {% else %}
+                <div class="selectors">
+                  <label for="product-select">{{ product.options.first }}:</label>
+                    <select id="product-select" name="id" class="noreplace itemColor">
+            			{% for variant in product.variants %}
+                      			
+        				    <option value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
+        						
+                      {% endfor %}
+    				</select>
+                  <br />
+                </div>
+                {% assign option_to_match = 'Color' %}
+                {% assign option_index = 0 %}
+                {% for option in product.options %}
+                {% if option == option_to_match %}
+                {% assign option_index = forloop.index0 %}
+                {% endif %}
+                {% endfor %}
+                          <script type="text/javascript">
+                          $(document).on('mainimgloaded', '#rg-gallery .es-carousel ul li', function(){
+                          var optionValue = $(this).find('img').attr('alt');
+                          if(optionValue.length > 0) {
+                          $('#productinfo #detail .options .selectors select option[value="'+optionValue+'"]').each(function(){
+                          if($(this).parent().val() != $(this).attr('value')) {
+                          $(this).parent().val($(this).attr('value')).trigger('change');
+                          }
+                          });
+                          }
+                          });
+                          var selectCallback = function(variant, selector) {
+                          //Swapping images JS
+                          var optionValue = variant.options[{{ option_index }}];
+                          $matchingImg = $('#rg-gallery .es-carousel li:not(.selected) img[alt="'+optionValue+'"]').parent();
+                          if($matchingImg.length > 0) {
+                          $matchingImg.first().parent().trigger('click');
+                          }
+                          if (variant && variant.available == true) {
+                          // selected a valid variant
+                            $('#productinfo #detail #purchase').removeClass('disabled').removeAttr('disabled'); // remove unavailable class from add-to-cart button, and re-enable button
+                            var newHtml = Shopify.formatMoney(variant.price, "{{shop.money}}");
+                            if(variant.compare_at_price > variant.price) {
+                                newHtml += '<div class="was-price">was ' + Shopify.formatMoney(variant.compare_at_price, "{{shop.money}}") + '</div>';
+                            }
+                            $('#price-field').html(newHtml);  // update price field
+                        } else {
+                            // variant doesn't exist
+                            $('#productinfo #detail #purchase').addClass('disabled').attr('disabled', 'disabled'); // set add-to-cart button to unavailable class and disable button
+                            var message = variant ? "Sold Out" : "Unavailable";
+                            $('#price-field').text(message); // update price-field message
+                        }
+                    };
+                    
+                    //Set up product inputs
+                    $(function() {
+                        new Shopify.OptionSelectors("product-select", { product: {{ product | json }}, onVariantSelected: selectCallback });
+                        {% if settings.prod_enable_linked_options and product.options.size > 1 %}
+                        Shopify.linkOptionSelectors({{ product | json }});
+                        {% endif %}
+                        {% assign found_one_in_stock = false %}
+                        {% for variant in product.variants %}
+                            {% if variant.available and found_one_in_stock == false %}
+                                {% assign found_one_in_stock = true %}
+                                {% for option in product.options %}
+                                    jQuery('.single-option-selector:eq(' + {{ forloop.index0 }} + ')').val({{ variant.options[forloop.index0] | json }}).trigger('change');
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        //Hide original option label if we now have multiple options
+                        if($('.selector-wrapper .single-option-selector').length != 1) {
+                            $('#product-select').siblings('label[for="product-select"]').hide();
+                        }
+                        
+                        //Style any added select dropdowns
+                        $.selectReplace();
+                    });
+                </script>
+            {% endif %}
+            
+            {% comment %} START - Personalize option {% endcomment %}
+              
+              {% comment %} NOTE: all required fields must add personalize-option class {% endcomment %}
+              {% if product.variants.size > 1 %}
+              <hr style="width:70%;text-align:left;margin-left:0"><br />
+              {% endif %}
+              <div id="personalize-copy"> Personalize It?</div>
+              <div id="personalize-form">
+                <input id="personalize-yes" type="radio" name="personalize-option" value="yes" checked>Yes
+                <input id="personalize-no" type="radio" name="personalize-option" value="no">No
+              </div>
+              
+              <script type="text/javascript">  
+                $("input[name=personalize-option]").click(function()
+                {                 
+                  	switch($(this).val())
+                    {
+                      case "yes":
+                        $(".personalize-full-form").css("display", "block");
+                        $(".personalize-option").removeClass("required");
+                        $(".personalize-option").addClass("required");
+                        break;
+                        
+                      case "no":
+                        $(".personalize-full-form").css("display", "none");
+                        $(".personalize-option").removeClass("required");
+                        {% comment %} THOM_EDIT_08-17 EDIT START{% endcomment %}
+                        $(".customFont").val("").change();
+                        $(".customColor").val("").change();
+                        $(".customText").val("");
+                        {% comment %} THOM_EDIT_08-17 EDIT END{% endcomment %}
+                        
+                        {% comment %} MIKE_EDIT_08-20 EDIT START{% endcomment %}
+                        $(".customArt").val("").change();
+                        $(".customTitle").val("");
+                        
+                        // clear out monogram fields 
+                        $(".customName").val("");
+                        $(".customName 1").val("");
+                        $(".customName 2").val("");
+                        $(".customName 3").val("");
+                        
+                        // clear out multiple name fields
+                        {% for i in (1..{{product.metafields.PZKeys.number_of_names}}) %}
+                         $(".customName{{ i }}").val(""); 
+                		{% endfor %}
+                           
+                           
+                        {% comment %} MIKE_EDIT_08-20 EDIT END{% endcomment %}
+                        
+                        break;
+                    }
+                    
+                });    
+                
+                // do a click just to make sure fields are set properly
+                $("input[name=personalize-option][value='yes']").trigger("click");
+              </script>
+            
+            {% comment %} END - Personalize option {% endcomment %}  
+              
+              
+              
+            {% comment %} If you are using Shopify's Line Item Properties, add them here! {% endcomment %}
+            
+        <div class="tags contentsection personalize-full-form">
+     	<script type="text/javascript">
+           $(function(){
+             /* $("#Font").change(function(){
+               var selectedValue = $(this).find(":selected").val();
+               console.log("the value you selected: " + selectedValue);
+               
+               if(selectedValue.trim() == "Dropshadow Type" || selectedValue.trim() == "Floral Type") {
+                 console.log("the value you selected: " + selectedValue);
+    
+                 $("#Step2").hide();
+                 $("#TextColor").val(" N/A");
+                 $("#TextColorLabelExtra").text("Text color will be as shown above for " + selectedValue.trim() + " graphic art.");
+               }
+               
+               else {
+               
+                 $("#Step2").show();
+                 $("#TextColor").val("");
+                 $("#TextColorLabelExtra").text("");
+        
+               }
+
+                               
+             });*/
+           });
+       </script>
+     
+        
+          {% assign stepnumber = 1 %} 
+              {% unless product.metafields.PZKeys.font == blank %}
+                {% assign availableFonts = product.metafields.PZKeys.font | split: ',' %} 
+                {% unless availableFonts.size < 2 %}
+                  <div>
+                    <label><b>Step 1. Choose Your Font:</b></label><br /><br />
+                    <select class="required personalize-option customFont" id="Font" name="properties[Font]" data-fieldname="Font">
+                                <option value="">Select Font ...</option> 
+                                  {% for font in availableFonts %}
+                                     <option value="{{ font | strip_newlines }}">{{ font | strip_newlines }}</option>
+                                {% endfor %}
+                        </select>
+                  </div>
+                  {% assign stepnumber = stepnumber | plus:1 %}
+          		{% endunless %}
+              {% endunless %}
+              
+              {% unless product.metafields.PZKeys.fontcolor == blank %}
+                {% assign availableFontColors = product.metafields.PZKeys.fontcolor | split: ',' %} 
+                {% unless availableFontColors.size < 2 %}
+          			<br />
+                  <div>
+                    <label id="TextColorLabel"><b>Step {{ stepnumber }}. Choose Your Text Color:</b></label><br /><br />
+                    <p style="margin-left:30px;margin-right:60px" id="TextColorLabelExtra"></p>
+                    	<div id="Step2">
+                    	<select class="required personalize-option customColor" id="TextColor" name="properties[Text Color]" data-fieldname="Text Color">
+                                <option value="">Select Text Color ...</option> 
+                                  {% for fontcolor in availableFontColors %}
+                                     <option value="{{ fontcolor | strip_newlines }}">{{ fontcolor | strip_newlines }}</option>
+                                {% endfor %}
+                        </select>
+                    	</div>  
+                  </div>
+          		 
+                  {% assign stepnumber = stepnumber | plus:1 %}
+              	{% endunless %}
+          	  {% endunless %}
+          
+              {% unless product.metafields.PZKeys.graphic_art == blank %}
+                {% assign availableArt = product.metafields.PZKeys.graphic_art | split: ',' %} 
+                {% unless availableArt.size < 2 %}
+                  <br />
+                  <div>
+                    <label><b>Step {{ stepnumber }}. Choose Your Graphic Art:</b></label><br /><br />
+                        <select class="required personalize-option customArt" id="Graphic Art" name="properties[Graphic Art]" data-fieldname="Graphic Art">
+                                <option value="">Select Graphic Art ...</option> 
+                                  {% for art in availableArt %}
+                                     <option value="{{ art | strip_newlines }}">{{ art | strip_newlines }}</option>
+                                {% endfor %}
+                        </select>
+                  </div>
+                  
+                  {% assign stepnumber = stepnumber | plus:1 %}
+          		{% endunless %}
+       		 {% endunless %}
+          
+             {% unless product.metafields.PZKeys.personalized_title == 0 or product.metafields.PZKeys.personalized_title == blank %}
+               		
+          
+          			<label><b>{% if stepnumber == 1 %} 
+                      			Add Your Personalized Title:
+          					{% else %}
+            							<br />	
+          						Step {{ stepnumber }}. Add Your Personalized Title:
+                      			{% assign stepnumber = stepnumber | plus:1 %}
+          					{% endif %}
+                      
+                      </b></label><font size="-2"><br/>(Examples:
+         {% if product.metafields.PZKeys.personalized_title_examples == blank %}
+          		Mom, Daddy, Grandma
+          {% else %}
+          	{{ product.metafields.PZKeys.personalized_title_examples }}
+          {% endif %}
+          ) <br/></font><input class="required personalize-option customTitle" type="text" id="Personalized Title" name="properties[Personalized Title]" style="width:175px;" maxlength="{{ product.metafields.PZKeys.maxlength }}" data-fieldname="Personalized Title" /> <font size="-2">(Limit: {{ product.metafields.PZKeys.maxlength }} chars )</font>
+          			 <br /><br />
+       		 {% endunless %}
+              
+          {% if product.metafields.PZKeys.number_of_names > 0 %} 
+          
+          
+          		<label><b>
+                {% if stepnumber == 1 %} 
+                  	Add Names:
+                {% else %}
+                  <br/>
+                  	Step {{ stepnumber }}. Add Names: 
+                {% endif %}
+                  </b></label><font size="-2">(Only 1 Name Is Required)</font><br /><br />
+                  
+                        		
+          
+                {% for i in (1..{{product.metafields.PZKeys.number_of_names}}) %}
+                    <label><font size="-2"><b> Name {{ i }}: </b></font></label>
+                    {% if i == 1 %}
+                      <input class="required personalize-option customName{{ i }}" type="text" id="Personalized Name {{ i }}" name="properties[Personalized Name {{ i }}]" style="width:175px;" maxlength="{{ product.metafields.PZKeys.maxlength }}" data-fieldname="Personalized Name {{ i }}" /> 
+                    {% else %}
+                      <input class="personalize-option customName{{ i }}" type="text" id="Personalized Name {{ i }}" name="properties[Personalized Name {{ i }}]" style="width:175px;" maxlength="{{ product.metafields.PZKeys.maxlength }}" data-fieldname="Personalized Name {{ i }}" /> 
+                    {% endif %}
+                      <br/><br/>
+                {% endfor %}
+          
+          		{% assign stepnumber = stepnumber | plus:1 %}
+          
+          {% elsif product.metafields.PZKeys.is_monogram == 1 %} 
+          
+          
+          		<label><b>
+                {% if stepnumber == 1 %} 
+                  	Add Monogram:
+                {% else %}
+                  <br/>
+                  	Step {{ stepnumber }}. Add Monogram: 
+                {% endif %}
+                  </b></label><br/><br/><font size="-2"><b>Please Note:</b> The First Name Initial will appear on the left, the Last Name Initial will appear larger in the center, and the Middle Initial will appear on the right. </font><br /><br />           
+          			<font size="-2"><b> First Name Initial:</b> </font>
+                    <input class="required personalize-option customName 1" type="text" id="First Name Initial" name="properties[First Name Initial]" style="width:50px;" maxlength="{{ product.metafields.PZKeys.maxlength }}" data-fieldname="First Name Initial" /> <font size="-2">(Will Appear on Left)</font>
+                    <br/><br/>
+                    <font size="-2"><b> Last Name Initial:</b> </font>
+                    <input class="required personalize-option customName 2" type="text" id="Last Name Initial" name="properties[Last Name Initial]" style="width:50px;" maxlength="{{ product.metafields.PZKeys.maxlength }}" data-fieldname="Last Name Initial" /> <font size="-2">(Will Appear Larger & In Center)</font>
+                    <br/><br/>
+                    <font size="-2"><b> Middle Name Initial:</b> </font>
+                    <input class="required personalize-option customName 3" type="text" id="Middle Name Initial" name="properties[Middle Name Initial]" style="width:50px;" maxlength="{{ product.metafields.PZKeys.maxlength }}" data-fieldname="Middle Name Initial" /> <font size="-2">(Will Appear on Right)</font>
+                    
+          
+          		{% assign stepnumber = stepnumber | plus:1 %}
+          
+          
+          {% else %}
+          		{% if product.metafields.PZKeys.number_of_pz_text_lines == blank or product.metafields.PZKeys.number_of_pz_text_lines == 1 %}
+          			
+          			{% unless product.metafields.PZKeys.personalized_text == 0 %}
+          			  <label><b>{% if stepnumber == 1 %} 
+                      			Add Your Personalized Text:
+          					{% else %}
+            							<br />	
+          						Step {{ stepnumber }}. Add Your Personalized Text:
+                      			{% assign stepnumber = stepnumber | plus:1 %}
+          					{% endif %}
+                      </b></label> <br /><br /><input class="required personalize-option customText" type="text" id="Personalized Text" name="properties[Personalized Text]" style="width:175px;" maxlength="{{ product.metafields.PZKeys.maxlength }}" data-fieldname="Personalized Text" /> <font size="-2">(Limit: {{ product.metafields.PZKeys.maxlength }} chars 
+          				{% if product.metafields.PZKeys.text_case == "ALL UPPER" %}, ONLY CAPITAL LETTERS{% elsif product.metafields.PZKeys.text_case == "ALL LOWER"%} , ONLY LOWERCASE{% endif %}</font>)
+          			{% endunless %}	
+          	
+          
+          		{% else %}
+          				
+          			{% for i in (1..{{product.metafields.PZKeys.number_of_pz_text_lines}}) %}
+                      <label><b> Personalized Text Line {{ i }}: </b></label>
+                      {% if i == 1 %}
+                        <input class="required personalize-option customText{{ i }}" type="text" id="Personalized Text {{ i }}" name="properties[Personalized Text {{ i }}]" style="width:175px;" maxlength="{{ product.metafields.PZKeys.maxlength }}" data-fieldname="Personalized Text {{ i }}" /> 
+                      {% else %}
+                        <input class="personalize-option customText{{ i }}" type="text" id="Personalized Text {{ i }}" name="properties[Personalized Text {{ i }}]" style="width:175px;" maxlength="{{ product.metafields.PZKeys.maxlength }}" data-fieldname="Personalized Text {{ i }}" /> 
+                      {% endif %}
+                        <br/><br/>
+                	{% endfor %}
+          	
+          		{% endif %}
+          {% endif %}
+          
+            
+              
+          {% unless product.metafields.PZKeys.birthdate == 0 or product.metafields.PZKeys.birthdate == blank %}
+          <br/><br/><label><b> Select Date: </b> &nbsp;<font size="-2">(&nbsp;Optional&nbsp;)</font></label><br /><br />
+          
+          <input type="text" class="customDate" id="datepicker" name="properties[Date]" style="width:175px;" data-fieldname="Date" />
+          {% endunless %}
+          
+          {% unless product.metafields.PZKeys.weight == 0 or product.metafields.PZKeys.weight == blank %}
+          <br/><br/><label><b> Enter Weight: </b> &nbsp;<font size="-2">(&nbsp;Optional&nbsp;)</font></label><br /><br />
+          
+          <input type="text" id="Weight" name="properties[Weight]" style="width:175px;" data-fieldname="Weight" maxlength="20"/>
+          {% endunless %}
+          
+          {% unless product.metafields.PZKeys.year == 0 or product.metafields.PZKeys.year == blank %}
+          <br/><br/><label><b> Enter Year: </b></label><br /><br />
+          
+          <input class="required" type="text" id="Year" name="properties[Year]" style="width:175px;" data-fieldname="Year" maxlength="4"/>
+          {% endunless %}
+              
+          
+            <!-- Dupp start -->  
+			<div id="preview-out"></div>
+			<!-- Dupp end --> 
+          
+          
+          	<!-- Dupp start -->      
+		  {% if product.metafields.PZKeys.template_id_map == blank and product.metafields.PZKeys.design_id == blank %}
+          	<div class="addbuttoncont">
+              <input type="hidden" id="custom-preview" class="button large plus" value="Preview" data-case-restriction="{{product.metafields.PZKeys.text_case}}" data-sku="{{product.variants.first.sku}}" data-template-lookup="{{product.metafields.PZKeys.template_id_map}}" data-design-lookup="{{product.metafields.PZKeys.design_id}}" data-design-table-key="{{product.metafields.PZKeys.design_table_key}}">
+            </div>
+          {% else %}
+          	<div class="addbuttoncont">
+              <input style="float:left;" id="custom-preview" class="button large plus" value="Preview Now ®" data-case-restriction="{{product.metafields.PZKeys.text_case}}" data-sku="{{product.variants.first.sku}}" data-template-lookup="{{product.metafields.PZKeys.template_id_map}}" data-design-lookup="{{product.metafields.PZKeys.design_id}}" data-design-table-key="{{product.metafields.PZKeys.design_table_key}}"><font color="red"><b>&nbsp;&nbsp;&#8678<font color="red"> Click to View <br/>&nbsp;&nbsp; Personalization</b></font></font>
+            </div>
+          {% endif %}
+          	<!-- Dupp end -->
+          
+         </div>
+              
+      </div>
+          <hr>
+       <center>   
+         
+      <br/><b><font color="red">FREE STANDARD SHIPPING</font></b><br/> On All Orders Over $99<br /></center><br />   
+         
+      {% if product.variants.first.inventory_management == 'shopify' and product.variants.first.inventory_quantity < 1 and product.variants.first.inventory_policy == 'continue'  %}
+         
+
+          <center><p style="font-size: larger;border: dotted 2px #959695;border-color: red;padding: 10px;color: red;">
+            <b> Currently <u style="font-weight:bold;">OUT</u> <u style="font-weight:bold;">OF</u> <u style="font-weight:bold;">STOCK</u><br /> But Available For Backorder </font></b> </p></center> 
+      
+
+	{% elsif product.tags contains 'related-fathers-day'%}
+
+{% comment %}<b><font color="red">*** Use RUSH or EXPRESS Shipping Options for Guaranteed Delivery By Father's Day  *** <br/>  </font></b>
+<br/><br/>
+{% endcomment %}
+	{% else %}
+      			
+      
+<center><b>* Estimated Delivery: {% if product.vendor == "Wood Creations" %}11 to 14{% elsif product.vendor == "HooHobbers" %}14 to 17{% elsif product.vendor == "MyBambino" %}4 to 10{% elsif product.vendor == "Little Colorado" %}11 to 14{% elsif product.vendor == "NA Bear" %}5 to 8{% elsif product.vendor == "Komet Creations" %}5 to 8{% elsif product.vendor == "Mary Meyer" %}5 to 8{% elsif product.vendor == "Stephen Joseph" %}5 to 8{% else %}6 to 10{% endif %} Calendar Days *</b><br /></center>
+          {% comment %}{% if product.vendor == "MyBambino" %}<b>* Expect Delivery within 6 Business Days *</b>{% endif %}{% endcomment %}
+	<br/>
+	{% endif %}    
+         
+         
+        <input type="hidden" id="preview-image-url" name="properties[preview-image-url]" data-fieldname="preview-image-url" value=""/>
+          
+            <div class="addbuttoncont">
+              <div class="shopping-cart"></div>
+                <input type="submit" name ="add" id="shappify_add_to_cart_btn" class="button large plus" value="{{ settings.text_addtocart }}" />
+            </div>
+           <div class="payment-method-container">   
+          <div class="paymentmethods seven columns row">
+    		{% if settings.payment_2co_enabled == true %}
+            <span class="2co"><span>2Checkout</span></span>
+            {% endif %}
+            {% if settings.payment_amex_enabled == true %}
+            <span class="amex"><span>American Express</span></span>
+            {% endif %}
+            {% if settings.payment_cirrus_enabled == true %}
+            <span class="cirrus"><span>Cirrus</span></span>
+            {% endif %}
+            {% if settings.payment_delta_enabled == true %}
+            <span class="delta"><span>Delta</span></span>
+            {% endif %}
+            {% if settings.payment_discover_enabled == true %}
+            <span class="discover"><span>Discover</span></span>
+            {% endif %}
+            {% if settings.payment_google_enabled == true %}
+            <span class="google"><span>Google Checkout</span></span>
+            {% endif %}
+            {% if settings.payment_maestro_enabled == true %}
+            <span class="maestro"><span>Maestro</span></span>
+            {% endif %}
+            {% if settings.payment_mastercard_enabled == true %}
+            <span class="mastercard"><span>Mastercard</span></span>
+            {% endif %}
+            {% if settings.payment_moneybookers_enabled == true %}
+            <span class="moneybook"><span>Moneybookers</span></span>
+            {% endif %}
+            {% if settings.payment_paypal_enabled == true %}
+            <span class="paypal"><span>PayPal</span></span>
+            {% endif %}
+            {% if settings.payment_sagepay_enabled == true %}
+            <span class="sage"><span>SagePay</span></span>
+            {% endif %}
+            {% if settings.payment_solo_enabled == true %}
+            <span class="solo"><span>Solo</span></span>
+            {% endif %}
+            {% if settings.payment_switch_enabled == true %}
+            <span class="switch"><span>Switch</span></span>
+            {% endif %}
+            {% if settings.payment_visa_enabled == true %}
+            <span class="visa"><span>Visa</span></span>
+            {% endif %}
+            {% if settings.payment_visaelectron_enabled == true %}
+            <span class="electron"><span>Visa Electron</span></span>
+            {% endif %}
+            <a style="margin:60px" href="https://www.paypal.com/webapps/mpp/paypal-popup" title="How PayPal Works" onclick="javascript:window.open('https://www.paypal.com/webapps/mpp/paypal-popup','WIPaypal','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1060, height=700'); return false;"><img width="100" length="100" src="https://www.paypalobjects.com/webstatic/mktg/logo/bdg_secured_by_pp_2line.png" border="0" alt="Secured by PayPal"></a>
+            
+             </div></div>
+
+            <script>
+                Shopify.money_format = '{{shop.money_format | replace: "'", '"'}}';
+                
+                {% unless settings.prod_disable_ajax %}
+                //Override for default Shopify function
+                Shopify.onItemAdded = function(line_item) {
+                    //Make buttons usable again
+                    $('form input[type="submit"]').attr('disabled', false).removeClass('disabled');
+                    //Adding to cart successful, update cart
+                    Shopify.getCart();
+                    //Show 'item added'
+                    $('#purchase').siblings('.added').remove();
+                    $('<div>').addClass('added').html('<span class="yay">{{ settings.text_ty }}</span><a class="basket" href="/cart">{{ settings.text_cart }} &rarr;</a>')
+                        .insertBefore($('#purchase')).fadeIn(200).delay(5000).fadeOut(500, function(){ 
+                            $(this).remove();
+                        });
+                    return false;
+                }
+                
+                //Override for default Shopify function
+                Shopify.onError = function(XMLHttpRequest, textStatus) {
+                    //Make buttons usable again
+                    $('form input[type="submit"]').attr('disabled', false).removeClass('disabled');
+                    //Display error message
+                    var errmsg;
+                    var data = eval('(' + XMLHttpRequest.responseText + ')');
+                    if (!!data.message) {
+                        errmsg = data.message + '<br />' + data.description;
+                    } 
+                  
+                  {
+                        errmsg = Shopify.fullMessagesFromErrors(data).join('; ');
+                    }
+                    $('#purchase').siblings('.added').remove();
+                    $('<div>').addClass('added').addClass('error').html('<span>'+errmsg+'</span>')
+                        .insertBefore($('#purchase')).fadeIn(200).delay(5000).fadeOut(500, function(){ 
+                            $(this).remove();
+                        });
+                };
+                
+                //Override for default Shopify function
+                Shopify.onCartUpdate = function(cart) {
+                    //Update elements on screen that show cart info
+                    $('#headercartvals').html('(' + cart.item_count + ') ' + Shopify.formatMoney(cart.total_price));
+                }
+                
+                //Define the function that adds to the cart
+                function addToCart(e) {
+                    if (typeof e !== 'undefined') e.preventDefault();
+                  Shopify.addItemFromForm($(this).closest('form').attr('id'));
+                }
+                
+                $(function(){
+                    //Action for clicking 'buy'
+                  $('#purchase').bind('click', addToCart);
+                });
+                {% endunless %}
+            </script>
+        </form>
+        {% else %}
+        <h3>{{ settings.text_soldout }}</h3>
+        {% endif %}
+        

@@ -1,0 +1,101 @@
+{% paginate blog.articles by settings.blog_page_size %}
+<div id="crumbs" class="sixteen columns">
+    <a href="/" title="Home">Home</a>
+    &raquo;
+    <a href="{{ blog.url }}">{{ blog.title }}</a>
+    {% if current_tags %}
+        &raquo; 
+        {% for tag in current_tags %}
+            <a href="{{ blog.url }}/tagged/{{ tag | handleize }}">{{ tag }}{% unless forloop.last %},{% endunless %}</a>
+        {% endfor %}
+    {% endif %}
+    
+    <span class="socialicons"><a title="RSS Feed for {{ blog.title }}" class="rss" href="{{ blog.url }}.atom">RSS</a></span>
+</div><!-- #crumbs -->
+
+{% if settings.show_social_blog %}
+<div class="social floating">
+    <span class="label">{{ settings.text_sharethis }}</span>
+    {% include 'social-sharing' %}
+</div>
+{% endif %}
+
+{% if paginate.pages > 1 %}
+<div class="sixteen columns">
+    {% include 'pagination' %}
+</div>
+{% endif %}
+
+<div class="simpleclear">
+{% if settings.blog_display == 'tiled_2' %}
+    <section class="masonry">
+{% elsif settings.blog_display == 'tiled_3' %}
+    <section class="masonry">
+{% else %}
+    <section class="ten columns">
+{% endif %}
+
+{% for article in blog.articles %}
+    {% if settings.blog_display == 'tiled_2' %}
+    <article class="eight columns">
+    {% elsif settings.blog_display == 'tiled_3' %}
+    <article class="one-third column">
+    {% else %}
+    <article>
+    {% endif %}
+    
+        <a href="{{ article.url }}"><h1>{{ article.title }}</h1></a>
+        <div class="info">
+            Posted on {{ article.published_at | date: "%B %d, %Y" }}
+            {% if settings.article_author_show %} by 
+                {% if settings.article_author_override == '' %}
+                    {{ article.author }}
+                {% else %}
+                    {{ settings.article_author_override }}
+                {% endif %}
+            {% endif %} 
+            {% if blog.comments_enabled? %}| <a href="{{article.url}}#commentsection">{{ article.comments_count }} {{ article.comments_count | pluralize: 'comment', 'comments' }}</a>{% endif %}
+        </div>
+        <div class="pagecontent">
+            {% capture articledesc %}{% include 'process-html' with article.excerpt_or_content %}{% endcapture %}
+            {{ articledesc }}
+        </div>
+        <p><a href="{{ article.url }}" class="arrow">Continue reading &rarr;</a></p>
+    </article>
+{% endfor %}
+</section>
+
+{% unless settings.blog_display == 'tiled_2' or settings.blog_display == 'tiled_3' %}
+<aside class="five columns widgets offset-by-one">
+    {% if blog.tags.size > 0 %}
+    <div class="item tags">
+        <h6>Tags</h6>
+        <ul>
+            {% for tag in blog.tags %}  
+                {% if current_tags contains tag %}
+                    <li class="active">{{ tag | highlight_active_tag | link_to_remove_tag: tag }}</li>
+                {% else %}
+                    <li>{{ tag | highlight_active_tag | link_to_add_tag: tag }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        {% if current_tags %}
+        <p><a href="{{ blog.url }}">Remove selected tags</a></p>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% assign data = settings.widget_s1_handle %}
+    {% unless data == '' %}{% include settings.widget_s1_type %}{% endunless %}
+    
+    {% assign data = settings.widget_s2_handle %}
+    {% unless data == '' %}{% include settings.widget_s2_type %}{% endunless %}
+    
+    {% assign data = settings.widget_s3_handle %}
+    {% unless data == '' %}{% include settings.widget_s3_type %}{% endunless %}
+</aside>
+{% endunless %}
+</div><!-- .row -->
+
+<div class="sixteen columns">{% include 'pagination' %}</div>
+{% endpaginate %}

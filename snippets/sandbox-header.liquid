@@ -1,0 +1,216 @@
+<div id="util-bar">
+    {% if shop.customer_accounts_enabled and customer %}
+        <div class="container cf util-bar-upperarea">
+            <div class="sixteen columns">
+                <a class="button" href="/account">Manage your account</a>
+                <a class="button" href="/account/logout">Logout</a>
+            </div>
+        </div>
+    {% elsif shop.customer_accounts_enabled %}
+    	<div id="util-bar-login" class="container cf util-bar-upperarea">
+            <div class="inputwrap sixteen columns formfields">
+                <form action="/account/login" method="post">
+        			<span class="title">{{ settings.text_login }}</span>
+                    <div class="nameinputcont inputrow">
+                        <label for="headername" class="hoverlabel">Email address</label>
+        			    <input id="headername" type="text" class="nameinput" name="customer[email]" />
+                    </div>
+        			<div class="passwordinputcont inputrow">
+                        <label for="headerpassword" class="hoverlabel">Password</label>
+        				<input id="headerpassword" type="password" class="password" name="customer[password]" />
+        				<span class="forgot"><a href="/account/login">Forgot your password?</a></span>
+        			</div>
+                    <input type="submit" class="button pink" value="{{ settings.text_login }}" />
+                </form>
+            </div>
+    	</div>
+    {% endif %}
+    <div class="container">
+        <div class="cartsocialcont {% if settings.search_pos == 'tl' %}search-in-tagline{% else %}text-in-tagline{% endif %} sixteen columns {% if settings.search_pos == 'tr-sl' %}search-expandable{% endif %}">
+            {% if settings.search_pos == 'tl' %}
+                <div class="tagline-area">
+                    <div id="searchcont" class="inline formfields">
+                        <form class="inputrow" action="/search" method="get">
+                            <label class="hoverlabel" for="searchinput">{{ settings.text_search }}</label>
+                            <input class="search defaulttextjs" name="q" id="searchinput" type="text" />
+                            <input type="submit" value="→" />
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+          <div class="tagline-area tagline">
+            <span style="float:left"><a href="/pages/contact-us">Contact Us</a> |<img style="vertical-align:text-bottom" src="http://cdn.shopify.com/s/files/1/0238/6527/files/telephone_icon.png?10277"/> (877) 514-3494</span><span style="float:right">{{ settings.head_tagline }}&nbsp;</span></div>
+            {% endif %}
+            
+    		<div class="actions">
+              	<a href="/" class="mobilelogo"><img width="175" src="{{ 'mobilelogo.png' | asset_url }}" alt="{{ store.name }}" /></a>
+                {% if settings.sm_rss or settings.sm_facebook or settings.sm_twitter or settings.sm_tumblr or settings.sm_pinterest or settings.sm_youtube or settings.sm_instagram %}
+    			<div class="socialicons actions-item">
+        			<ul>
+                    {% if settings.sm_rss %}
+                        <li class="rss"><a title="Follow our RSS" target="_blank" href="{{ blogs[settings.sm_rss_blog].url }}.atom">RSS</a></li>
+                    {% endif %}
+                    {% if settings.sm_facebook %}
+                        <li class="facebook"><a title="Follow us on Facebook" target="_blank" href="{{settings.sm_facebook_link}}">Facebook</a></li>
+                    {% endif %}
+                    {% if settings.sm_twitter %}
+                        <li class="twitter"><a title="Follow us on Twitter" target="_blank" href="{{settings.sm_twitter_link}}">Twitter</a></li>
+                    {% endif %}
+                    {% if settings.sm_tumblr %}
+                        <li class="tumblr"><a title="Follow our Tumblr" target="_blank" href="{{settings.sm_tumblr_link}}">Tumblr</a></li>
+                    {% endif %}
+                    {% if settings.sm_pinterest %}
+                        <li class="pinterest"><a title="Follow us on Pinterest" target="_blank" href="{{settings.sm_pinterest_link}}">Pinterest</a></li>
+                    {% endif %}
+                    {% if settings.sm_youtube %}
+                        <li class="youtube"><a title="Follow us on YouTube" target="_blank" href="{{settings.sm_youtube_link}}">YouTube</a></li>
+                    {% endif %}
+                    {% if settings.sm_instagram %}
+                        <li class="instagram"><a title="Follow us on Instagram" target="_blank" href="{{settings.sm_instagram_link}}">Instagram</a></li>
+                    {% endif %}
+        			</ul>
+                </div>
+                {% endif %}
+               
+                {% if shop.customer_accounts_enabled and customer %}
+                    <a href="#" class="account logindrop actions-item">{{ settings.text_youraccount }}</a>
+                {% elsif shop.customer_accounts_enabled %}
+                    {% if settings.show_reg %}
+                        <span class="actions-item">{{ 'Register' | customer_register_link }}</span>
+                    {% endif %}
+    			    <a href="#" class="account logindrop actions-item">{{ settings.text_login }}</a>
+                {% endif %}
+    			<a class="button actions-item" href="/{% if template != 'cart' %}cart{% else %}checkout{% endif %}" id="cartsummary">{{ settings.text_cart }} <span id="headercartvals">({{ cart.item_count }}) {{ cart.total_price | money }}</span></a>
+                {% if settings.search_pos == 'tr-f' %}
+                    <div id="searchcont" class="inline formfields actions-item">
+                        <form class="inputrow" action="/search" method="get">
+                            <label class="hoverlabel" for="searchinput">{{ settings.text_search }}</label>
+                            <input class="search defaulttextjs" name="q" id="searchinput" type="text" />
+                            <input type="submit" value="→" />
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+		</div>
+        {% if settings.search_pos == 'tr-sl' %}
+        <div id="searchcont" class="slideout formfields dohover smarttextinput">
+            <a href="#" class="searchbtn">{{ settings.text_search }}</a>
+            <div class="searchformwrap">
+                <form class="inputrow" action="/search" method="get">
+                    <label class="hoverlabel" for="searchinput">{{ settings.text_search }}</label>
+                    <input class="search defaulttextjs" name="q" id="searchinput" type="text" />
+                    <input type="submit" value="→" />
+            	</form>
+            </div>
+        </div>
+        {% endif %}
+	</div>
+</div>
+<div class="bodywrap">
+    <header id="pageheader" class="container">
+    	<div id="logo-area" class="sixteen columns">
+            <div id="logo">    
+            {% if settings.use_logo_image %}
+              <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/" class="image-logo"><img src="{{ 'logo.png' | asset_url }}" alt="{{ shop.name }}" title="{{ shop.name }}" /></a>
+              
+             
+              {% else %}
+            <a href="/" class="text-logo">{{ shop.name }}</a>
+            {% endif %}
+            <img width="500" src="http://res.cloudinary.com/dibsies/image/upload/v1400799659/memorial-day-banner-mobile_copy_ujk5ho.jpg" alt="DIBSIES Personalization Station" title="DIBSIES Personalization Station" style="float: right;margin-right: 90px;margin-top: 30px;">
+            {% if template == 'index' %}
+              </div>
+            {% else %}
+            </div>
+            {% endif %}
+          
+          <div class="tagLine"><h1>Personalized Gifts for Children</h1></div>
+          <br />
+          
+            {% if settings.search_pos == 'logo-ru' or settings.search_pos == 'logo-rl' %}
+                
+          		<div id="searchcont" class="inline formfields {% if settings.search_pos == 'logo-rl'%}lower{% endif %}">
+                    
+                  	<form class="inputrow" action="/search" method="get">
+                        <label class="hoverlabel" for="searchinput">{{ settings.text_search }}</label>
+                        <input class="search defaulttextjs" name="q" id="searchinput" type="text" />
+                        <input type="submit" value="→" />
+                    </form>
+                </div>
+            {% endif %}
+    	</div>
+    	<nav class="sixteen columns">
+            {% assign dropdownMarkup = '' %}
+            {% assign firstliclass = ' class="first"' %}
+    		<ul>
+        	  	{% for link in linklists.main-menu.links %}
+        			<li{{ firstliclass }}>
+                        {% assign firstliclass = '' %}
+                        {% comment %} If catalog nav, show collections underneath {% endcomment %}
+                        {% if link.title == 'Catalog' %}
+                            <a class="hasdropdown" href="{{ link.url }}">{{ settings.text_catalog }}</a>
+                            {% capture dropdownMarkup %}{{ dropdownMarkup }}<option value="{{ link.url }}">{{ settings.text_catalog }}</option>{% endcapture %}
+                            <ul>
+                            {% for collection in collections %}
+                                {% assign handlefirst = collection.handle | split: '-' | first %}
+                                {% if collection.handle != 'all' and handlefirst != 'frontpage' %}
+                              <li><b>{{ collection.title | link_to: collection.url }}</b></li>
+                                {% capture dropdownMarkup %}{{ dropdownMarkup }}<option value="{{ collection.url }}">- {{ collection.title }}</option>{% endcapture %}
+                                {% endif %}
+                            {% endfor %}
+                            </ul>
+                            
+                            {% comment %}Show Vendor list right after collections{% endcomment %}
+                            {% if shop.vendors.size > 0 and settings.vendor_list_enabled == true %}
+                                </li>
+                                <li>
+                                    <a class="hasdropdown">{{ settings.text_vendor }}</a>
+                                    {% capture dropdownMarkup %}{{ dropdownMarkup }}<option value="">{{ settings.text_vendor }}</option>{% endcapture %}
+                                    <ul>
+                                        {% for vendor in shop.vendors %}
+                                            <li>{{ vendor | link_to_vendor }}</li>
+                                            {% capture dropdownMarkup %}{{ dropdownMarkup }}<option value="{{ vendor | url_for_vendor }}">- {{ vendor }}</option>{% endcapture %}
+                                        {% endfor %}
+                                    </ul>
+                            {% endif %}
+                            
+                            {% comment %}Show Types list right after vendors{% endcomment %}
+                            {% if shop.types.size > 0 and settings.type_list_enabled == true %}
+                                </li>
+                                <li>
+                                    <a class="hasdropdown">{{ settings.text_type }}</a>
+                                    {% capture dropdownMarkup %}{{ dropdownMarkup }}<option value="">{{ settings.text_type }}</option>{% endcapture %}
+                                    <ul>
+                                        {% for type in shop.types %}
+                                            <li>{{ type | link_to_type }}</li>
+                                            {% capture dropdownMarkup %}{{ dropdownMarkup }}<option value="{{ type | url_for_type }}">- {{ type }}</option>{% endcapture %}
+                                        {% endfor %}
+                                    </ul>
+                            {% endif %}
+                        {% else %}
+                            {% comment %} Get any lists named the same as the parent and treat as subnav {% endcomment %}
+                            {% include 'child-menu-detector' with link %}
+                            {% if has_drop_down %}
+                                   {% if forloop.index == 1 %}
+                                  <a class="hasdropdown" href="{{ link.url }}">{{ link.title }}</a>
+                                  {% else %}
+                                  <a class="hasdropdown" href="{{ link.url }}"><font color="#f45929">&nbsp;|</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ link.title }}</a>
+                                  {% endif %}
+                                  {% capture dropdownMarkup %}{{ dropdownMarkup }}<option value="{{ link.url }}">{{ link.title }}</option>{% endcapture %}
+                    			<ul>
+                                    {% for l in linklists[child_list_handle].links %}
+                					    <li><a href="{{ l.url }}">{{ l.title }}</a></li>
+                                  {% capture dropdownMarkup %}{{ dropdownMarkup }}<option value="{{ l.url }}">- {{ l.title }}</option>{% endcapture %}
+                                    {% endfor %}
+                				</ul>
+                            {% else %}
+                                  <a href="{{ link.url }}"><font color="#f45929">&nbsp;|</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ link.title }}</a>
+                                  {% capture dropdownMarkup %}{{ dropdownMarkup }}<option value="{{ link.url }}">{{ link.title }}</option>{% endcapture %}
+                            {% endif %}
+                        {% endif %}
+        			</li>
+    			{% endfor %}
+    		</ul>
+            <select id="dropdownNav" class="noreplace"><option value="">Go to...</option>{{ dropdownMarkup }}</select>
+    	</nav>
+    </header>

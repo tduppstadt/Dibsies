@@ -1,0 +1,24 @@
+<div id="ssw-widget-share-links-html" data-title="{{ product.title }}" data-handle="{{ product.handle }}" data-images="{{ product.featured_image | product_img_url: lightbox_image_size }}"></div>
+<script type="text/javascript">
+    if(typeof sswWidgetShareLinkInterval === 'undefined'){
+        var sswWidgetShareLinkInterval = setInterval(function(){
+            if(typeof userChecked !== 'undefined' && userChecked){
+                clearInterval(sswWidgetShareLinkInterval);
+                var shareLinksData = {
+                    'module': 'service',
+                    'name': 'SocialButtons',
+                    'title': ssw('#ssw-widget-share-links-html').data('title'),
+                    'url': location.protocol + '//' + location.host + '/products/' + ssw('#ssw-widget-share-links-html').data('handle'),
+                    'images': ssw('#ssw-widget-share-links-html').data('images'),
+                    'page': 'product',
+                    'share_type': 'product_share',
+                    '_sid': ssw.cookie('hesid'),
+                    'hash_key': ssw.cookie('hash_key')
+                };
+                ssw.get('/apps/ssw/lite2/core/widget/index', shareLinksData, function(response){
+                    ssw('#ssw-widget-share-links-html').html(response);
+                });
+            }
+        }, 300);
+    }
+</script>
