@@ -12,9 +12,15 @@ $(document).ready(function(){
 
         // DIBSIES On The DOUBLE info
         $("body").on("click", ".js-d-on-d-info", function(){
-            console.log("clicked");
             var template = $("#modal-dibsies-on-double").html();
             window.showModal(template);            
+        });
+        
+        // preview
+        $("body").on("click", ".js-personalize-btn", function(){
+            console.log("click");
+            var template = $("#modal-product-preview").html();
+            window.showModal(template);  
         });
 
     };

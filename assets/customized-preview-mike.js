@@ -1,14 +1,15 @@
 $(document).ready(function()
 {
-	
  	var self = this;
 
 	this.loadInProgress = false;
   
    
 	// create template id lookup
+
 	this.templateLookUp = {};
-	var temp = $("#custom-preview").attr("data-template-lookup").split(",");
+
+	var temp = $("#modal-product-preview").attr("data-template-lookup").split(",");
 	for (var i = 0; i < temp.length; i++)
 	{		
 		this.templateLookUp[temp[i].split("=")[0]] = temp[i].split("=")[1];
@@ -34,7 +35,8 @@ $(document).ready(function()
     }
   
 	// preview button
-	$("#custom-preview").on("click", function()
+  
+	$("body").on("click", "#custom-preview", function()
      {
 		if (self.loadInProgress) return;
 		if (self.validateForm()) return;
@@ -555,6 +557,8 @@ $(document).ready(function()
     //                                                generatePreview
 	this.generatePreview = function(arg,cloudUrl)
 	{ 
+    $(".no-preview", ".modal-product-preview").removeClass("no-preview");
+
 		// show loading
 		self.loadingPreview();
 
