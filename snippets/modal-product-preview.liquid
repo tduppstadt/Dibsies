@@ -188,10 +188,10 @@
 							                  {% if stepnumber == 1 %} 
 							                    {% if product.metafields.PZKeys.alternate_names_dates == 1 %}
 							                  <label><b>
-							                      Add Names & Birthdates:
-													</b></label><br/><font size="-2">(Only 1 Name and 1 Birthdate Is Required)</font><br /><br />
+							                      Add Personalized Text & Dates:
+													</b></label><br/><font size="-2">(Only 1 Text and 1 Date Is Required)</font><br /><br />
 							                      {% else %}
-							          <label><b>  
+							          <label><b>  							          
 							                  Add Names:
 							                      {% if product.metafields.PZKeys.is_ornament == 1 %}
 							                        </b>
@@ -227,7 +227,7 @@
 							          <br/> {% endif %}
 							          <br/>
 							          <br/>
-							          <p></p>
+							          <p></p>							          
 							          {% endfor %} {% else %} {% for i in (1..{{product.metafields.PZKeys.number_of_names}}) %}
 							          <label class="nameLabel{{ i }}"><font size="-2"><b> Name {{ i }}: </b></font>
 							          </label>
