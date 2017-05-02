@@ -146,11 +146,7 @@
             $('#productinfo .gallery a.thumb[href^="' + Shopify.Image.getSizedImageUrl(variant.featured_image.src, 'master').split('?')[0] + '"]').first().click();
         }
 
-
-
-        console.log(variant);
         variantsku = variant.sku;
-        console.log("testme2");
 
         var optionMTValue = variant.options[{
             {

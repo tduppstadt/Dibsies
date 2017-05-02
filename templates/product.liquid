@@ -33,7 +33,7 @@
   
   
   {% assign featured_image = product.selected_or_first_available_variant.featured_image | default: product.featured_image %}
-  <div id="productinfo" class="cf" data-featimgurl="{{ product.featured_image | product_img_url: 'small' }}" itemscope itemtype="http://schema.org/Product">
+  <div id="productinfo" class="cf js-productinfo" data-featimgurl="{{ product.featured_image | product_img_url: 'small' }}" itemscope itemtype="http://schema.org/Product">
   
     <div class="eight columns">
   

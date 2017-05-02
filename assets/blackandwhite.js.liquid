@@ -208,7 +208,7 @@ $(function(){
     };
     
   /// Gallery
-  $('#productinfo .gallery').on('click', '.thumbnails .thumb', function(e){
+  $('body').on('click', '.js-productinfo .gallery .thumbnails .thumb', function(e){
     e.preventDefault();
     var $mainA = $(this).closest('.gallery').find('.main a');
     var newImg = $(this).attr('href');
@@ -240,7 +240,8 @@ $(function(){
   });
   
   //Zoom or LB
-    $('#productinfo .gallery').on('initzoomorlightbox', function(){
+    $('.js-productinfo .gallery').on('initzoomorlightbox', function(){
+    
       //Zoom
       if($(this).hasClass('mode-zoom')) {
         var opts = {};

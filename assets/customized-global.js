@@ -21,6 +21,21 @@ $(document).ready(function(){
             console.log("click");
             var template = $("#modal-product-preview").html();
             window.showModal(template);  
+
+
+            $('.modal-product-preview .gallery').on('initzoomorlightbox', function(){
+            
+              //Zoom
+              if($(this).hasClass('mode-zoom')) {
+                var opts = {};
+                $.extend(opts, thumbZoomOptions);
+                opts.blockClicks = true;
+                $(this).find('.main a').jqzoom(opts);
+              }
+              //LB
+              $(this).find('.main a').slimbox();
+            }).trigger('initzoomorlightbox');
+
         });
 
     };
