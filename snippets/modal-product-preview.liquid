@@ -189,11 +189,8 @@
 							                    {% if product.metafields.PZKeys.alternate_names_dates == 1 %}
 							                  <label><b>
 							                      Add Names & Birthdates:
-							                         </b>
-							          </label>
-							          <br/><font size="-2">(Only 1 Name and 1 Birthdate Is Required)</font>
-							          <br />
-							          <br /> {% else %}
+													</b></label><br/><font size="-2">(Only 1 Name and 1 Birthdate Is Required)</font><br /><br />
+							                      {% else %}
 							          <label><b>  
 							                  Add Names:
 							                      {% if product.metafields.PZKeys.is_ornament == 1 %}
@@ -207,36 +204,25 @@
 							          <br /> {% endif %} {% endif %} {% else %}
 							          <br/> {% if product.metafields.PZKeys.alternate_names_dates == 1 %}
 							          <label><b>
-							                      Step {{ stepnumber }}. Add Names & Birthdates:
-							                          </b>
-							          </label>
-							          <br/><font size="-2">(Only 1 Name and 1 Birthdate Is Required)</font>
-							          <br />
-							          <br /> {% else %}
+							                Step {{ stepnumber }}. Add Personalized Text & Dates:
+											</b></label><br/><font size="-2">(Only 1 Text and 1 Date Is Required)</font><br /><br />
+                   						{% else %}
 							          <label><b>
 							                      Step {{ stepnumber }}. Add Names: 
 							                        </b>
 							          </label><font size="-2">(Only 1 Name Is Required)</font>
 							          <br />
 							          <br /> {% endif %} {% endif %} {% if product.metafields.PZKeys.alternate_names_dates == 1 %} {% for i in (1..{{product.metafields.PZKeys.number_of_names}}) %} {% if i == 1 %}
-							          <label><font size="-2"><b> Birthdate {{ i }} (in MM.DD.YY format, Example: 01.12.15) </b></font>
-							          </label>
-							          <br/>
+							          <label><font size="-2"><b> Date {{ i }} (in MM.DD.YY format, Example: 01.12.15) </b></font></label><br/>
 							          <input class="required personalize-option customDate{{ i }}" type="text" id="Birthdate {{ i }}" name="properties[Birthdate {{ i }}]" style="width:175px;" maxlength="{{ 8 }}" data-fieldname="Birthdate {{ i }}" />
 							          <br/>
-							          <label><font size="-2"><b> Name {{ i }} (all lowercase): </b></font>
-							          </label>
-							          <br/>
+							          <label><font size="-2"><b> Personalized Name/Text {{ i }}: </b></font></label><br/>
 							          <input class="required personalize-option customName{{ i }}" type="text" id="Personalized Name {{ i }}" name="properties[Personalized Name {{ i }}]" style="width:175px;" maxlength="{{ product.metafields.PZKeys.maxlength }}" data-fieldname="Personalized Name {{ i }}" />
 							          <br/> {% else %}
-							          <label><font size="-2"><b> Birthdate {{ i }} (in MM.DD.YY format, Example: 01.12.15): </b></font>
-							          </label>
-							          <br/>
+							          <label><font size="-2"><b> Date {{ i }} (in MM.DD.YY format, Example: 01.12.15): </b></font></label><br/>
 							          <input class="personalize-option customDate{{ i }}" type="text" id="Birthdate {{ i }}" name="properties[Birthdate {{ i }}]" style="width:175px;" maxlength="{{ 8 }}" data-fieldname="Birthdate {{ i }}" />
 							          <br/>
-							          <label><font size="-2"><b> Name {{ i }} (all lowercase): </b></font>
-							          </label>
-							          <br/>
+							          <label><font size="-2"><b> Personalized Name/Text {{ i }}: </b></font></label><br/>
 							          <input class="personalize-option customName{{ i }}" type="text" id="Personalized Name {{ i }}" name="properties[Personalized Name {{ i }}]" style="width:175px;" maxlength="{{ product.metafields.PZKeys.maxlength }}" data-fieldname="Personalized Name {{ i }}" />
 							          <br/> {% endif %}
 							          <br/>
