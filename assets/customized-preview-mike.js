@@ -557,7 +557,11 @@ $(document).ready(function()
     //                                                generatePreview
 	this.generatePreview = function(arg,cloudUrl)
 	{ 
+    // show preview section
     $(".no-preview", ".modal-product-preview").removeClass("no-preview");
+
+    // show cart
+    $(".cart-section").css("display", "block");
 
 		// show loading
 		self.loadingPreview();

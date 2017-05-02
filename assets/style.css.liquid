@@ -3322,6 +3322,7 @@ width:160px; /* Dropdown width */
     padding-top: 10px;
     padding-bottom: 26px;
     margin-top: 20px;
+    text-align: center;
 }
 
 #close-modal.button
@@ -3487,10 +3488,24 @@ span#view-responsive{ display: none; }
     max-width: 343px;
     margin-left: auto;
     margin-right: auto;
+    display: none;
 }
 
+#addToCartCopy,
 #shappify_add_to_cart_btn {
     height: 50px;
     width: 100%;
     text-align: center;
+}
+
+@media only screen and (max-width: 400px) {
+    .addbuttoncont, 
+    .addbuttoncont input,
+    .addbuttoncont #custom-preview.button{
+        width: 100% !important;
+    }
+
+    .preview-btn-info {
+        display: none !important;
+    }
 }
