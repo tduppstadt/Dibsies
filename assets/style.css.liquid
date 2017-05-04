@@ -2616,6 +2616,9 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#4C000000,endCol
 }
 
 /* Slimbox */
+#lbSlide {
+    width: 100%;
+}
 #lbOverlay {
     position: fixed;
   z-index: 9999;
@@ -2638,12 +2641,12 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#4C000000,endCol
   background: #fff url({{ 'loader-white.gif' | asset_url }}) no-repeat center;
 }
 
-#lbImage {
+ #lbImage {
   position: absolute;
   left: 0;
   top: 0;
   border: 10px solid #fff;
-  background-repeat: no-repeat;
+  background-repeat: no-repeat; 
 }
 
 #lbPrevLink, #lbNextLink {
