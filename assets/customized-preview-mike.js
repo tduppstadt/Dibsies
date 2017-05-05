@@ -204,7 +204,7 @@ $(document).ready(function()
 	this.clearPreview = function()
 	{ 
 		$("#preview-out").html("");
-      	$("#preview-out-main-image").html("");
+    $("#preview-out-main-image").html("");
 	};
 
 	// ______________________________________________________________
@@ -559,6 +559,8 @@ $(document).ready(function()
 	{ 
     // show preview section
     $(".no-preview", ".modal-product-preview").removeClass("no-preview");
+    $(".js-productinfo", ".modal-product-preview").css("display", "none");
+
 
     // show cart
     $(".cart-section").css("display", "block");

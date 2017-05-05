@@ -28,7 +28,6 @@
 
 						 {% assign featured_image = product.selected_or_first_available_variant.featured_image | default: product.featured_image %}
 
-						{% if product.metafields.PZKeys.template_id_map == blank and product.metafields.PZKeys.design_id == blank %}
 							<div class="col-md-6 reg-preview-container js-productinfo" data-featimgurl="{{ product.featured_image | product_img_url: 'small' }}" itemscope itemtype="http://schema.org/Product">
 				          		<div class="gallery mode-{{ settings.prod_det_gall_method }}">
 									<div class="main">
@@ -49,15 +48,14 @@
 								</div>
 							</div> <!–– end preview col ––>
 
-					{% else %}
 
 							<div class="col-md-6 preview-out-container no-preview--hide-me">
 				          			<div id="preview-out"></div>
 				          	</div> <!–– end preview col ––>								
-						{% endif %}
+						
 						
 
-			          	<div class="col-md-6 no-preview--center-me">
+			          	<div class="col-md-6">
 							{% if product.available %}
 
 							  
