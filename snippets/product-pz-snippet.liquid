@@ -24,10 +24,24 @@
     <hr style="clear: both;">
 </div>
 
-<script>
+{% assign option_mt_index = 0 %}
+{% assign option_number_names_index = 0 %}
+{% if product.metafields.PZKeys.is_monogram == 1%}
+  {% assign monogram_type = 'Type of Monogram' %}
+  {% assign number_names = 'Choose Number of Names' %}
+  {% for option in product.options %}
+    {% if option == monogram_type %}
+        {% assign option_mt_index = forloop.index0 %}
+        {% assign option_number_names_index = forloop.index0 %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+<script type="text/javascript">
+
     // (c) Copyright 2011 Caroline Schnapp. All Rights Reserved. Contact: mllegeorgesand@gmail.com
     // See http://wiki.shopify.com/Linked_Options
-    var Shopify = Shopify || {};
+    window.Shopify = Shopify || {};
 
     Shopify.optionsMap = {};
 
@@ -106,22 +120,26 @@
         });
 
     };
-</script>
 
-<script type="text/javascript">
+
+
+
+
+
+
+
+
+
+window.LiquidJsProduct = function() {
     var variantsku;
 
     var selectCallback = function(variant, selector) {
-
+        
         if (variant && variant.available == true) {
 
             // selected a valid variant
             $("input[type=submit]").show();
-            var newHtml = '<font color="red" size="3">Sale Price:</font> ' + Shopify.formatMoney(variant.price, {
-                {
-                    shop.money | json
-                }
-            });
+            var newHtml = '<font color="red" size="3">Sale Price:</font> ' + Shopify.formatMoney(variant.price, {{ shop.money | json }});
             if (variant.compare_at_price > variant.price) {
                 newHtml += '<div class="was-price">' + 'Regular Price ' + Shopify.formatMoney(variant.compare_at_price, "{{shop.money}}") + '</div>';
             }
@@ -129,30 +147,20 @@
         } else {
             // variant doesn't exist
             $("input[type=submit]").hide();
-            var message = variant ? {
-                {
-                    'products.variant.out_of_stock' | t | json
-                }
-            } : {
-                {
-                    'products.variant.non_existent' | t | json
-                }
-            };
+            var message = variant ? {{ 'products.variant.out_of_stock' | t | json }} : {{ 'products.variant.non_existent' | t | json }};
             $('#price-field').text("Currently Out of Stock"); // update price-field message
         }
 
         //Shopify variant linking
         if (variant && variant.featured_image) {
-            $('#productinfo .gallery a.thumb[href^="' + Shopify.Image.getSizedImageUrl(variant.featured_image.src, 'master').split('?')[0] + '"]').first().click();
+            $('.modal-product-preview .gallery a.thumb[href^="' + Shopify.Image.getSizedImageUrl(variant.featured_image.src, 'master').split('?')[0] + '"]').click();
         }
 
         variantsku = variant.sku;
 
-        var optionMTValue = variant.options[{
-            {
-                option_mt_index
-            }
-        }];
+        var optionMTValue = variant.options[{{ option_mt_index }}];
+        //var optionMTValue = variant.options[0];
+        
 
         // Begin Number of Initials Dynamic Form Code
 
@@ -239,11 +247,10 @@
 
         // Begin Number of Names Dynamic Form Code
 
-        var optionNumberNamesValue = variant.options[{
-            {
-                option_number_names_index
-            }
-        }];
+        var optionNumberNamesValue = variant.options[{{ option_number_names_index }}];
+        //var optionNumberNamesValue = variant.options[0];
+        
+
         console.log("optionNumberNamesValue:" + optionNumberNamesValue);
         for (var i = 1; i < 30; i++) {
 
@@ -262,42 +269,44 @@
     };
 
     //Set up product inputs
-    $(function() {
-        new Shopify.OptionSelectors("product-select", {
-            product: {
-                {
-                    product | json
-                }
-            },
-            onVariantSelected: selectCallback,
-            enableHistoryState: true
-        }); { %
-            if product.options.size > 1 %
-        }
-        Shopify.linkOptionSelectors({
-            {
-                product | json
-            }
-        }); { % endif %
-        }
+   
+    new Shopify.OptionSelectors("product-select", {
+        product: {{ product | json }},
+        onVariantSelected: selectCallback,
+        enableHistoryState: true
+    }); 
 
-        //Hide original option label if we now have multiple options
-        if ($('.selector-wrapper .single-option-selector').length != 1) {
-            $('#product-select').siblings('label[for="product-select"]').hide();
-        }
+    {% if product.options.size > 1 %}
+        Shopify.linkOptionSelectors({{ product | json }}); 
+    {% endif %}
 
-        //Style any added select dropdowns
-        $.selectReplace();
-    });
-</script>
+    //Hide original option label if we now have multiple options
+    if ($('.selector-wrapper .single-option-selector').length != 1) {
+        $('#product-select').siblings('label[for="product-select"]').hide();
+    }
 
-<script>
+    //Style any added select dropdowns
+    $.selectReplace();
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     Shopify.money_format = '{{shop.money_format | replace: "'
     ", '"
     '}}';
 
-    { % unless settings.prod_disable_ajax %
-    }
+    {% unless settings.prod_disable_ajax %}
     //Override for default Shopify function
     Shopify.onItemAdded = function(line_item) {
         //Make buttons usable again
@@ -341,14 +350,14 @@
     }
 
     //Define the function that adds to the cart
-    function addToCart(e) {
+    function window.addToCart(e) {
         if (typeof e !== 'undefined') e.preventDefault();
         Shopify.addItemFromForm($(this).closest('form').attr('id'));
     }
 
-    $(function() {
         //Action for clicking 'buy'
         $('#purchase').bind('click', addToCart);
-    }); { % endunless %
-    }
+    {% endunless %}
+
+};
 </script>

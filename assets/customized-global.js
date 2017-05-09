@@ -1,5 +1,11 @@
 $(document).ready(function(){
 
+
+
+
+
+
+
 	// ______________________________________________________________
     //                                                      showModal
     window.showModal = function(template) {
@@ -18,10 +24,11 @@ $(document).ready(function(){
         
         // preview
         $("body").on("click", ".js-personalize-btn", function(){
-            console.log("click");
             var template = $("#modal-product-preview").html();
             window.showModal(template);  
 
+            // from product-pz-snippet.liquid
+            window.LiquidJsProduct();
 
             $('.modal-product-preview .gallery').on('initzoomorlightbox', function(){
             

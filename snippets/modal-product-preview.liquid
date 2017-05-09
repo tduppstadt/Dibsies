@@ -36,8 +36,9 @@
 											<img src="{{ featured_image | img_url: 'master' }}" alt="{{ featured_image.alt | escape }}" />
 										</a>
 									</div>
+
 									{% if product.images.size > 1 %}
-										<div class="thumbnails">
+										<div class="thumbnails" style="display:none;">
 										{% for image in product.images %}
 											<a class="thumb" {% if image.src == featured_image %} class="active" {% endif %} title="{{ image.alt | escape }}" href="{{ image | product_img_url: 'master' }}">
 												<img src="{{ image | img_url: 'small' }}" alt="{{ image.alt | escape }}"/>
@@ -72,8 +73,6 @@
 							                  <option {% if variant.id==p roduct.selected_or_first_available_variant.id %} selected="selected" {% endif %} value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
 							                  {% endfor %}
 							              </select>
-							              <br/>
-							              <br/>
 							          </div>
 
 							          {% assign option_mt_index = 0 %} {% assign option_number_names_index = 0 %} {% if product.metafields.PZKeys.is_monogram == 1%} {% assign monogram_type = 'Type of Monogram' %} {% assign number_names = 'Choose Number of Names' %} {% for option in product.options %} {% if option == monogram_type %} {% assign option_mt_index = forloop.index0 %} {% assign option_number_names_index = forloop.index0 %} {% endif %} {% endfor %} {% endif %}
@@ -95,67 +94,76 @@
 
 
 
-							              {% assign stepnumber = 1 %} {% unless product.metafields.PZKeys.font == blank %} {% assign availableFonts = product.metafields.PZKeys.font | split: ',' %} {% unless availableFonts.size
-							              < 2 %} <div>
-							                  <label><b>Step 1. Choose Your Font:</b>
-							                  </label>
-							                  <br />
-							                  <br />
-							                  <select class="required personalize-option customFont" id="Font" name="properties[Font]" data-fieldname="Font">
-							                      <option value="">Select Font ...</option>
-							                      {% for font in availableFonts %}
-							                      <option value="{{ font | strip_newlines }}">{{ font | strip_newlines }}</option>
-							                      {% endfor %}
-							                  </select>
-							          </div>
-							          {% assign stepnumber = stepnumber | plus:1 %} {% endunless %} {% endunless %}
-
-
+							          {% assign stepnumber = 1 %} 
+							              {% unless product.metafields.PZKeys.font == blank %}
+							                {% assign availableFonts = product.metafields.PZKeys.font | split: ',' %} 
+							                {% unless availableFonts.size < 2 %}
+							                  <div>
+							                    <label><b>Step 1. Choose Your Font:</b></label><br /><br />
+							                    <select class="required personalize-option customFont" id="Font" name="properties[Font]" data-fieldname="Font">
+							                                <option value="">Select Font ...</option> 
+							                                  {% for font in availableFonts %}
+							                                     <option value="{{ font | strip_newlines }}">{{ font | strip_newlines }}</option>
+							                                {% endfor %}
+							                        </select>
+							                  </div>
+							                  {% assign stepnumber = stepnumber | plus:1 %}
+							          		{% endunless %}
+							              {% endunless %}
 							          
-							          {% unless product.metafields.PZKeys.fontcolor == blank %} {% if product.variants.first.metafields.PZKeys.fontcolor == blank %} {% assign availableFontColors = product.metafields.PZKeys.fontcolor | split: ',' %} {% else %} {% assign availableFontColors = product.variants.first.metafields.PZKeys.fontcolor | split: ',' %} {% endif %} {% unless availableFontColors.size
-							          < 2 %} <br />
-							          <div>
-							              <label id="TextColorLabel"><b>Step {{ stepnumber }}. Choose Your Text Color:</b>
-							              </label>
-							              <br />
-							              <br />
-							              <p style="margin-left:30px;margin-right:60px" id="TextColorLabelExtra"></p>
-							              <div id="Step2">
-							                  <select class="required personalize-option customColor" id="TextColor" name="properties[Text Color]" data-fieldname="Text Color">
-							                      <option value="">Select Text Color ...</option>
-							                      {% for fontcolor in availableFontColors %}
-							                      <option value="{{ fontcolor | strip_newlines }}">{{ fontcolor | strip_newlines }}</option>
-							                      {% endfor %}
-							                  </select>
-							              </div>
-							          </div>
-
-							          {% assign stepnumber = stepnumber | plus:1 %} {% endunless %} {% endunless %} {% unless product.metafields.PZKeys.graphic_art == blank %} {% assign availableArt = product.metafields.PZKeys.graphic_art | split: ',' %} {% unless availableArt.size
-							          < 2 %} <br />
-							          <div>
-							              <label><b>Step {{ stepnumber }}. Choose Your Graphic Art:</b>
-							              </label>
-							              <br />
-							              <br />
-							              <select class="required personalize-option customArt" id="Graphic Art" name="properties[Graphic Art]" data-fieldname="Graphic Art">
-							                  <option value="">Select Graphic Art ...</option>
-							                  {% for art in availableArt %}
-							                  <option value="{{ art | strip_newlines }}">{{ art | strip_newlines }}</option>
-							                  {% endfor %}
-							              </select>
-							          </div>
-
-							          {% assign stepnumber = stepnumber | plus:1 %} {% endunless %} {% endunless %} {% unless product.metafields.PZKeys.personalized_title == 0 or product.metafields.PZKeys.personalized_title == blank %}
-
-
-							          <label><b>{% if stepnumber == 1 %} 
+							              {% unless product.metafields.PZKeys.fontcolor == blank %}
+							          		{% if product.variants.first.metafields.PZKeys.fontcolor == blank %}
+							                	{% assign availableFontColors = product.metafields.PZKeys.fontcolor | split: ',' %} 
+							          		{% else %}
+							          			{% assign availableFontColors = product.variants.first.metafields.PZKeys.fontcolor | split: ',' %}
+							          		{% endif %}
+							                {% unless availableFontColors.size < 2 %}
+							          			<br />
+							                  <div>
+							                    <label id="TextColorLabel"><b>Step {{ stepnumber }}. Choose Your Text Color:</b></label><br /><br />
+							                    <p style="margin-left:30px;margin-right:60px" id="TextColorLabelExtra"></p>
+							                    	<div id="Step2">
+							                    	<select class="required personalize-option customColor" id="TextColor" name="properties[Text Color]" data-fieldname="Text Color">
+							                                <option value="">Select Text Color ...</option> 
+							                                  {% for fontcolor in availableFontColors %}
+							                                     <option value="{{ fontcolor | strip_newlines }}">{{ fontcolor | strip_newlines }}</option>
+							                                {% endfor %}
+							                        </select>
+							                    	</div>  
+							                  </div>
+							          		 
+							                  {% assign stepnumber = stepnumber | plus:1 %}
+							              	{% endunless %}
+							          	  {% endunless %}
+							          
+							              {% unless product.metafields.PZKeys.graphic_art == blank %}
+							                {% assign availableArt = product.metafields.PZKeys.graphic_art | split: ',' %} 
+							                {% unless availableArt.size < 2 %}
+							                  <br />
+							                  <div>
+							                    <label><b>Step {{ stepnumber }}. Choose Your Graphic Art:</b></label><br /><br />
+							                        <select class="required personalize-option customArt" id="Graphic Art" name="properties[Graphic Art]" data-fieldname="Graphic Art">
+							                                <option value="">Select Graphic Art ...</option> 
+							                                  {% for art in availableArt %}
+							                                     <option value="{{ art | strip_newlines }}">{{ art | strip_newlines }}</option>
+							                                {% endfor %}
+							                        </select>
+							                  </div>
+							                  
+							                  {% assign stepnumber = stepnumber | plus:1 %}
+							          		{% endunless %}
+							       		 {% endunless %}
+							          
+							             {% unless product.metafields.PZKeys.personalized_title == 0 or product.metafields.PZKeys.personalized_title == blank %}
+							               		
+							          
+							          			<label><b>{% if stepnumber == 1 %}
 							                              Add Your Personalized Title:
 							                      {% else %}
 							                            <br />  
 							                        Step {{ stepnumber }}. Add Your Personalized Title:
 							                              {% assign stepnumber = stepnumber | plus:1 %}
-							                      {% endif %}
-							                        
+							                      {% endif %}					                        
 							                        </b>
 							          </label><font size="-2"><br/>(Examples:
 							           {% if product.metafields.PZKeys.personalized_title_examples == blank %}
