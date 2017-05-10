@@ -22,7 +22,7 @@ $(document).ready(function(){
             window.showModal(template);            
         });
         
-        // preview
+        // personalize
         $("body").on("click", ".js-personalize-btn", function(){
             var template = $("#modal-product-preview").html();
             window.showModal(template);  
@@ -30,17 +30,25 @@ $(document).ready(function(){
             // from product-pz-snippet.liquid
             window.LiquidJsProduct();
 
+            // scroll to top
+            $("#generalModal").animate({ scrollTop: 0 }, "slow");
+
+            // preview
             $('.modal-product-preview .gallery').on('initzoomorlightbox', function(){
             
-              //Zoom
-              if($(this).hasClass('mode-zoom')) {
-                var opts = {};
-                $.extend(opts, thumbZoomOptions);
-                opts.blockClicks = true;
-                $(this).find('.main a').jqzoom(opts);
-              }
-              //LB
-              $(this).find('.main a').slimbox();
+                // scroll to top
+                $("#generalModal").animate({ scrollTop: 0 }, "slow");
+
+                // init Zoom
+                if ($(this).hasClass('mode-zoom')) {
+                    var opts = {};
+                    $.extend(opts, thumbZoomOptions);
+                    opts.blockClicks = true;
+                    $(this).find('.main a').jqzoom(opts);
+                }
+
+                // init lightbox
+                $(this).find('.main a').slimbox();
             }).trigger('initzoomorlightbox');
 
         });
