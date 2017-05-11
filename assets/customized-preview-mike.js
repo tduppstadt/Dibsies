@@ -49,7 +49,8 @@ $(document).ready(function()
       		$("a.product-page-link").attr("href", href_no_querystring + '?pzText=' + formPzText.value);
           	$("input.product-page-link").attr("onClick", "javascript:location.href='" + href_no_querystring + "?pzText=" + formPzText.value +"';");
         }
-		
+		    $("#generalModal").animate({ scrollTop: 0 }, "slow");
+        
         self.getPreview();
 
 	});

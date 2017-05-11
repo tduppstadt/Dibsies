@@ -35,7 +35,8 @@ $(document).ready(function(){
 
             // preview
             $('.modal-product-preview .gallery').on('initzoomorlightbox', function(){
-            
+
+
                 // scroll to top
                 $("#generalModal").animate({ scrollTop: 0 }, "slow");
 
