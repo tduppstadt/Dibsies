@@ -36,6 +36,8 @@
 
         {% if product.available %}
         <form id="product-form-personalized" action="/cart/add" method="post">
+  {% comment %}{% include 'product-customizer' %}{% endcomment %}
+
             <div class="options">
              {% if shappify_qb_options_count == 1 %}
                 <input type="hidden" name="id" value="{{ product.variants.first.id }}" />

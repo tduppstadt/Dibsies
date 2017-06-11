@@ -14,6 +14,8 @@
             {% if collection.products.size > number_to_show %}</a>{% endif %}
         {% endunless %}
         {% for product in collection.products limit: number_to_show %}
+
+          {% if product.type == 'SHOPSTORM_HIDDEN_PRODUCT' %}{% continue %}{% endif %}
             {% include 'product-list-repeatable-item' with product %}
         {% endfor %}
         {% endpaginate %}
@@ -37,6 +39,8 @@
             {% if collection.products.size > number_to_show %}</a>{% endif %}
         {% endunless %}
         {% for product in collection.products limit: number_to_show %}
+
+          {% if product.type == 'SHOPSTORM_HIDDEN_PRODUCT' %}{% continue %}{% endif %}
             {% include 'product-list-repeatable-item' with product %}
         {% endfor %}
         {% endpaginate %}

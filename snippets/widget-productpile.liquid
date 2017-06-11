@@ -1,3 +1,4 @@
+
 {% assign split_data = data | split: '|' %}
 {% if split_data.size == 2 %}
 {% assign num_to_show = split_data[1] | plus: 0 %}
@@ -11,6 +12,7 @@
     <ul>
     {% assign counter = 0 %}
     {% for product in collections[split_data.first].products limit: num_to_show %}
+      {% if product.type == 'SHOPSTORM_HIDDEN_PRODUCT' %}{% continue %}{% endif %}
     <li class="product{% if counter == 1 %} middle{% endif %}">
         <a class="showpopuptext" data-popuptext="{{ product.title }}" href="{{ product.url }}">{{ product.featured_image | product_img_url: 'compact' | img_tag: product.featured_image.alt }}</a>
     </li>

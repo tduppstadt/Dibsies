@@ -116,9 +116,7 @@ $(document).ready(function() {
         <div class="productlist">  
         
         {% for product in collection.products %}
-          	<!-- Bold Apps: Premium Options --> {% if product.metafields.inventory.ShappifyHidden == "true" %}{% else %}
-            {% include 'product-list-repeatable-item' with product %}
-          	{% endif %} <!-- Bold Apps: Premium Options -->
+            {% include 'product-list-repeatable-item' with product %}       	
         {% endfor %}
         </div><!-- .productlist -->
     {% endif %}

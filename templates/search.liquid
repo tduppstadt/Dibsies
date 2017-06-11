@@ -52,6 +52,8 @@
                 {% assign pageHTML = '' %}
                 {% for item in search.results  %}
 
+                  {% if item.type == 'SHOPSTORM_HIDDEN_PRODUCT' %}{% continue %}{% endif %}
+
                     {% if item.type %}
                         {% capture productHTML %}{{ productHTML }}{% include 'product-list-repeatable-item' with item %}{% endcapture %}
                     {% else %}

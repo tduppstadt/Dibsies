@@ -2,6 +2,11 @@
 <html lang="en">
 
 <head>
+<script>
+      {% if customer.tags.size > 0 %}
+        window.upsell_customer_tags = "{{customer.tags |join: ','}}";
+      {% endif %}
+    </script>
 <meta name="msvalidate.01" content="C61341BCE1B566027D2E7B9D89E0774A" /> 
 <meta name="google-site-verification" content="h7nRFdMPwg8G9RSMLQS4SAQEjVT97yhfJF_cpj-kcfA" />
   
@@ -16,6 +21,8 @@
 
 {% include 'theme-meta' %}
 {{ content_for_header }}
+
+
 
 {{ 'bootstrap.min.css' | asset_url | stylesheet_tag }}
 {{ 'bootstrap-theme.min.css' | asset_url | stylesheet_tag }} 
@@ -359,10 +366,8 @@ window._fbq.push(['track', 'PixelInitialized', {}]);
 <!-- Facebook Remarketing Tag End -->  
 
 {% comment %}<script src="//d3nhg2i1zayjpd.cloudfront.net/search/prod/dibsies.myshopify.com.min.js"></script>{% endcomment %}
-  
+  {{ 'shopstorm-apps.scss.css' | asset_url | stylesheet_tag }}
 </head>
-
-
 <body class="{% if customer %}customer-logged-in {% endif %}template-{{ template | split: '.' | first }}">
 
 

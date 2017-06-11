@@ -60,10 +60,11 @@
         </thead>
         <tbody>
           {% for line_item in order.line_items %}
-          <tr id="{{ line_item.id }}" class="{% cycle 'odd', 'even' %}">
+          <tr id="{{ line_item.id }}" class="{% cycle 'odd', 'even' %}" style="{% include 'product-customizer-helper' with 'hide-pricing-item-row', item: line_item %}">
             <td class="product">
               {{ line_item.title | link_to: line_item.product.url }} 
               {% for p in line_item.properties %}{% unless p.last == blank or p.first == 'preview-image-url' %}<br /> - <u>{{ p.first }}:</u> {{ p.last }}{% endunless %}{% endfor %}
+              {% include 'product-customizer-helper' item: line_item %}
               {% if line_item.fulfillment %}
                 <div class="note">
                   Fulfilled {{ line_item.fulfillment.created_at | date: "%b %d" }}
@@ -74,9 +75,10 @@
               {% endif %}
             </td>
             <td class="sku note">{{ line_item.sku }}</td>
-            <td class="money">{{ line_item.price | money }}</td>
+            <td class="money">{% include 'product-customizer-helper' with 'item-price', item: line_item, items: order.line_items %}</td>
             <td class="quantity cente">{{ line_item.quantity }}</td>
-            <td class="total money">{{ line_item.quantity | times: line_item.price | money }}</td>
+            <td class="total money">{% capture item_price %}{% include 'product-customizer-helper' with 'item-price', item: line_item, items: order.line_items, raw: true %}{% endcapture %}
+	{{ line_item.quantity | times: item_price | money }}</td>
           </tr>
           {% endfor %}
         </tbody>  

@@ -1,0 +1,8 @@
+{% assign booster_min_price = booster-min-price.price_max %}
+{% for variant in booster-min-price.variants %}
+  {% unless variant.title contains "Booster UP" %}
+    {% if variant.price < booster_min %}
+      {% assign booster_min_price = variant.price %}
+    {% endif %}
+  {% endunless %}
+{% endfor %}

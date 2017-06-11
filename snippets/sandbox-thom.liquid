@@ -1,3 +1,4 @@
+{%- include 'bold-product' with product, hide_action: 'break', output: 'none' -%}
 <meta property="shoppad:always_desktop" content="true" />
 {% comment %}
 <div class="tags contentsection">
@@ -42,6 +43,8 @@
         {% endfor %}
 
         <form id="product-form-personalized" action="/cart/add" method="post">
+  {% comment %}{% include 'product-customizer' %}{% endcomment %}
+
             <div class="options">
              {% if shappify_qb_options_count == 1 %}
                 <input type="hidden" name="id" value="{{ product.variants.first.id }}" />
