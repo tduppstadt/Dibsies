@@ -2617,7 +2617,11 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#4C000000,endCol
 
 /* Slimbox */
 #lbSlide {
+<<<<<<< HEAD
     width: 100%
+=======
+    width: 100%;
+>>>>>>> master
 }
 #lbOverlay {
     position: fixed;
@@ -2641,12 +2645,12 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#4C000000,endCol
   background: #fff url({{ 'loader-white.gif' | asset_url }}) no-repeat center;
 }
 
-#lbImage {
+ #lbImage {
   position: absolute;
   left: 0;
   top: 0;
   border: 10px solid #fff;
-  background-repeat: no-repeat;
+  background-repeat: no-repeat; 
 }
 
 #lbPrevLink, #lbNextLink {
@@ -3350,7 +3354,6 @@ width:160px; /* Dropdown width */
 #preview-out
 {  
 	margin-top: 20px;
-    text-align: center;
 }
 
 #marketingBanner
@@ -3505,7 +3508,7 @@ span#view-responsive{ display: none; }
     text-align: center;
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 400px) {
     .addbuttoncont, 
     .addbuttoncont input,
     .addbuttoncont #custom-preview.button{
@@ -3516,12 +3519,6 @@ span#view-responsive{ display: none; }
         display: none !important;
     }
 
-    .personalize__btn,
-    #custom-preview.button {
-        height: 50px !important;
-        padding-top: 13px !important;
-        font-size: 20px !important;
-    }
 }
 
 #product-select {

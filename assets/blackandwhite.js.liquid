@@ -208,7 +208,7 @@ $(function(){
     };
     
   /// Gallery
-  $('#productinfo .gallery').on('click', '.thumbnails .thumb', function(e){
+  $('body').on('click', '.js-productinfo .gallery .thumbnails .thumb', function(e){
     e.preventDefault();
     var $mainA = $(this).closest('.gallery').find('.main a');
     var newImg = $(this).attr('href');
@@ -240,7 +240,8 @@ $(function(){
   });
   
   //Zoom or LB
-    $('#productinfo .gallery').on('initzoomorlightbox', function(){
+    $('.js-productinfo .gallery').on('initzoomorlightbox', function(){
+    
       //Zoom
       if($(this).hasClass('mode-zoom')) {
         var opts = {};
@@ -749,6 +750,19 @@ function modifyQuantity(sel, amt, varID) {
     
     var newVal = Math.max(1, curr+amt);
     $(sel).val(newVal);
+    
+    /* Added by ShopStorm for Product Customizer compatibility on 2017-05-22 */
+
+    if (typeof(shopstorm) !== 'undefined' && typeof(shopstorm.apps) !== 'undefined' && typeof(shopstorm.apps.productCustomizer) !== 'undefined' && typeof(shopstorm.apps.productCustomizer.$) !== 'undefined') {
+      // first ensure that the line item quantity is correct (e.g. they clicked the +/- buttons)
+      // note that we use our app jquery, to ensure our bound form submit handlers are fired
+      var $quantityInput = shopstorm.apps.productCustomizer.$('[data-line=' + line + '] input[name="updates[]"]');
+      $quantityInput.val(qty);
+      $quantityInput.closest('form').submit();
+      return;
+    }
+    
+    /* end added by ShopStorm */
     
     if(typeof(varID) != 'undefined') {
         function updateCart(jqXHR, data) {

@@ -1,3 +1,5 @@
+
+
                   
 
 
@@ -33,7 +35,7 @@
   
   
   {% assign featured_image = product.selected_or_first_available_variant.featured_image | default: product.featured_image %}
-  <div id="productinfo" class="cf" data-featimgurl="{{ product.featured_image | product_img_url: 'small' }}" itemscope itemtype="http://schema.org/Product">
+  <div id="productinfo" class="cf js-productinfo" data-featimgurl="{{ product.featured_image | product_img_url: 'small' }}" itemscope itemtype="http://schema.org/Product">
   
     <div class="eight columns">
   
@@ -43,7 +45,7 @@
 
 
 	  {% if product.metafields.customimpression['UseCustomImpression'] == "true" %}
-		{% include 'customimpression_viewer' %}
+		
 
 
 
@@ -224,7 +226,7 @@ Gift cards are delivered by email and contain instructions to redeem them at che
               {% endif %}
           {% endfor %} 
         <!-- product.metafields.PZKeys.is_pz == {{ product.metafields.PZKeys.is_pz }} -->
-        {% if product.metafields.PZKeys.is_pz == "1" or product.metafields.PZKeys.is_pz == 1 %} {% comment %} If this is a personalized product, show page differently and include pz options. {% endcomment %}
+        {% if product.metafields.PZKeys.is_pz == "1" or product.metafields.PZKeys.is_pz == 1 and product.metafields.product_customizer == empty %} {% comment %} If this is a personalized product, show page differently and include pz options. {% endcomment %}
               {% if product.handle == "sandbox-thom" %}	
                   {% include 'sandbox-thom' with product %}
               {% elsif product.handle == "sandbox-mike" %}
@@ -242,6 +244,8 @@ Gift cards are delivered by email and contain instructions to redeem them at che
             
             {% if product.available %}
             <form action="/cart/add" method="post" id="product-form">
+  
+
                 <div class="options">
                   	{% if product.handle != 'gift-card' %}
                     <label for="quantity">Quantity:</label> 
@@ -381,6 +385,8 @@ Gift cards are delivered by email and contain instructions to redeem them at che
                   
                 {% comment %} If you are using Shopify's Line Item Properties, add them here! {% endcomment %}
                 
+                
+                
                 </div>
           <hr>
               <br/>
@@ -517,10 +523,6 @@ Gift cards are delivered by email and contain instructions to redeem them at che
           
           <div class="description contentsection" itemprop="description">{% include 'process-html' with product.description %}
     
-            
-            {% if product.metafields.PZKeys.use_customization_engine == 1 %}
-     			{% include 'customization-engine-snippet' with product %}	  
-			{% endif %}
 
             <b> Need More Info? &nbsp;</b> <u>No Problem</u>. Just Click "Ask A Question" Below and Submit Your Question. Previous Purchasers or Dibsies Customer Service will respond!<br /><br />  
             <div class='yotpo QABottomLine'
@@ -608,3 +610,4 @@ ecomm_pagetype: 'product',
 ecomm_totalvalue: price
 };
 </script>
+

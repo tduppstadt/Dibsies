@@ -1,3 +1,4 @@
+{%- include 'bold-product' with product, hide_action: 'break', output: 'none' -%}
 {% unless settings.rel_product_method == 'none' %}
 {% assign these_are_related_products = true %}
 <div class="productlist">
@@ -7,6 +8,7 @@
         {% assign count = 0 %}
         {% paginate collections.all.products by 1000 %}
         {% for related_product in collections.all.products %}
+{%- include 'bold-product' with related_product, hide_action: 'skip' -%}
             {% assign tagmatch = 0 %}
             {% for reltag in related_product.tags %}
                 {% capture relremoved %}{{ reltag | remove_first: 'related-' }}{% endcapture %}
@@ -32,6 +34,7 @@
         {% assign count = 0 %}
         {% paginate collections.all.products by 1000 %}
         {% for related_product in collections.all.products %}
+{%- include 'bold-product' with related_product, hide_action: 'skip' -%}
             {% if related_product.type == product-page-related.type and related_product.handle != product-page-related.handle and count != numberOfRelatedToShow %}
                 {% capture count %}{{ count | plus: 1 }}{% endcapture %}
                 {% if count == '1' %}<h2 class="sixteen columns">Related products</h2>{% endif %}

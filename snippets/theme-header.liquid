@@ -82,7 +82,7 @@
                     {% endif %}
     			    <a href="#" class="account logindrop actions-item">{{ settings.text_login }}</a>
                 {% endif %}
-    			<a class="button actions-item" href="/{% if template != 'cart' %}cart{% else %}checkout{% endif %}" id="cartsummary">{{ settings.text_cart }} <span id="headercartvals">({{ cart.item_count }}) {{ cart.total_price | money }}</span></a>
+    			<a class="button actions-item" href="/{% if template != 'cart' %}cart{% else %}checkout{% endif %}" id="cartsummary">{{ settings.text_cart }} <span id="headercartvals"> {{ cart.total_price | money }}</span></a>
                 {% if settings.search_pos == 'tr-f' %}
                     <div id="searchcont" class="inline formfields actions-item">
                         <form class="inputrow" action="/search" method="get">

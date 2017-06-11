@@ -1,14 +1,15 @@
 $(document).ready(function()
 {
-	
  	var self = this;
 
 	this.loadInProgress = false;
   
    
 	// create template id lookup
+
 	this.templateLookUp = {};
-	var temp = $("#custom-preview").attr("data-template-lookup").split(",");
+
+	var temp = $("#modal-product-preview").attr("data-template-lookup").split(",");
 	for (var i = 0; i < temp.length; i++)
 	{		
 		this.templateLookUp[temp[i].split("=")[0]] = temp[i].split("=")[1];
@@ -34,7 +35,8 @@ $(document).ready(function()
     }
   
 	// preview button
-	$("#custom-preview").on("click", function()
+  
+	$("body").on("click", "#custom-preview", function()
      {
 		if (self.loadInProgress) return;
 		if (self.validateForm()) return;
@@ -47,7 +49,8 @@ $(document).ready(function()
       		$("a.product-page-link").attr("href", href_no_querystring + '?pzText=' + formPzText.value);
           	$("input.product-page-link").attr("onClick", "javascript:location.href='" + href_no_querystring + "?pzText=" + formPzText.value +"';");
         }
-		
+		    $("#generalModal").animate({ scrollTop: 0 }, "slow");
+        
         self.getPreview();
 
 	});
@@ -202,7 +205,7 @@ $(document).ready(function()
 	this.clearPreview = function()
 	{ 
 		$("#preview-out").html("");
-      	$("#preview-out-main-image").html("");
+    $("#preview-out-main-image").html("");
 	};
 
 	// ______________________________________________________________
@@ -555,6 +558,14 @@ $(document).ready(function()
     //                                                generatePreview
 	this.generatePreview = function(arg,cloudUrl)
 	{ 
+    // show preview section
+    $(".no-preview", ".modal-product-preview").removeClass("no-preview");
+    $(".js-productinfo", ".modal-product-preview").css("display", "none");
+
+
+    // show cart
+    $(".cart-section").css("display", "block");
+
 		// show loading
 		self.loadingPreview();
 

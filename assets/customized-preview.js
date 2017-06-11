@@ -12,6 +12,7 @@ $(document).ready(function()
 	};
 
 	// preview button
+	console.log("__________________________ hello");
 	$("#custom-preview").on("click", function()
 	{
 		if (self.loadInProgress) return;

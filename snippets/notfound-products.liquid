@@ -10,6 +10,8 @@
         {% endif %}
         <div class="productlist">
         {% for product in collection.products %}
+{%- include 'bold-product' with product, hide_action: 'skip' -%}
+          {% if product.type == 'SHOPSTORM_HIDDEN_PRODUCT' %}{% continue %}{% endif %}
             {% include 'product-list-repeatable-item' with product %}
         {% endfor %}
         </div><!-- .productlist -->
