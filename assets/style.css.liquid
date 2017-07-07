@@ -298,6 +298,47 @@ input.short {
   margin-top: 13px;
   margin-left: 15px;
 }
+
+.addbuttoncont {
+}
+
+.addbuttoncont td {
+    vertical-align: middle;
+}
+.addbuttoncont .modal-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.addbuttoncon {
+    margin-bottom: 40px;
+}
+.addbuttoncont .cart-button {
+    position: relative;
+    width: 100%;
+    margin-top: 40px;
+}
+.addbuttoncont .add-label {
+    padding-left: 10px;
+    display: inline-block;
+    position: relative;
+}
+
+.addbuttoncont table {
+    width: 100%;
+    border-bottom: 1px solid #d5d5d5;
+    margin: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.addbuttoncont table:last-child {
+    border-bottom: none;
+}
+
+.addbuttoncont label {
+       white-space: nowrap; 
+}
+
 a.button,
 input.button,
 .button a {
@@ -3300,7 +3341,13 @@ width:160px; /* Dropdown width */
 }
 
 
-.payment-method-container{ padding-top: 15px;}
+.payment-method-container{ 
+    max-width: 340px;
+    padding-top: 15px;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 .paymentmethods
 {
@@ -3493,7 +3540,7 @@ span#view-responsive{ display: none; }
 }
 
 .cart-section{
-    max-width: 343px;
+    max-width: 60%;
     margin-left: auto;
     margin-right: auto;
 }
@@ -3511,7 +3558,15 @@ span#view-responsive{ display: none; }
     .addbuttoncont #custom-preview.button{
         width: 100% !important;
     }
-
+    .addbuttoncont {
+       margin-top: 40px;
+    }
+    .addbuttoncont label {
+        padding-right: 40px;
+    }
+    .addbuttoncont .add-label {
+        padding-left: 0px;
+    }
     .preview-btn-info {
         display: none !important;
     }
@@ -3521,6 +3576,10 @@ span#view-responsive{ display: none; }
         height: 50px !important;
         padding-top: 13px !important;
         font-size: 20px !important;
+    }
+
+    .cart-section {
+        max-width: 100%;
     }
 }
 
@@ -3544,4 +3603,20 @@ span#view-responsive{ display: none; }
 .options .selector-wrapper .selectreplace {
     margin-top: 6px;
     margin-bottom: 10px;
+}
+
+.share-preview {
+    position: relative;
+    width: 200px;
+    height: 25px;
+    margin-left: 10px;
+}
+
+.share-preview__fb {
+    position: relative;
+    width: 148px;
+    height: 38px;
+    cursor: pointer;
+    cursor: hand;
+
 }

@@ -73,6 +73,8 @@
 <script src='{{ 'modal.js' | asset_url }}'></script>
 
 <script src='{{ 'customized-global.js' | asset_url }}'></script>
+<script src='{{ 'social.js' | asset_url }}'></script>
+
 
 
 <!-- Plugin style sheet -->
@@ -346,24 +348,6 @@ input:focus, textarea:focus {
 <![endif]-->
 
 
-<!-- Facebook Remarketing Tag Begin -->  
-<script>(function() {
-  var _fbq = window._fbq || (window._fbq = []);
-  if (!_fbq.loaded) {
-    var fbds = document.createElement('script');
-    fbds.async = true;
-    fbds.src = '//connect.facebook.net/en_US/fbds.js';
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(fbds, s);
-    _fbq.loaded = true;
-  }
-  _fbq.push(['addPixelId', '268680113339108']);
-})();
-window._fbq = window._fbq || [];
-window._fbq.push(['track', 'PixelInitialized', {}]);
-</script>
-<noscript><img height="1" width="1" alt="" style="display:none" src="https://www.facebook.com/tr?id=268680113339108&amp;ev=NoScript" /></noscript>  
-<!-- Facebook Remarketing Tag End -->  
 
 {% comment %}<script src="//d3nhg2i1zayjpd.cloudfront.net/search/prod/dibsies.myshopify.com.min.js"></script>{% endcomment %}
   {{ 'shopstorm-apps.scss.css' | asset_url | stylesheet_tag }}
@@ -380,14 +364,7 @@ window._fbq.push(['track', 'PixelInitialized', {}]);
   
 {% endunless %}
 
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script> 
+</script> 
     {% if product.handle contains 'email-preview' or product.handle contains 'facebook-preview' %}	
     	{% include 'preview-header' %}
 	{% elsif product.handle == "sandbox-mike" %}
@@ -442,8 +419,18 @@ window._fbq.push(['track', 'PixelInitialized', {}]);
 
 {% comment %} templates {% endcomment %}
 {% include 'modal-dibsies-on-double' %}
-{% include 'modal-product-preview' %}
 
+{% if product.title != 'Dibsies E-Gift Card' %}
+{% include 'modal-product-preview' %}
+{% endif %}
+
+
+
+{% include 'metisa-core' %}
+
+{% include 'metisa-popup' %}
+
+{% include 'metisa-track' %}
 
 </body>
 </html>

@@ -34,8 +34,7 @@ $(document).ready(function()
       
     }
   
-	// preview button
-  
+	// preview button  
 	$("body").on("click", "#custom-preview", function()
      {
 		if (self.loadInProgress) return;
@@ -50,17 +49,113 @@ $(document).ready(function()
           	$("input.product-page-link").attr("onClick", "javascript:location.href='" + href_no_querystring + "?pzText=" + formPzText.value +"';");
         }
 		    $("#generalModal").animate({ scrollTop: 0 }, "slow");
-        
+        $(".js-share-preview").css("display", "none");
         self.getPreview();
 
 	});
-		
+
+
+
+    $("body").on("click", ".js-share-preview-fb", function() {
+
+      var customName = $("[data-fieldname='Personalized Text']",".personalize-full-form").val();
+      var title = $("h1", "#detail").text();
+      var description = $(".description p", "#detail").text();
+
+      var lastChar = customName[customName.length -1];
+      if (lastChar === "s" || lastChar === "S"){
+        customName += "'";
+      } else {
+        customName += "'s";
+      }
+
+      var shareObj = {
+            'title'       : title + " with " + customName + " name on it!",
+            'description' : "Found it at @Dibsies Personalization Station",
+            'url'         : location.href,//response.results.link,
+            'image'       : $(".js-preview-img", "#preview-out").attr("src")
+        };
+
+      window.oSocial.facebookShare(shareObj);
+    });
+
+    
+
+    // add to cart
+    $("body").on("click", "#shappify_add_to_cart_btn", function(){
+        
+        var form = $("#product-form-personalized");
+
+        // get accessories (add ons)        
+        var $addOns = $("input[type='checkbox']:checked", "#product-form-personalized .addbuttoncont");
+        var addCount = $addOns.length;
+
+        // if we have add ons -> process
+        if (addCount > 0){
+
+            /*
+                // this code shows the data normally POSTed
+                var data = form.serializeArray();
+                data = window.objectifyForm(data);
+                console.log("-------- data", data);
+            */
+
+            // get property line items
+            var $formData = $("input", form).not( $("[type='button']") ).not( $("[name='id']") );
+            $formData = $formData.add("textarea", form);
+            $formData = $formData.add("select", form);
+            var properties = {};
+            $formData.each(function(){
+                properties[$(this).attr("data-fieldname")] = $(this).val();
+            });
+
+
+            // create cart obj
+            var cartObj = {
+                id: $("input[name='id']", form).val(),
+                properties: properties
+            };
+
+            
+            // post add ons
+            var postAddOns = function(){
+                if (addCount > 0){
+                    addCount--;
+                    $.post( "/cart/add.js", {
+                        id: $($addOns[addCount]).val()
+                    }, postAddOns, "json");
+                } else {
+                    location.href = "/cart";
+                }
+            };
+
+            // do initial product POST
+            $.post( "/cart/add.js", cartObj, postAddOns, "json");
+
+        } else {
+
+            // no add ons -> basic submit
+            var $form = $("#product-form-personalized");
+            $form.submit();
+        }
+
+
+    }); 
+
+    	
 	// ______________________________________________________________
     //                                                    toTitleCase
 	this.toTitleCase = function(str)
 	{
+          
+      var relevantStrNoSpace = str.replace(/ /g,"");
+      var relevantStr = relevantStrNoSpace.replace(/\./g,"");
+          
+          
+          
+          
       // if 3 letters or less, ignore this.  allow capitalized initials
-      if (str.length > 3) {
+      if (relevantStr.length > 3) {
         
         // see how many letters are capitalized
         
@@ -224,9 +319,9 @@ $(document).ready(function()
       
       var httpsUrl = url.replace('http://','https://');
       // below replace method added to escape apostrophes or single quotes from url
-      var htm = "<img style='max-width:100%;' src='" + httpsUrl.replace(/'/g, "%27") + "' width='400px' id='previewimg'/>";
+      var htm = "<img class='js-preview-img' style='max-width:100%;' src='" + httpsUrl.replace(/'/g, "%27") + "' width='400px' id='previewimg'/>";
       htm += "<div style='max-width:100%; color: #2957A4; font-style:italic; padding-bottom:25px;'>This preview image is a simulation of your personalization options applied to this product</div>"
-		
+
         $("#preview-out").html(htm);
       	$("#preview-out-main-image").html(htm);
       	$("#main-img").attr("src",httpsUrl);
@@ -234,6 +329,8 @@ $(document).ready(function()
       	//$(".main-image").css("display", "none");
       	//$(".zoomPad").css("display", "none");
       	$("#preview-image-url").attr("value",httpsUrl);
+
+        $(".js-share-preview").css("display", "block");
 	};
 
 

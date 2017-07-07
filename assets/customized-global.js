@@ -2,8 +2,15 @@ $(document).ready(function(){
 
 
 
+    // used to de-serialize data function
+    window.objectifyForm = function(formArray) {
 
-
+      var returnArray = {};
+      for (var i = 0; i < formArray.length; i++){
+        returnArray[formArray[i]['name']] = formArray[i]['value'];
+      }
+      return returnArray;
+    }
 
 
 	// ______________________________________________________________
@@ -15,6 +22,15 @@ $(document).ready(function(){
     // ______________________________________________________________
     //                                                assignListeners
     var assignListeners = function() {
+
+        // block enter key submit
+        $(document).on("keypress", "#product-form-personalized", function(event) { 
+            if( event.keyCode == 13){
+              event.preventDefault();
+              event.stopPropagation();
+              return false;
+            }
+        });
 
         // DIBSIES On The DOUBLE info
         $("body").on("click", ".js-d-on-d-info", function(){
@@ -51,6 +67,8 @@ $(document).ready(function(){
                 // init lightbox
                 $(this).find('.main a').slimbox();
             }).trigger('initzoomorlightbox');
+
+
 
         });
 

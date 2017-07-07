@@ -1,0 +1,112 @@
+{% if product %}
+<script>
+  (function(){
+
+    var baseUrl = "https://askmetisa.com";
+    var slug = "dibsiespersonalizati";
+
+    function loadScript(url, callback){
+      var script = document.createElement("script")
+      script.type = "text/javascript";
+      if (script.readyState){  //IE
+        script.onreadystatechange = function(){
+          if (script.readyState == "loaded" || script.readyState == "complete"){
+            script.onreadystatechange = null;
+            callback();
+          }
+        };
+      } else {  //Others
+        script.onload = function(){
+          callback();
+        };
+      }
+
+      script.src = url;
+      document.getElementsByTagName("head")[0].appendChild(script);
+    }
+    var getUrlParameter = function getUrlParameter(sParam) {
+      var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+      for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+          return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+      }
+    };
+
+    var metisaTracking = function($){
+      var product_id = '';
+      {% if product %}
+        {% if product.variants %}
+          product_id = "{{ product.variants[0].id }}";
+        {% endif %}
+      {% endif %}
+      // add-to-cart tracking
+      var sessionId = readSessionCookie();
+      // Widget click tracking
+      var refer = getUrlParameter("ref");
+      if (refer == 'metisa-widget' && product_id) {
+        var widget_id = getUrlParameter("widget_id");
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open('POST', "/cart/update.js");
+        xmlhttp.onreadystatechange = function() {
+          if (xmlhttp.readyState == 4) {
+            var cart = JSON.parse(xmlhttp.responseText);
+            var metisaUrl = baseUrl + "/" + slug + "/clickstream/widget/" + widget_id + "/cart/" + cart.token + "/" + product_id + "/";
+            var body = {}
+            if (sessionId) {
+              body['session_id'] = sessionId;
+            }
+            {% if customer %}
+            body['customer_id'] = '{{customer.id}}';
+            {% endif %}
+            $.post(metisaUrl, body);
+          }
+        };
+        xmlhttp.send();
+      }
+      // Normal click tracking for product page only
+      var clickUrl = baseUrl + "/" + slug + "/clickstream/click/" + product_id + "/";
+      var xmlhttpClick = new XMLHttpRequest();
+      if (product_id) {
+        var url = this.baseUrl + this.slug + '/clickstream/click/' + escape(product_id);
+        var data = {}
+        {% if customer %}
+        data['customer_id'] = '{{customer.id}}';
+        {% endif %}
+        if (sessionId) {
+          data['session_id'] = sessionId;
+        }
+
+        xmlhttpClick.open('POST', clickUrl);
+        xmlhttpClick.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttpClick.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4) {
+                if (xmlhttp.status == 200) {
+                    console.log("Done")
+                } else {
+                    console.log('Error: ' + xmlhttp.statusText);
+                }
+            }
+        };
+        xmlhttpClick.send(JSON.stringify(data));
+      }
+    };
+
+    if ((typeof jQuery === 'undefined') || (parseFloat(jQuery.fn.jquery) < 1.7)) {
+      loadScript('//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js', function(){
+        jQuery191 = jQuery.noConflict(true);
+        metisaTracking(jQuery191);
+      });
+    } else {
+      metisaTracking(jQuery);
+    }
+  })();
+</script>
+{% endif %}
+

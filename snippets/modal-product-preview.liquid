@@ -1,3 +1,16 @@
+{% if product.title contains "Dibsies E-Gift Card" %}
+              <style> #shappify_add_to_cart_btn  {display: none !important}</style>
+			  <button class="gwbutton btn" style="margin-top: 10px; padding: 15px;
+    display: block;
+    text-transform: uppercase;
+    font-size: 20px;background: linear-gradient(to bottom, #1e5799 0%,#2989d8 50%,#207cca 51%,#7db9e8 100%);    font: 1.05em 'Trocchi',Arial,sans-serif;
+    color: #ffffff; box-shadow: 0 0 2px 0 #000;">Send a Gift Card</button>
+            {% else %}
+              <style> #shappify_add_to_cart_btn {display: inline !important}</style>
+               <button class="gwbutton btn">Send a Gift Card</button>       
+			  <style>.gwbutton {display:none   !important}</style>
+            {% endif %}
+
 <script id="modal-product-preview" type="text/template" data-template-lookup="{{product.metafields.PZKeys.template_id_map}}">
 
 	<div class="modal-product-preview modal-dialog modal-lg"> 
@@ -53,6 +66,7 @@
 
 							<div class="col-md-6 preview-out-container no-preview--hide-me">
 				          			<div id="preview-out"></div>
+				          			<div class='js-share-preview share-preview' style="display:none;"><div class='js-share-preview-fb share-preview__fb'><img src="{{ 'fb-share-preview-btn.png' | asset_url }}" width="100%"/></div></div>
 				          	</div> <!–– end preview col ––>								
 						
 						
@@ -87,7 +101,6 @@
 							              <input id="personalize-yes" type="radio" name="personalize-option" value="yes" checked>Yes
 							              <input id="personalize-no" type="radio" name="personalize-option" value="no">No
 							          </div>
-
 
 
 							          {% comment %} END - Personalize option {% endcomment %} {% endcomment %} {% comment %} If you are using Shopifys Line Item Properties, add them here! {% endcomment %}
@@ -471,9 +484,6 @@
 							          <!-- Dupp end -->
 
 
-
-
-
 							      </div>
 
 							      </div>
@@ -541,10 +551,55 @@
                         <span class="mw-product-options"></span>
                         
 			            <div class="addbuttoncont">
+                        
+                        	{% assign addOnProducts = 0 %}
+                        	{% for thisProdTag in product.tags %}
+                               {% if thisProdTag contains "addon" %}
+                                  {% assign addOnProducts = 1 %}
+                                  {% assign matchingTag = thisProdTag %}
+                               {% endif %}
+                            {% endfor %}
+                       
+                       		{% unless addOnProducts == 0 %}
+                              {% assign numberOfAddOnsToShow = '3' %} 
+                              <!-- Products which have a matching addon tag e.g. 3 products (including this one) all containing a tag 'addon-group1' -->
+                              {% assign count = 0 %}
+                              {% paginate collections.all.products by 1000 %}
+                              {% for addon_product in collections.all.products %}
+                              	  {% if addon_product.type == "Add On" %}
+                                    {% assign tagmatch = 0 %}
+                                    {% for addontag in addon_product.tags %}
+                                        {% capture addonremoved %}{{ addontag | remove_first: 'addon-' }}{% endcapture %}
+                                        {% if addonremoved != addontag and count != numberOfAddOnsToShow %}
+                                            {% if matchingTag == addontag %}
+                                                    {% assign tagmatch = 1 %}
+                                            {% endif %}      
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if tagmatch == 1 %}
+                                        {% capture count %}{{ count | plus: 1 }}{% endcapture %}
+                                         {% if count == '1' %}<h4 class="modal-title"><span style="font:normal 16px/28px 'Trocchi', sans-serif;color:#2957A4"><b>Easy-Add Accessories</b></span></h4>{% endif %}
+                                        <table>
+                                        	<tr>
+                                            	<td>
+                                                	<label><input type="checkbox" name="id" value="{{ addon_product.variants.first.id }}" /><span class="add-label"><b>Add?</b></span></label>
+  												</td>
+                                                <td style="padding-bottom: 15px;"> <img src="{{ addon_product.featured_image | product_img_url: product_thumb_size }}"/>
+  												</td>
+                                                <td><b>{{ addon_product.title }}</b><br>{{ addon_product.price | money }} (<a href="{{ addon_product.url }}" target="_blank" title="More details on {{ addon_product.title }}">details</a>)
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    {% endif %}
+                                  {% endif %}
+                              {% endfor %}
+                              {% endpaginate %}
+							{% endunless %}
                         	
-			              <div class="shopping-cart"></div>
-                          	
-			                <input type="submit" name ="add" id="shappify_add_to_cart_btn" class="button large plus" value="{{ settings.text_addtocart }}" />
+                        	<div class="cart-button">
+			              		<div class="shopping-cart"></div>                          	
+			                	<input type="button" name ="add" id="shappify_add_to_cart_btn" class="button large plus" value="{{ settings.text_addtocart }}" />
+			                </div>
 			            </div>              
 						
 			           <div class="payment-method-container">   

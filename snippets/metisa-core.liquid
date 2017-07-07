@@ -1,0 +1,69 @@
+<!-- Metisa -->
+<script>
+var returnHash = function() {
+  abc = "abcdef1234567890".split("");
+  var token="";
+  for(i=0;i<32;i++){
+       token += abc[Math.floor(Math.random()*abc.length)];
+  }
+  return token; //Will return a 32 bit "hash"
+}
+
+var createSessionCookie = function() {
+  value = returnHash();
+  var expires = "";
+  document.cookie = "MetisaTracking=" + value + expires + "; path=/";
+}
+
+var readSessionCookie = function() {
+    var nameEQ = "MetisaTracking" + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
+sessionId = readSessionCookie();
+if(!sessionId) {
+  createSessionCookie();
+}
+</script>
+
+<script>
+    (function(){
+        window.mt = window.mt || function(){
+            (window.mt.q = window.mt.q || []).push(arguments)
+        };
+
+        var scriptTag = document.createElement('script');
+        scriptTag.type = 'text/javascript';
+        scriptTag.async = true;
+        scriptTag.src = 'https://askmetisa.com/static/widget/metisa.js';
+
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(scriptTag, s);
+    })();
+    mt('store', 'dibsiespersonalizati');
+
+    var sessionId = readSessionCookie();
+    if (sessionId) {
+      mt('session', sessionId);
+    }
+
+    {% if language_code == blank %}
+      {% assign language_code = 'en' %}
+    {% endif %}
+  	mt('language', "{{ language_code }}");
+    {% if customer %}
+        mt('customer', {{ customer.id }});
+    {% endif %}
+    {% if product %}
+        {% if product.variants %}
+            mt('product', {{ product.variants[0].id }});
+        {% endif %}
+    {% endif %}
+
+</script>
