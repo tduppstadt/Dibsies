@@ -442,10 +442,20 @@ window._fbq.push(['track', 'PixelInitialized', {}]);
 
 {% comment %} templates {% endcomment %}
 {% include 'modal-dibsies-on-double' %}
+
+{% if product.title != 'Dibsies E-Gift Card' %}
 {% include 'modal-product-preview' %}
+{% endif %}
 
 
-</body>
+
+{% include 'metisa-core' %}
+
+{% include 'metisa-popup' %}
+
+{% include 'metisa-track' %}
+
+<!-- BEEKETINGSCRIPT CODE START -->{% include 'bk-tracking' %}<!-- BEEKETINGSCRIPT CODE END --></body>
 </html>
 
 

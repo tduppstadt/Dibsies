@@ -1,0 +1,20 @@
+
+<div class="pagesnippetwidget widget eight columns">
+  <a href="{{ pages[data].url }}"></a>
+  {% capture desc %}<a href="https://www.facebook.com/dibsies" target="_blank"><img src="http://res.cloudinary.com/dibsies/image/upload/v1498779487/images_fvxtvr.jpg" style="float: right;" alt="" /></a>{% endcapture %}
+  <div class="expandable">{{ desc }}</div>
+</div>
+
+<script>
+$(document).ready(function() {
+
+  // override default options (also overrides global overrides)
+  $('.expandable').expander({
+    slicePoint:       600,  // default is 100
+    expandPrefix:     ' ... <br/><br/>', // default is '... '
+    expandText:       '[Show More]', // default is 'read more'
+    userCollapseText: ' ... <br/><br/>[Show Less]'  // default is 'read less'
+  });
+
+});
+</script>

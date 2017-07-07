@@ -1,25 +1,21 @@
-<!-- BEGIN: Simp Google Trusted Stores by Simprosys InfoMedia For Any Assistance on this Code contact info@simprosys.com -->
-		<script type="text/javascript">
-		var gts = gts || [];
-
-		gts.push(["id", "688769"]);
-		gts.push(["badge_position", "BOTTOM_RIGHT"]);
-        
-        gts.push(["locale", "en_US"]);
-		{% if template contains 'product' %} 
-		gts.push(["google_base_offer_id", "shopify_US_{{ product.id }}_{{ product.variants.first.id }}"]);
-		{% endif %}          
-		gts.push(["google_base_subaccount_id", "10856862"]);
-		gts.push(["google_base_country", "US"]);
-		gts.push(["google_base_language", "en"]);
-
-		(function() {
-		var gts = document.createElement("script");
-		gts.type = "text/javascript";
-		gts.async = true;
-		gts.src = "https://www.googlecommerce.com/trustedstores/api/js";
-		var s = document.getElementsByTagName("script")[0];
-		s.parentNode.insertBefore(gts, s);
-		})();
-		</script>
-		<!-- END: Simp Google Trusted Stores  by Simprosys InfoMedia-->
+<!-- BEGIN: Google Customer Review by Simprosys InfoMedia For Any Assistance on this Code contact support@simprosys.com -->
+<script src="https://apis.google.com/js/platform.js?onload=renderBadge" async defer></script>
+<script>
+  window.renderBadge = function() {
+    var ratingBadgeContainer = document.createElement("div");
+      document.body.appendChild(ratingBadgeContainer);
+      window.gapi.load("ratingbadge", function() {
+        window.gapi.ratingbadge.render(
+          ratingBadgeContainer, {
+            "merchant_id": 10856862,
+            "position": "BOTTOM_RIGHT"
+          });           
+     });
+  }
+</script>
+<script>
+  window.___gcfg = {
+    lang: "en_US"
+  };
+</script>
+<!-- END: Google Customer Review  by Simprosys InfoMedia-->

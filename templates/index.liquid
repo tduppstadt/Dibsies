@@ -1,3 +1,5 @@
+
+
 {% comment %} Generate the product row html first - we don't know where they are going yet {% endcomment %}
 {% if collections[settings.productrow_1_collection].products.size > 0 %}
 {% capture row1_html %}
@@ -120,11 +122,19 @@
     </div>
 </section>
 {% endif %}
-              
-
+   
 {% if settings.collrow_position == '1' %}{{ collrow_html }}{% endif %}
+                        
+                                          <section class="widgets row">
+    {% include 'widget-facebook-banner' %}            
+    {% assign data = 'facebook' %}
+    {% include 'widget-custom-notitle' %}
+              </section>
+                        
+
 {% if settings.productrow_1_position == '1' %}{{ row1_html }}{% endif %}
 {% if settings.productrow_2_position == '1' %}{{ row2_html }}{% endif %}
+
 
 {% if settings.widget_1_3_on %}
 <section class="widgets row">
@@ -170,6 +180,10 @@
 {% if settings.collrow_position == '3' %}{{ collrow_html }}{% endif %}
 {% if settings.productrow_1_position == '3' %}{{ row1_html }}{% endif %}
 {% if settings.productrow_2_position == '3' %}{{ row2_html }}{% endif %}
+              
+
+    
+  
 <script type="text/javascript">
 var google_tag_params = {
 ecomm_prodid: '',

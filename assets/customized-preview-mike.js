@@ -34,8 +34,7 @@ $(document).ready(function()
       
     }
   
-	// preview button
-  
+	// preview button  
 	$("body").on("click", "#custom-preview", function()
      {
 		if (self.loadInProgress) return;
@@ -54,13 +53,83 @@ $(document).ready(function()
         self.getPreview();
 
 	});
-		
+
+
+    // add to cart
+    $("body").on("click", "#shappify_add_to_cart_btn", function(){
+        
+        var form = $("#product-form-personalized");
+
+        // get accessories (add ons)        
+        var $addOns = $("input[type='checkbox']:checked", "#product-form-personalized .addbuttoncont");
+        var addCount = $addOns.length;
+
+        // if we have add ons -> process
+        if (addCount > 0){
+
+            /*
+                // this code shows the data normally POSTed
+                var data = form.serializeArray();
+                data = window.objectifyForm(data);
+                console.log("-------- data", data);
+            */
+
+            // get property line items
+            var $formData = $("input", form).not( $("[type='button']") ).not( $("[name='id']") );
+            $formData = $formData.add("textarea", form);
+            $formData = $formData.add("select", form);
+            var properties = {};
+            $formData.each(function(){
+                properties[$(this).attr("data-fieldname")] = $(this).val();
+            });
+
+
+            // create cart obj
+            var cartObj = {
+                id: $("input[name='id']", form).val(),
+                properties: properties
+            };
+
+            
+            // post add ons
+            var postAddOns = function(){
+                if (addCount > 0){
+                    addCount--;
+                    $.post( "/cart/add.js", {
+                        id: $($addOns[addCount]).val()
+                    }, postAddOns, "json");
+                } else {
+                    location.href = "/cart";
+                }
+            };
+
+            // do initial product POST
+            $.post( "/cart/add.js", cartObj, postAddOns, "json");
+
+        } else {
+
+            // no add ons -> basic submit
+            var $form = $("#product-form-personalized");
+            $form.submit();
+        }
+
+
+    }); 
+
+    	
 	// ______________________________________________________________
     //                                                    toTitleCase
 	this.toTitleCase = function(str)
 	{
+          
+      var relevantStrNoSpace = str.replace(/ /g,"");
+      var relevantStr = relevantStrNoSpace.replace(/\./g,"");
+          
+          
+          
+          
       // if 3 letters or less, ignore this.  allow capitalized initials
-      if (str.length > 3) {
+      if (relevantStr.length > 3) {
         
         // see how many letters are capitalized
         
